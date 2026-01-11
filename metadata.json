@@ -1,0 +1,7 @@
+{
+  "name": "SnapCal AI",
+  "description": "A vibe-first AI calorie tracker. Snap a photo of your meal, and let Gemini estimate the calories.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}

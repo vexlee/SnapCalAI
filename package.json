@@ -1,0 +1,37 @@
+{
+  "name": "snapcal-ai",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist",
+    "gcp-build": "docker build -t gcr.io/[PROJECT_ID]/snapcal-ai --build-arg GEMINI_API_KEY=$GEMINI_API_KEY --build-arg SUPABASE_URL=$SUPABASE_URL --build-arg SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY .",
+    "gcp-deploy": "docker push gcr.io/[PROJECT_ID]/snapcal-ai && gcloud run deploy snapcal-ai --image gcr.io/[PROJECT_ID]/snapcal-ai --platform managed --region us-central1 --allow-unauthenticated"
+  },
+  "dependencies": {
+    "@google/genai": "latest",
+    "@supabase/supabase-js": "^2.39.3",
+    "clsx": "^2.1.1",
+    "lucide-react": "^0.344.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "recharts": "^2.12.0",
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.56",
+    "@types/react-dom": "^18.2.19",
+    "@types/uuid": "^9.0.8",
+    "@vitejs/plugin-react": "^4.2.1",
+    "autoprefixer": "^10.4.18",
+    "gh-pages": "^6.1.1",
+    "postcss": "^8.4.35",
+    "tailwindcss": "^3.4.1",
+    "typescript": "^5.3.3",
+    "vite": "^5.1.4"
+  }
+}
