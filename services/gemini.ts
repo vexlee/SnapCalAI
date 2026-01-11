@@ -1,8 +1,24 @@
 import { GoogleGenAI, Type } from "@google/genai";
 
-const apiKey = import.meta.env.VITE_GEMINI_API_KEY || "";
-console.log("Gemini Key Detected:", apiKey ? "Yes" : "No", apiKey ? `(Length: ${apiKey.length})` : "");
-const ai = new GoogleGenAI({ apiKey });
+/**
+ * Get the API key dynamically to ensure it's always fresh
+ */
+const getApiKey = (): string => {
+  const apiKey = import.meta.env.VITE_GEMINI_API_KEY || "";
+  if (!apiKey) {
+    console.error("VITE_GEMINI_API_KEY is not set in environment variables");
+  }
+  return apiKey;
+};
+
+/**
+ * Get or create the AI client instance with current API key
+ */
+const getAIClient = (): GoogleGenAI => {
+  const apiKey = getApiKey();
+  console.log("Gemini Key Detected:", apiKey ? "Yes" : "No", apiKey ? `(Length: ${apiKey.length})` : "");
+  return new GoogleGenAI({ apiKey });
+};
 
 const SYSTEM_INSTRUCTION = `
 You are an expert AI nutritionist and mathematical calculator. 
@@ -92,6 +108,7 @@ async function withRetry<T>(fn: () => Promise<T>, retries = 2, delayMs = 2000): 
 export const analyzeFoodImage = async (base64Image: string): Promise<AnalysisResult> => {
   try {
     return await withRetry(async () => {
+      const ai = getAIClient();
       const response = await ai.models.generateContent({
         model: 'gemini-3-flash-preview',
         contents: {
@@ -162,6 +179,7 @@ export const calculateCaloriesFromText = async (description: string, existingIng
         prompt = `Estimate nutrition for: "${description}".`;
       }
 
+      const ai = getAIClient();
       const response = await ai.models.generateContent({
         model: 'gemini-3-flash-preview',
         contents: [{ parts: [{ text: prompt }] }],
@@ -205,6 +223,7 @@ export const calculateCaloriesFromText = async (description: string, existingIng
 export const calculateRecipe = async (ingredients: string, servings: number): Promise<RecipeResult> => {
   try {
     return await withRetry(async () => {
+      const ai = getAIClient();
       const response = await ai.models.generateContent({
         model: 'gemini-3-flash-preview',
         contents: [{ parts: [{ text: `Ingredients: ${ingredients}\nNumber of Servings: ${servings}` }] }],
