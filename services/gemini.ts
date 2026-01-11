@@ -1,6 +1,7 @@
 import { GoogleGenAI, Type } from "@google/genai";
 
 const apiKey = import.meta.env.VITE_GEMINI_API_KEY || "";
+console.log("Gemini Key Detected:", apiKey ? "Yes" : "No", apiKey ? `(Length: ${apiKey.length})` : "");
 const ai = new GoogleGenAI({ apiKey });
 
 const SYSTEM_INSTRUCTION = `

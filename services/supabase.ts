@@ -8,6 +8,9 @@ import { createClient } from '@supabase/supabase-js';
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || "";
 const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || "";
 
+console.log("Supabase URL Detected:", SUPABASE_URL ? "Yes" : "No", SUPABASE_URL ? `(Length: ${SUPABASE_URL.length})` : "");
+console.log("Supabase Key Detected:", SUPABASE_KEY ? "Yes" : "No", SUPABASE_KEY ? `(Length: ${SUPABASE_KEY.length})` : "");
+
 // Check if valid keys are present (Must start with http for URL)
 export const isSupabaseConfigured =
   !!SUPABASE_URL &&
