@@ -7,13 +7,5 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [react()],
     base: './', // Ensures assets are linked correctly on GitHub Pages
-    define: {
-      'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY),
-      'process.env.SUPABASE_URL': JSON.stringify(env.SUPABASE_URL),
-      'process.env.SUPABASE_ANON_KEY': JSON.stringify(env.SUPABASE_ANON_KEY),
-      'import.meta.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY),
-      'import.meta.env.SUPABASE_URL': JSON.stringify(env.SUPABASE_URL),
-      'import.meta.env.SUPABASE_ANON_KEY': JSON.stringify(env.SUPABASE_ANON_KEY),
-    }
   };
 });

@@ -5,8 +5,8 @@ import { createClient } from '@supabase/supabase-js';
 // ------------------------------------------------------------------
 // Vite exposes env vars on import.meta.env
 // We check for both process.env (legacy/test) and import.meta.env (Vite)
-const SUPABASE_URL = process.env.SUPABASE_URL || "";
-const SUPABASE_KEY = process.env.SUPABASE_ANON_KEY || "";
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || "";
+const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || "";
 
 // Check if valid keys are present (Must start with http for URL)
 export const isSupabaseConfigured =
