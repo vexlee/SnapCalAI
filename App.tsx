@@ -46,7 +46,7 @@ function App() {
     const checkOnboarding = async () => {
       if (user) {
         setCheckingOnboarding(true);
-        const completed = await hasCompletedOnboarding();
+        const completed = await hasCompletedOnboarding(user);
         setShowOnboarding(!completed);
         setCheckingOnboarding(false);
       } else {
@@ -78,7 +78,7 @@ function App() {
 
   // If user hasn't completed onboarding, show onboarding
   if (showOnboarding) {
-    return <Onboarding onComplete={handleOnboardingComplete} />;
+    return <Onboarding user={user} onComplete={handleOnboardingComplete} />;
   }
 
   return (

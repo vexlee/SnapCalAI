@@ -463,14 +463,17 @@ export const checkDatabaseSchema = async (): Promise<DBCheckResult> => {
 
 const LS_ONBOARDING_KEY = 'snapcal_onboarding_v1';
 
-export const hasCompletedOnboarding = async (): Promise<boolean> => {
-  const user = await getCurrentUser();
-  if (!user) return false;
+export const hasCompletedOnboarding = async (user: any): Promise<boolean> => {
+  if (!user || !user.id) return false;
+
+  // Always check local storage first as a cache/fallback
+  const onboardingStr = localStorage.getItem(LS_ONBOARDING_KEY);
+  const onboarding = onboardingStr ? JSON.parse(onboardingStr) : {};
+
+  if (onboarding[user.id] === true) return true;
 
   if (!shouldUseCloud) {
-    const onboardingStr = localStorage.getItem(LS_ONBOARDING_KEY);
-    const onboarding = onboardingStr ? JSON.parse(onboardingStr) : {};
-    return onboarding[user.id] === true;
+    return false;
   }
 
   try {
@@ -478,37 +481,48 @@ export const hasCompletedOnboarding = async (): Promise<boolean> => {
       .from('user_settings')
       .select('has_completed_onboarding')
       .eq('user_id', user.id)
-      .single();
+      .maybeSingle(); // maybeSingle is safer as it doesn't throw on 0 rows
 
-    return (error || !data) ? false : (data.has_completed_onboarding || false);
+    const completed = data?.has_completed_onboarding || false;
+
+    // If completed in cloud, cache it locally
+    if (completed) {
+      onboarding[user.id] = true;
+      localStorage.setItem(LS_ONBOARDING_KEY, JSON.stringify(onboarding));
+    }
+
+    return completed;
   } catch (e) {
     return false;
   }
 };
 
-export const markOnboardingComplete = async (): Promise<void> => {
-  const user = await getCurrentUser();
-  if (!user) throw new Error("Not logged in");
+export const markOnboardingComplete = async (user: any): Promise<void> => {
+  if (!user || !user.id) return;
 
-  if (!shouldUseCloud) {
-    const onboardingStr = localStorage.getItem(LS_ONBOARDING_KEY);
-    const onboarding = onboardingStr ? JSON.parse(onboardingStr) : {};
-    onboarding[user.id] = true;
-    localStorage.setItem(LS_ONBOARDING_KEY, JSON.stringify(onboarding));
-    return;
+  // 1. Save to Local Storage (Always do this as immediate cache)
+  const onboardingStr = localStorage.getItem(LS_ONBOARDING_KEY);
+  const onboarding = onboardingStr ? JSON.parse(onboardingStr) : {};
+  onboarding[user.id] = true;
+  localStorage.setItem(LS_ONBOARDING_KEY, JSON.stringify(onboarding));
+
+  // 2. Save to Cloud if enabled
+  if (shouldUseCloud) {
+    try {
+      const { error } = await supabase
+        .from('user_settings')
+        .upsert({
+          user_id: user.id,
+          has_completed_onboarding: true
+        }, { onConflict: 'user_id' });
+
+      if (error) console.error("Cloud mark onboarding error:", error);
+    } catch (e) {
+      console.error("Cloud mark onboarding exception:", e);
+    }
   }
-
-  const { error } = await supabase
-    .from('user_settings')
-    .upsert({
-      user_id: user.id,
-      has_completed_onboarding: true
-    }, { onConflict: 'user_id' });
-
-  if (error) console.error("Failed to mark onboarding complete:", error);
 };
 
-export const skipOnboarding = async (): Promise<void> => {
-  // Skipping is the same as marking complete - user has "seen" the onboarding
-  await markOnboardingComplete();
+export const skipOnboarding = async (user: any): Promise<void> => {
+  await markOnboardingComplete(user);
 };

@@ -4,10 +4,11 @@ import { Button } from '../components/ui/Button';
 import { saveUserProfile, saveDailyGoal, markOnboardingComplete, skipOnboarding } from '../services/storage';
 
 interface OnboardingProps {
+    user: any;
     onComplete: () => void;
 }
 
-export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
+export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete }) => {
     const [currentStep, setCurrentStep] = useState(0);
     const [name, setName] = useState('');
     const [height, setHeight] = useState('');
@@ -46,7 +47,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
     };
 
     const handleSkip = async () => {
-        await skipOnboarding();
+        await skipOnboarding(user);
         onComplete();
     };
 
@@ -70,7 +71,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
             }
 
             // Mark onboarding as complete
-            await markOnboardingComplete();
+            await markOnboardingComplete(user);
 
             // Navigate to dashboard
             onComplete();
@@ -108,10 +109,10 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
                         <div
                             key={idx}
                             className={`h-1.5 rounded-full transition-all duration-500 ${idx === currentStep
-                                    ? 'w-12 bg-royal-600 dark:bg-royal-500'
-                                    : idx < currentStep
-                                        ? 'w-8 bg-royal-400 dark:bg-royal-600'
-                                        : 'w-8 bg-gray-200 dark:bg-gray-700'
+                                ? 'w-12 bg-royal-600 dark:bg-royal-500'
+                                : idx < currentStep
+                                    ? 'w-8 bg-royal-400 dark:bg-royal-600'
+                                    : 'w-8 bg-gray-200 dark:bg-gray-700'
                                 }`}
                         />
                     ))}
@@ -397,8 +398,8 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
                             onClick={handleBack}
                             disabled={currentStep === 0}
                             className={`flex items-center gap-2 px-5 py-3 rounded-[16px] font-bold text-sm transition-all ${currentStep === 0
-                                    ? 'opacity-0 pointer-events-none'
-                                    : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5'
+                                ? 'opacity-0 pointer-events-none'
+                                : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5'
                                 }`}
                         >
                             <ChevronLeft size={20} />

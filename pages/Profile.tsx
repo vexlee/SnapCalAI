@@ -305,50 +305,6 @@ export const Profile: React.FC = () => {
         </div>
       )}
 
-      {/* Storage Mode Toggle (Only if Supabase is configured) */}
-      {isSupabaseConfigured && (
-        <div className="bg-white dark:bg-[#1a1c26] p-6 rounded-[32px] border border-gray-100 dark:border-white/5 shadow-diffused dark:shadow-diffused-dark">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-3">
-              <div className={`w-10 h-10 rounded-2xl flex items-center justify-center ${currentMode === 'cloud' ? 'bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600' : 'bg-gray-100 dark:bg-white/10 text-gray-500'}`}>
-                {currentMode === 'cloud' ? <Cloud size={20} /> : <HardDrive size={20} />}
-              </div>
-              <div>
-                <p className="text-sm font-bold text-gray-900 dark:text-gray-50">Storage Mode</p>
-                <p className="text-xs text-gray-400 dark:text-gray-500">
-                  {currentMode === 'cloud' ? 'Connected to Supabase' : 'Device Storage Only'}
-                </p>
-              </div>
-            </div>
-            {shouldUseCloud && (
-              <button onClick={checkDB} className="p-2 text-gray-400 hover:text-royal-500 transition-colors" title="Check Connection">
-                <RefreshCw size={16} className={dbStatus === 'checking' ? 'animate-spin' : ''} />
-              </button>
-            )}
-          </div>
-
-          <div className="flex p-1 bg-gray-100 dark:bg-white/5 rounded-2xl">
-            <button
-              onClick={() => handleModeSwitch('local')}
-              className={`flex-1 py-3 text-xs font-bold rounded-xl transition-all ${currentMode === 'local'
-                ? 'bg-white dark:bg-white/10 text-gray-900 dark:text-white shadow-sm'
-                : 'text-gray-400 hover:text-gray-600'
-                }`}
-            >
-              Device Only
-            </button>
-            <button
-              onClick={() => handleModeSwitch('cloud')}
-              className={`flex-1 py-3 text-xs font-bold rounded-xl transition-all ${currentMode === 'cloud'
-                ? 'bg-emerald-500 text-white shadow-sm'
-                : 'text-gray-400 hover:text-gray-600'
-                }`}
-            >
-              Cloud Sync
-            </button>
-          </div>
-        </div>
-      )}
 
       {/* Appearance Card */}
       <div className="bg-white dark:bg-[#1a1c26] p-6 rounded-[32px] border border-gray-100 dark:border-white/5 shadow-diffused dark:shadow-diffused-dark">
@@ -465,6 +421,51 @@ export const Profile: React.FC = () => {
                 </button>
               </div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Storage Mode Toggle (Only if Supabase is configured) */}
+      {isSupabaseConfigured && (
+        <div className="bg-white dark:bg-[#1a1c26] p-6 rounded-[32px] border border-gray-100 dark:border-white/5 shadow-diffused dark:shadow-diffused-dark">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <div className={`w-10 h-10 rounded-2xl flex items-center justify-center ${currentMode === 'cloud' ? 'bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600' : 'bg-gray-100 dark:bg-white/10 text-gray-500'}`}>
+                {currentMode === 'cloud' ? <Cloud size={20} /> : <HardDrive size={20} />}
+              </div>
+              <div>
+                <p className="text-sm font-bold text-gray-900 dark:text-gray-50">Storage Mode</p>
+                <p className="text-xs text-gray-400 dark:text-gray-500">
+                  {currentMode === 'cloud' ? 'Connected to Supabase' : 'Device Storage Only'}
+                </p>
+              </div>
+            </div>
+            {shouldUseCloud && (
+              <button onClick={checkDB} className="p-2 text-gray-400 hover:text-royal-500 transition-colors" title="Check Connection">
+                <RefreshCw size={16} className={dbStatus === 'checking' ? 'animate-spin' : ''} />
+              </button>
+            )}
+          </div>
+
+          <div className="flex p-1 bg-gray-100 dark:bg-white/5 rounded-2xl">
+            <button
+              onClick={() => handleModeSwitch('local')}
+              className={`flex-1 py-3 text-xs font-bold rounded-xl transition-all ${currentMode === 'local'
+                ? 'bg-white dark:bg-white/10 text-gray-900 dark:text-white shadow-sm'
+                : 'text-gray-400 hover:text-gray-600'
+                }`}
+            >
+              Device Only
+            </button>
+            <button
+              onClick={() => handleModeSwitch('cloud')}
+              className={`flex-1 py-3 text-xs font-bold rounded-xl transition-all ${currentMode === 'cloud'
+                ? 'bg-emerald-500 text-white shadow-sm'
+                : 'text-gray-400 hover:text-gray-600'
+                }`}
+            >
+              Cloud Sync
+            </button>
           </div>
         </div>
       )}
