@@ -2,6 +2,7 @@ import { GoogleGenAI, Type } from "@google/genai";
 
 /**
  * Get the API key dynamically to ensure it's always fresh
+ * Updated: 2026-01-11 - Fix for production deployment
  */
 const getApiKey = (): string => {
   const apiKey = import.meta.env.VITE_GEMINI_API_KEY || "";
