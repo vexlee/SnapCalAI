@@ -43,10 +43,16 @@ export interface UserProfile {
   name: string;
   height: number;
   weight: number;
+  age?: number;
+  gender?: 'male' | 'female';
+  activityLevel?: 'sedentary' | 'light' | 'moderate' | 'very' | 'extra';
+  goal?: 'cut' | 'bulk' | 'maintain';
+  equipmentAccess?: 'gym' | 'home' | 'bodyweight';
 }
 
 export enum AppView {
   DASHBOARD = 'DASHBOARD',
+  CAL_COACH = 'CAL_COACH',
   HISTORY = 'HISTORY',
   PROFILE = 'PROFILE',
   ONBOARDING = 'ONBOARDING',

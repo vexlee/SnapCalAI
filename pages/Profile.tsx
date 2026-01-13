@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { User, Ruler, Weight, Check, RefreshCw, Activity, ArrowRight, Database, Moon, Sun, LogOut, UploadCloud, AlertCircle, HardDrive, Cloud, Code, Copy } from 'lucide-react';
+import { User, Ruler, Weight, Check, RefreshCw, Activity, ArrowRight, Database, Moon, Sun, LogOut, UploadCloud, AlertCircle, HardDrive, Cloud, Code, Copy, Calendar, Users, TrendingUp, Target, Dumbbell, ChevronDown } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { getUserProfile, saveUserProfile, saveDailyGoal, hasLocalData, syncLocalDataToSupabase, checkDatabaseSchema } from '../services/storage';
 import { isSupabaseConfigured, getAppMode, setAppMode, shouldUseCloud } from '../services/supabase';
@@ -34,6 +34,11 @@ create table if not exists user_profiles (
   name text,
   height float,
   weight float,
+  age integer,
+  gender text check (gender in ('male', 'female')),
+  activity_level text check (activity_level in ('sedentary', 'light', 'moderate', 'very', 'extra')),
+  goal text check (goal in ('cut', 'bulk', 'maintain')),
+  equipment_access text check (equipment_access in ('gym', 'home', 'bodyweight')),
   created_at timestamp with time zone default timezone('utc'::text, now())
 );
 
@@ -84,6 +89,11 @@ export const Profile: React.FC = () => {
   const [name, setName] = useState('');
   const [height, setHeight] = useState(''); // cm
   const [weight, setWeight] = useState(''); // kg
+  const [age, setAge] = useState('');
+  const [gender, setGender] = useState<'male' | 'female' | ''>('');
+  const [activityLevel, setActivityLevel] = useState<'sedentary' | 'light' | 'moderate' | 'very' | 'extra' | ''>('');
+  const [goal, setGoal] = useState<'cut' | 'bulk' | 'maintain' | ''>('');
+  const [equipmentAccess, setEquipmentAccess] = useState<'gym' | 'home' | 'bodyweight' | ''>('');
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [recommendedCalories, setRecommendedCalories] = useState<number | null>(null);
@@ -93,6 +103,7 @@ export const Profile: React.FC = () => {
   const [isSyncing, setIsSyncing] = useState(false);
   const [dbStatus, setDbStatus] = useState<'ok' | 'missing_tables' | 'error' | 'checking'>('checking');
   const [showSql, setShowSql] = useState(false);
+  const [showTrainingGoals, setShowTrainingGoals] = useState(false);
 
   useEffect(() => {
     loadProfile();
@@ -141,6 +152,11 @@ export const Profile: React.FC = () => {
       setName(profile.name);
       setHeight(profile.height.toString());
       setWeight(profile.weight.toString());
+      if (profile.age) setAge(profile.age.toString());
+      if (profile.gender) setGender(profile.gender);
+      if (profile.activityLevel) setActivityLevel(profile.activityLevel);
+      if (profile.goal) setGoal(profile.goal);
+      if (profile.equipmentAccess) setEquipmentAccess(profile.equipmentAccess);
     }
   };
 
@@ -176,7 +192,12 @@ export const Profile: React.FC = () => {
       await saveUserProfile({
         name,
         height: parseFloat(height),
-        weight: parseFloat(weight)
+        weight: parseFloat(weight),
+        age: age ? parseInt(age) : undefined,
+        gender: gender || undefined,
+        activityLevel: activityLevel || undefined,
+        goal: goal || undefined,
+        equipmentAccess: equipmentAccess || undefined
       });
       setSaveSuccess(true);
       setTimeout(() => setSaveSuccess(false), 2000);
@@ -238,7 +259,7 @@ export const Profile: React.FC = () => {
   const currentMode = getAppMode();
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-500 pb-10">
+    <div className="flex-1 overflow-y-auto no-scrollbar pb-32 px-6 pt-10 space-y-8 animate-in fade-in duration-500">
       <header>
         <p className="text-gray-400 dark:text-gray-500 text-xs font-semibold uppercase tracking-widest mb-2">My Profile</p>
         <h1 className="text-3xl font-extrabold text-gray-900 dark:text-gray-50 tracking-tight">Personal Details</h1>
@@ -327,6 +348,47 @@ export const Profile: React.FC = () => {
         </div>
       </div>
 
+      {/* Insight Container */}
+      {bmi && bmiStatus && currentRecommendation && (
+        <div className="relative rounded-[32px] p-6 text-white overflow-hidden shadow-xl bg-royal-600 shadow-royal-200 dark:shadow-royal-900/40 animate-in slide-in-from-bottom-4 duration-500">
+          <div className="absolute top-0 right-0 -mt-10 -mr-10 w-40 h-40 bg-white/10 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-0 left-0 -mb-10 -ml-10 w-40 h-40 bg-black/10 rounded-full blur-3xl"></div>
+
+          <div className="relative z-10">
+            <div className="flex justify-between items-start mb-6">
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <Activity size={16} className="text-royal-200" />
+                  <span className="text-royal-200 text-xs font-bold uppercase tracking-widest">Body Insight</span>
+                </div>
+                <h2 className="text-3xl font-extrabold tracking-tight">BMI: {bmi.toFixed(1)}</h2>
+              </div>
+              <div className={`px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/10 text-sm font-bold ${bmiStatus.color}`}>
+                {bmiStatus.label}
+              </div>
+            </div>
+
+            <div className="bg-white/10 backdrop-blur-md rounded-[24px] p-5 border border-white/5">
+              <p className="text-white/70 text-xs font-medium mb-3">
+                Based on your profile, we recommend a daily calorie limit of:
+              </p>
+              <div className="flex items-center justify-between">
+                <div className="flex items-baseline gap-1">
+                  <span className="text-4xl font-extrabold tracking-tighter">{currentRecommendation}</span>
+                  <span className="text-lg font-bold text-white/60">kcal</span>
+                </div>
+                <button
+                  onClick={handleApplyRecommendation}
+                  className="w-10 h-10 bg-white text-royal-600 rounded-full flex items-center justify-center hover:scale-110 active:scale-95 transition-all shadow-lg"
+                >
+                  <ArrowRight size={20} strokeWidth={3} />
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="bg-white dark:bg-[#1a1c26] p-6 rounded-[32px] border border-gray-100 dark:border-white/5 shadow-diffused dark:shadow-diffused-dark space-y-5">
         <div>
           <label className="block text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2 ml-1">Display Name</label>
@@ -371,6 +433,116 @@ export const Profile: React.FC = () => {
           </div>
         </div>
 
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2 ml-1">Age</label>
+            <div className="relative">
+              <input
+                type="number"
+                value={age}
+                onChange={(e) => setAge(e.target.value)}
+                placeholder="25"
+                className="w-full p-4 pl-12 bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5 rounded-[20px] focus:outline-none focus:ring-2 focus:ring-royal-200 focus:border-royal-400 font-bold text-gray-900 dark:text-gray-50 transition-all placeholder:text-gray-300 dark:placeholder:text-gray-600"
+              />
+              <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500" size={20} />
+            </div>
+          </div>
+          <div>
+            <label className="block text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2 ml-1">Gender</label>
+            <div className="relative">
+              <select
+                value={gender}
+                onChange={(e) => setGender(e.target.value as 'male' | 'female' | '')}
+                className="w-full p-4 pl-12 bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5 rounded-[20px] focus:outline-none focus:ring-2 focus:ring-royal-200 focus:border-royal-400 font-bold text-gray-900 dark:text-gray-50 transition-all appearance-none cursor-pointer"
+              >
+                <option value="">Select</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+              </select>
+              <Users className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 pointer-events-none" size={20} />
+            </div>
+          </div>
+        </div>
+
+        {/* Training Goal Setting - Collapsible Section */}
+        <div className="pt-4 border-t border-gray-100 dark:border-white/5">
+          <button
+            type="button"
+            onClick={() => setShowTrainingGoals(!showTrainingGoals)}
+            className="w-full flex items-center justify-between mb-3 group"
+          >
+            <div className="flex items-center gap-2">
+              <Target size={16} className="text-royal-600 dark:text-royal-400" />
+              <p className="text-xs font-bold text-royal-600 dark:text-royal-400 uppercase tracking-wider">
+                Training Goal Setting
+              </p>
+            </div>
+            <ChevronDown
+              size={18}
+              className={`text-royal-600 dark:text-royal-400 transition-transform duration-300 ${showTrainingGoals ? 'rotate-180' : ''}`}
+            />
+          </button>
+          <p className="text-[10px] text-gray-400 dark:text-gray-500 mb-3 ml-1">Optional - Fill this for personalized AI Coach recommendations</p>
+
+          {showTrainingGoals && (
+            <div className="space-y-5 animate-in slide-in-from-top-2 duration-300">
+              <div>
+                <label className="block text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2 ml-1">Activity Level</label>
+                <div className="relative">
+                  <select
+                    value={activityLevel}
+                    onChange={(e) => setActivityLevel(e.target.value as any)}
+                    className="w-full p-4 pl-12 bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5 rounded-[20px] focus:outline-none focus:ring-2 focus:ring-royal-200 focus:border-royal-400 font-bold text-gray-900 dark:text-gray-50 transition-all appearance-none cursor-pointer"
+                  >
+                    <option value="">Select</option>
+                    <option value="sedentary">Sedentary (Little or no exercise)</option>
+                    <option value="light">Lightly Active (1-3 days/week)</option>
+                    <option value="moderate">Moderately Active (3-5 days/week)</option>
+                    <option value="very">Very Active (6-7 days/week)</option>
+                    <option value="extra">Extra Active (Intense daily)</option>
+                  </select>
+                  <TrendingUp className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 pointer-events-none" size={20} />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2 ml-1">Goal</label>
+                  <div className="relative">
+                    <select
+                      value={goal}
+                      onChange={(e) => setGoal(e.target.value as any)}
+                      className="w-full p-4 pl-12 bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5 rounded-[20px] focus:outline-none focus:ring-2 focus:ring-royal-200 focus:border-royal-400 font-bold text-gray-900 dark:text-gray-50 transition-all appearance-none cursor-pointer"
+                    >
+                      <option value="">Select</option>
+                      <option value="cut">Cut (Lose Fat)</option>
+                      <option value="bulk">Bulk (Gain Muscle)</option>
+                      <option value="maintain">Maintain</option>
+                    </select>
+                    <Target className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 pointer-events-none" size={20} />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2 ml-1">Equipment</label>
+                  <div className="relative">
+                    <select
+                      value={equipmentAccess}
+                      onChange={(e) => setEquipmentAccess(e.target.value as any)}
+                      className="w-full p-4 pl-12 bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5 rounded-[20px] focus:outline-none focus:ring-2 focus:ring-royal-200 focus:border-royal-400 font-bold text-gray-900 dark:text-gray-50 transition-all appearance-none cursor-pointer"
+                    >
+                      <option value="">Select</option>
+                      <option value="gym">Gym Access</option>
+                      <option value="home">Home Equipment</option>
+                      <option value="bodyweight">Bodyweight Only</option>
+                    </select>
+                    <Dumbbell className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 pointer-events-none" size={20} />
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
         <Button
           className="w-full py-5 text-lg shadow-lg shadow-royal-200 dark:shadow-royal-900/40"
           onClick={handleSave}
@@ -384,46 +556,6 @@ export const Profile: React.FC = () => {
         </Button>
       </div>
 
-      {/* Insight Container */}
-      {bmi && bmiStatus && currentRecommendation && (
-        <div className="relative rounded-[32px] p-6 text-white overflow-hidden shadow-xl bg-royal-600 shadow-royal-200 dark:shadow-royal-900/40 animate-in slide-in-from-bottom-4 duration-500">
-          <div className="absolute top-0 right-0 -mt-10 -mr-10 w-40 h-40 bg-white/10 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-0 left-0 -mb-10 -ml-10 w-40 h-40 bg-black/10 rounded-full blur-3xl"></div>
-
-          <div className="relative z-10">
-            <div className="flex justify-between items-start mb-6">
-              <div>
-                <div className="flex items-center gap-2 mb-1">
-                  <Activity size={16} className="text-royal-200" />
-                  <span className="text-royal-200 text-xs font-bold uppercase tracking-widest">Body Insight</span>
-                </div>
-                <h2 className="text-3xl font-extrabold tracking-tight">BMI: {bmi.toFixed(1)}</h2>
-              </div>
-              <div className={`px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/10 text-sm font-bold ${bmiStatus.color}`}>
-                {bmiStatus.label}
-              </div>
-            </div>
-
-            <div className="bg-white/10 backdrop-blur-md rounded-[24px] p-5 border border-white/5">
-              <p className="text-white/70 text-xs font-medium mb-3">
-                Based on your profile, we recommend a daily calorie limit of:
-              </p>
-              <div className="flex items-center justify-between">
-                <div className="flex items-baseline gap-1">
-                  <span className="text-4xl font-extrabold tracking-tighter">{currentRecommendation}</span>
-                  <span className="text-lg font-bold text-white/60">kcal</span>
-                </div>
-                <button
-                  onClick={handleApplyRecommendation}
-                  className="w-10 h-10 bg-white text-royal-600 rounded-full flex items-center justify-center hover:scale-110 active:scale-95 transition-all shadow-lg"
-                >
-                  <ArrowRight size={20} strokeWidth={3} />
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Storage Mode Toggle (Only if Supabase is configured) */}
       {isSupabaseConfigured && (

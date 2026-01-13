@@ -341,11 +341,22 @@ export const getUserProfile = async (): Promise<UserProfile | null> => {
 
   const { data, error } = await supabase
     .from('user_profiles')
-    .select('name, height, weight')
+    .select('name, height, weight, age, gender, activity_level, goal, equipment_access')
     .eq('user_id', user.id)
     .single();
 
-  return (error || !data) ? null : (data as UserProfile);
+  if (error || !data) return null;
+
+  return {
+    name: data.name,
+    height: data.height,
+    weight: data.weight,
+    age: data.age,
+    gender: data.gender,
+    activityLevel: data.activity_level,
+    goal: data.goal,
+    equipmentAccess: data.equipment_access
+  };
 };
 
 export const saveUserProfile = async (profile: UserProfile): Promise<void> => {
@@ -366,7 +377,12 @@ export const saveUserProfile = async (profile: UserProfile): Promise<void> => {
       user_id: user.id,
       name: profile.name,
       height: profile.height,
-      weight: profile.weight
+      weight: profile.weight,
+      age: profile.age,
+      gender: profile.gender,
+      activity_level: profile.activityLevel,
+      goal: profile.goal,
+      equipment_access: profile.equipmentAccess
     }, { onConflict: 'user_id' });
 
   if (error) handleStorageError(error, "Save Profile");
@@ -428,10 +444,21 @@ export const syncLocalDataToSupabase = async (): Promise<void> => {
     }
   }
 
+  // Sync Profile if it doesn't exist in cloud
+  const profilesStr = localStorage.getItem(LS_PROFILE_KEY);
+  if (profilesStr) {
+    const profiles = JSON.parse(profilesStr);
+    const firstKey = Object.keys(profiles)[0];
+    if (firstKey && profiles[firstKey]) {
+      await saveUserProfile(profiles[firstKey]);
+    }
+  }
+
   // Clear local data to complete migration
   localStorage.removeItem(LS_KEY);
   localStorage.removeItem(LS_SUMMARIES_KEY);
   localStorage.removeItem(LS_SETTINGS_KEY);
+  localStorage.removeItem(LS_PROFILE_KEY);
 };
 
 // --- Diagnostics ---
