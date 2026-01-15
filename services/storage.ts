@@ -128,7 +128,7 @@ export const saveEntry = async (entry: FoodEntry): Promise<void> => {
       fat: entry.fat,
       confidence: entry.confidence,
       is_manual: entry.isManual,
-      image_url: entry.imageUrl,
+      image_url: entry.imageUrl === undefined ? null : entry.imageUrl, // Convert undefined to null for proper DB update
       ingredients: entry.ingredients,
       original_ai_response: entry.originalAiResponse
     });
@@ -309,53 +309,57 @@ export const getDailySummariesLite = async (): Promise<Omit<DailySummary, 'entri
  * Without images for initial load - use getEntryImage() for individual image loading
  */
 export const getEntriesForDateLite = async (date: string): Promise<FoodEntry[]> => {
-  const user = await getCurrentUser();
-  if (!user) return [];
+  return withCache(CACHE_KEYS.entriesForDate(date), async () => {
+    const user = await getCurrentUser();
+    if (!user) return [];
 
-  if (!shouldUseCloud) {
-    return getLocalEntries()
-      .filter(e => e.user_id === user.id && e.date === date)
-      .map(e => ({ ...e, imageUrl: undefined, originalAiResponse: undefined }))
-      .sort((a, b) => b.timestamp.localeCompare(a.timestamp));
-  }
+    if (!shouldUseCloud) {
+      return getLocalEntries()
+        .filter(e => e.user_id === user.id && e.date === date)
+        .map(e => ({ ...e, imageUrl: undefined, originalAiResponse: undefined }))
+        .sort((a, b) => b.timestamp.localeCompare(a.timestamp));
+    }
 
-  const { data, error } = await supabase
-    .from('food_entries')
-    .select(ENTRY_COLUMNS_LITE)
-    .eq('user_id', user.id)
-    .eq('date', date)
-    .order('timestamp', { ascending: false });
+    const { data, error } = await supabase
+      .from('food_entries')
+      .select(ENTRY_COLUMNS_LITE)
+      .eq('user_id', user.id)
+      .eq('date', date)
+      .order('timestamp', { ascending: false });
 
-  if (error) {
-    console.error("Supabase date fetch error:", error);
-    return [];
-  }
+    if (error) {
+      console.error("Supabase date fetch error:", error);
+      return [];
+    }
 
-  return data ? data.map(mapRowToEntry) : [];
+    return data ? data.map(mapRowToEntry) : [];
+  }, 5 * 60 * 1000); // Cache for 5 minutes
 };
 
 /**
  * Get a single entry's image (for lazy image loading)
  */
 export const getEntryImage = async (entryId: string): Promise<string | null> => {
-  const user = await getCurrentUser();
-  if (!user) return null;
+  return withCache(CACHE_KEYS.entryImage(entryId), async () => {
+    const user = await getCurrentUser();
+    if (!user) return null;
 
-  if (!shouldUseCloud) {
-    const entries = getLocalEntries();
-    const entry = entries.find(e => e.id === entryId && e.user_id === user.id);
-    return entry?.imageUrl || null;
-  }
+    if (!shouldUseCloud) {
+      const entries = getLocalEntries();
+      const entry = entries.find(e => e.id === entryId && e.user_id === user.id);
+      return entry?.imageUrl || null;
+    }
 
-  const { data, error } = await supabase
-    .from('food_entries')
-    .select('image_url')
-    .eq('id', entryId)
-    .eq('user_id', user.id)
-    .single();
+    const { data, error } = await supabase
+      .from('food_entries')
+      .select('image_url')
+      .eq('id', entryId)
+      .eq('user_id', user.id)
+      .single();
 
-  if (error || !data) return null;
-  return data.image_url;
+    if (error || !data) return null;
+    return data.image_url;
+  }, 30 * 60 * 1000); // Cache images for 30 minutes (they rarely change)
 };
 
 /**
@@ -497,6 +501,36 @@ export const deleteEntry = async (id: string): Promise<void> => {
     .eq('user_id', user.id);
 
   if (error) handleStorageError(error, "Delete Entry");
+
+  // Invalidate all entry-related caches
+  cache.invalidatePattern(/^food:/);
+};
+
+/**
+ * Clear the image from an entry while preserving nutritional data
+ */
+export const clearEntryImage = async (id: string): Promise<void> => {
+  const user = await getCurrentUser();
+  if (!user) throw new Error("Not logged in");
+
+  if (!shouldUseCloud) {
+    const entries = getLocalEntries();
+    const entryIndex = entries.findIndex(e => e.id === id && e.user_id === user.id);
+    if (entryIndex >= 0) {
+      entries[entryIndex].imageUrl = undefined;
+      saveLocalEntries(entries);
+    }
+    cache.invalidatePattern(/^food:/);
+    return;
+  }
+
+  const { error } = await supabase
+    .from('food_entries')
+    .update({ image_url: null }) // Explicitly set to NULL
+    .eq('id', id)
+    .eq('user_id', user.id);
+
+  if (error) handleStorageError(error, "Clear Image");
 
   // Invalidate all entry-related caches
   cache.invalidatePattern(/^food:/);
