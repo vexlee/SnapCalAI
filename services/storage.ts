@@ -1,6 +1,7 @@
 import { supabase, shouldUseCloud } from './supabase';
 import { getCurrentUser } from './auth';
 import { FoodEntry, DailySummary, UserProfile } from '../types';
+import { cache, CACHE_KEYS, withCache } from '../utils/cache';
 
 // --- Local Storage Fallback Keys ---
 const LS_KEY = 'snapcal_data_v1';
@@ -107,6 +108,8 @@ export const saveEntry = async (entry: FoodEntry): Promise<void> => {
     }
 
     saveLocalEntries(entries);
+    // Invalidate all entry-related caches
+    cache.invalidatePattern(/^food:/);
     return;
   }
 
@@ -133,64 +136,71 @@ export const saveEntry = async (entry: FoodEntry): Promise<void> => {
   if (error) {
     handleStorageError(error, "Save Entry");
   }
+
+  // Invalidate all entry-related caches
+  cache.invalidatePattern(/^food:/);
 };
 
 export const getEntries = async (): Promise<FoodEntry[]> => {
-  const user = await getCurrentUser();
-  if (!user) return [];
+  return withCache(CACHE_KEYS.ENTRIES, async () => {
+    const user = await getCurrentUser();
+    if (!user) return [];
 
-  if (!shouldUseCloud) {
-    return getLocalEntries()
-      .filter(e => e.user_id === user.id)
-      .sort((a, b) => b.timestamp.localeCompare(a.timestamp));
-  }
+    if (!shouldUseCloud) {
+      return getLocalEntries()
+        .filter(e => e.user_id === user.id)
+        .sort((a, b) => b.timestamp.localeCompare(a.timestamp));
+    }
 
-  const { data, error } = await supabase
-    .from('food_entries')
-    .select(ENTRY_COLUMNS_FULL)
-    .eq('user_id', user.id)
-    .order('timestamp', { ascending: false })
-    .limit(200); // Pagination: limit to 200 entries max
+    const { data, error } = await supabase
+      .from('food_entries')
+      .select(ENTRY_COLUMNS_FULL)
+      .eq('user_id', user.id)
+      .order('timestamp', { ascending: false })
+      .limit(200); // Pagination: limit to 200 entries max
 
-  if (error) {
-    console.error("Supabase Fetch Error:", error);
-    if (error.message.includes("relation")) {
+    if (error) {
+      console.error("Supabase Fetch Error:", error);
+      if (error.message.includes("relation")) {
+        return [];
+      }
       return [];
     }
-    return [];
-  }
 
-  return data ? data.map(mapRowToEntry) : [];
+    return data ? data.map(mapRowToEntry) : [];
+  }, 3 * 60 * 1000); // Cache for 3 minutes
 };
 
 /**
  * Get entries without image data (for list views - saves significant bandwidth)
  */
 export const getEntriesLite = async (): Promise<FoodEntry[]> => {
-  const user = await getCurrentUser();
-  if (!user) return [];
+  return withCache(CACHE_KEYS.ENTRIES_LITE, async () => {
+    const user = await getCurrentUser();
+    if (!user) return [];
 
-  if (!shouldUseCloud) {
-    // For local storage, just omit imageUrl in the returned objects
-    return getLocalEntries()
-      .filter(e => e.user_id === user.id)
-      .map(e => ({ ...e, imageUrl: undefined, originalAiResponse: undefined }))
-      .sort((a, b) => b.timestamp.localeCompare(a.timestamp));
-  }
+    if (!shouldUseCloud) {
+      // For local storage, just omit imageUrl in the returned objects
+      return getLocalEntries()
+        .filter(e => e.user_id === user.id)
+        .map(e => ({ ...e, imageUrl: undefined, originalAiResponse: undefined }))
+        .sort((a, b) => b.timestamp.localeCompare(a.timestamp));
+    }
 
-  const { data, error } = await supabase
-    .from('food_entries')
-    .select(ENTRY_COLUMNS_LITE)
-    .eq('user_id', user.id)
-    .order('timestamp', { ascending: false })
-    .limit(200);
+    const { data, error } = await supabase
+      .from('food_entries')
+      .select(ENTRY_COLUMNS_LITE)
+      .eq('user_id', user.id)
+      .order('timestamp', { ascending: false })
+      .limit(200);
 
-  if (error) {
-    console.error("Supabase Fetch Lite Error:", error);
-    return [];
-  }
+    if (error) {
+      console.error("Supabase Fetch Lite Error:", error);
+      return [];
+    }
 
-  return data ? data.map(mapRowToEntry) : [];
+    return data ? data.map(mapRowToEntry) : [];
+  }, 3 * 60 * 1000); // Cache for 3 minutes
 };
 
 /**
@@ -198,98 +208,100 @@ export const getEntriesLite = async (): Promise<FoodEntry[]> => {
  * Only fetches aggregate totals, no individual meal data
  */
 export const getDailySummariesLite = async (): Promise<Omit<DailySummary, 'entries'>[]> => {
-  const user = await getCurrentUser();
-  if (!user) return [];
+  return withCache(CACHE_KEYS.DAILY_SUMMARIES_LITE, async () => {
+    const user = await getCurrentUser();
+    if (!user) return [];
 
-  if (!shouldUseCloud) {
-    // Calculate from local entries
-    const entries = getLocalEntries().filter(e => e.user_id === user.id);
-    const grouped: Record<string, FoodEntry[]> = {};
-    entries.forEach(entry => {
-      if (!grouped[entry.date]) grouped[entry.date] = [];
-      grouped[entry.date].push(entry);
-    });
+    if (!shouldUseCloud) {
+      // Calculate from local entries
+      const entries = getLocalEntries().filter(e => e.user_id === user.id);
+      const grouped: Record<string, FoodEntry[]> = {};
+      entries.forEach(entry => {
+        if (!grouped[entry.date]) grouped[entry.date] = [];
+        grouped[entry.date].push(entry);
+      });
 
-    // Also include stored summaries for older data
-    const storedSummaries = getLocalSummaries().filter(s => s.user_id === user.id);
-    const result: Record<string, Omit<DailySummary, 'entries'>> = {};
+      // Also include stored summaries for older data
+      const storedSummaries = getLocalSummaries().filter(s => s.user_id === user.id);
+      const result: Record<string, Omit<DailySummary, 'entries'>> = {};
 
-    storedSummaries.forEach(s => {
-      result[s.date] = {
-        date: s.date,
-        totalCalories: s.total_calories || s.totalCalories,
-        totalProtein: s.total_protein || s.totalProtein || 0,
-        totalCarbs: s.total_carbs || s.totalCarbs || 0,
-        totalFat: s.total_fat || s.totalFat || 0
-      };
-    });
-
-    Object.keys(grouped).forEach(date => {
-      const dayEntries = grouped[date];
-      result[date] = {
-        date,
-        totalCalories: dayEntries.reduce((sum, e) => sum + e.calories, 0),
-        totalProtein: dayEntries.reduce((sum, e) => sum + (e.protein || 0), 0),
-        totalCarbs: dayEntries.reduce((sum, e) => sum + (e.carbs || 0), 0),
-        totalFat: dayEntries.reduce((sum, e) => sum + (e.fat || 0), 0)
-      };
-    });
-
-    return Object.values(result).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-  }
-
-  // Cloud: Use SQL aggregation to avoid fetching all entries
-  const { data, error } = await supabase
-    .from('food_entries')
-    .select('date, calories, protein, carbs, fat')
-    .eq('user_id', user.id)
-    .order('date', { ascending: false });
-
-  if (error) {
-    console.error("Supabase summary fetch error:", error);
-    return [];
-  }
-
-  // Group and aggregate client-side (PostgREST doesn't support GROUP BY directly)
-  const grouped: Record<string, { calories: number; protein: number; carbs: number; fat: number }> = {};
-  (data || []).forEach((row: any) => {
-    if (!grouped[row.date]) {
-      grouped[row.date] = { calories: 0, protein: 0, carbs: 0, fat: 0 };
-    }
-    grouped[row.date].calories += row.calories || 0;
-    grouped[row.date].protein += row.protein || 0;
-    grouped[row.date].carbs += row.carbs || 0;
-    grouped[row.date].fat += row.fat || 0;
-  });
-
-  // Also fetch stored summaries for archived days
-  try {
-    const { data: summaryData } = await supabase
-      .from('daily_summaries')
-      .select('date, total_calories, total_protein, total_carbs, total_fat')
-      .eq('user_id', user.id);
-
-    (summaryData || []).forEach((s: any) => {
-      if (!grouped[s.date]) {
-        grouped[s.date] = {
-          calories: s.total_calories,
-          protein: s.total_protein,
-          carbs: s.total_carbs,
-          fat: s.total_fat
+      storedSummaries.forEach(s => {
+        result[s.date] = {
+          date: s.date,
+          totalCalories: s.total_calories || s.totalCalories,
+          totalProtein: s.total_protein || s.totalProtein || 0,
+          totalCarbs: s.total_carbs || s.totalCarbs || 0,
+          totalFat: s.total_fat || s.totalFat || 0
         };
-      }
-    });
-  } catch (e) { /* daily_summaries table may not exist */ }
+      });
 
-  return Object.entries(grouped)
-    .map(([date, totals]) => ({
-      date,
-      totalCalories: totals.calories,
-      totalProtein: totals.protein,
-      totalCarbs: totals.carbs,
-      totalFat: totals.fat
-    }))
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+      Object.keys(grouped).forEach(date => {
+        const dayEntries = grouped[date];
+        result[date] = {
+          date,
+          totalCalories: dayEntries.reduce((sum, e) => sum + e.calories, 0),
+          totalProtein: dayEntries.reduce((sum, e) => sum + (e.protein || 0), 0),
+          totalCarbs: dayEntries.reduce((sum, e) => sum + (e.carbs || 0), 0),
+          totalFat: dayEntries.reduce((sum, e) => sum + (e.fat || 0), 0)
+        };
+      });
+
+      return Object.values(result).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    }
+
+    // Cloud: Use SQL aggregation to avoid fetching all entries
+    const { data, error } = await supabase
+      .from('food_entries')
+      .select('date, calories, protein, carbs, fat')
+      .eq('user_id', user.id)
+      .order('date', { ascending: false });
+
+    if (error) {
+      console.error("Supabase summary fetch error:", error);
+      return [];
+    }
+
+    // Group and aggregate client-side (PostgREST doesn't support GROUP BY directly)
+    const grouped: Record<string, { calories: number; protein: number; carbs: number; fat: number }> = {};
+    (data || []).forEach((row: any) => {
+      if (!grouped[row.date]) {
+        grouped[row.date] = { calories: 0, protein: 0, carbs: 0, fat: 0 };
+      }
+      grouped[row.date].calories += row.calories || 0;
+      grouped[row.date].protein += row.protein || 0;
+      grouped[row.date].carbs += row.carbs || 0;
+      grouped[row.date].fat += row.fat || 0;
+    });
+
+    // Also fetch stored summaries for archived days
+    try {
+      const { data: summaryData } = await supabase
+        .from('daily_summaries')
+        .select('date, total_calories, total_protein, total_carbs, total_fat')
+        .eq('user_id', user.id);
+
+      (summaryData || []).forEach((s: any) => {
+        if (!grouped[s.date]) {
+          grouped[s.date] = {
+            calories: s.total_calories,
+            protein: s.total_protein,
+            carbs: s.total_carbs,
+            fat: s.total_fat
+          };
+        }
+      });
+    } catch (e) { /* daily_summaries table may not exist */ }
+
+    return Object.entries(grouped)
+      .map(([date, totals]) => ({
+        date,
+        totalCalories: totals.calories,
+        totalProtein: totals.protein,
+        totalCarbs: totals.carbs,
+        totalFat: totals.fat
+      }))
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  }, 3 * 60 * 1000); // Cache for 3 minutes
 };
 
 /**
@@ -473,6 +485,8 @@ export const deleteEntry = async (id: string): Promise<void> => {
   if (!shouldUseCloud) {
     const entries = getLocalEntries().filter(e => !(e.id === id && e.user_id === user.id));
     saveLocalEntries(entries);
+    // Invalidate all entry-related caches
+    cache.invalidatePattern(/^food:/);
     return;
   }
 
@@ -483,25 +497,30 @@ export const deleteEntry = async (id: string): Promise<void> => {
     .eq('user_id', user.id);
 
   if (error) handleStorageError(error, "Delete Entry");
+
+  // Invalidate all entry-related caches
+  cache.invalidatePattern(/^food:/);
 };
 
 export const getDailyGoal = async (): Promise<number> => {
-  const user = await getCurrentUser();
-  if (!user) return 2000;
+  return withCache(CACHE_KEYS.DAILY_GOAL, async () => {
+    const user = await getCurrentUser();
+    if (!user) return 2000;
 
-  if (!shouldUseCloud) {
-    const settingsStr = localStorage.getItem(LS_SETTINGS_KEY);
-    const settings = settingsStr ? JSON.parse(settingsStr) : {};
-    return settings[user.id] || 2000;
-  }
+    if (!shouldUseCloud) {
+      const settingsStr = localStorage.getItem(LS_SETTINGS_KEY);
+      const settings = settingsStr ? JSON.parse(settingsStr) : {};
+      return settings[user.id] || 2000;
+    }
 
-  const { data, error } = await supabase
-    .from('user_settings')
-    .select('daily_goal')
-    .eq('user_id', user.id)
-    .single();
+    const { data, error } = await supabase
+      .from('user_settings')
+      .select('daily_goal')
+      .eq('user_id', user.id)
+      .single();
 
-  return (error || !data) ? 2000 : data.daily_goal;
+    return (error || !data) ? 2000 : data.daily_goal;
+  }, 10 * 60 * 1000); // Cache for 10 minutes
 };
 
 export const saveDailyGoal = async (goal: number): Promise<void> => {
@@ -513,6 +532,7 @@ export const saveDailyGoal = async (goal: number): Promise<void> => {
     const settings = settingsStr ? JSON.parse(settingsStr) : {};
     settings[user.id] = goal;
     localStorage.setItem(LS_SETTINGS_KEY, JSON.stringify(settings));
+    cache.invalidate(CACHE_KEYS.DAILY_GOAL);
     return;
   }
 
@@ -521,36 +541,40 @@ export const saveDailyGoal = async (goal: number): Promise<void> => {
     .upsert({ user_id: user.id, daily_goal: goal }, { onConflict: 'user_id' });
 
   if (error) handleStorageError(error, "Save Daily Goal");
+
+  cache.invalidate(CACHE_KEYS.DAILY_GOAL);
 };
 
 export const getUserProfile = async (): Promise<UserProfile | null> => {
-  const user = await getCurrentUser();
-  if (!user) return null;
+  return withCache(CACHE_KEYS.USER_PROFILE, async () => {
+    const user = await getCurrentUser();
+    if (!user) return null;
 
-  if (!shouldUseCloud) {
-    const profilesStr = localStorage.getItem(LS_PROFILE_KEY);
-    const profiles = profilesStr ? JSON.parse(profilesStr) : {};
-    return profiles[user.id] || null;
-  }
+    if (!shouldUseCloud) {
+      const profilesStr = localStorage.getItem(LS_PROFILE_KEY);
+      const profiles = profilesStr ? JSON.parse(profilesStr) : {};
+      return profiles[user.id] || null;
+    }
 
-  const { data, error } = await supabase
-    .from('user_profiles')
-    .select('name, height, weight, age, gender, activity_level, goal, equipment_access')
-    .eq('user_id', user.id)
-    .single();
+    const { data, error } = await supabase
+      .from('user_profiles')
+      .select('name, height, weight, age, gender, activity_level, goal, equipment_access')
+      .eq('user_id', user.id)
+      .single();
 
-  if (error || !data) return null;
+    if (error || !data) return null;
 
-  return {
-    name: data.name,
-    height: data.height,
-    weight: data.weight,
-    age: data.age,
-    gender: data.gender,
-    activityLevel: data.activity_level,
-    goal: data.goal,
-    equipmentAccess: data.equipment_access
-  };
+    return {
+      name: data.name,
+      height: data.height,
+      weight: data.weight,
+      age: data.age,
+      gender: data.gender,
+      activityLevel: data.activity_level,
+      goal: data.goal,
+      equipmentAccess: data.equipment_access
+    };
+  }, 10 * 60 * 1000); // Cache for 10 minutes
 };
 
 export const saveUserProfile = async (profile: UserProfile): Promise<void> => {
@@ -562,6 +586,7 @@ export const saveUserProfile = async (profile: UserProfile): Promise<void> => {
     const profiles = profilesStr ? JSON.parse(profilesStr) : {};
     profiles[user.id] = profile;
     localStorage.setItem(LS_PROFILE_KEY, JSON.stringify(profiles));
+    cache.invalidate(CACHE_KEYS.USER_PROFILE);
     return;
   }
 
@@ -580,6 +605,8 @@ export const saveUserProfile = async (profile: UserProfile): Promise<void> => {
     }, { onConflict: 'user_id' });
 
   if (error) handleStorageError(error, "Save Profile");
+
+  cache.invalidate(CACHE_KEYS.USER_PROFILE);
 };
 
 // --- Migration Helpers ---
@@ -746,4 +773,12 @@ export const markOnboardingComplete = async (user: any): Promise<void> => {
 
 export const skipOnboarding = async (user: any): Promise<void> => {
   await markOnboardingComplete(user);
+};
+
+/**
+ * Manually clear all data caches (useful for debugging or force refresh)
+ */
+export const clearAllCaches = (): void => {
+  cache.clear();
+  console.log('✨ All data caches cleared');
 };
