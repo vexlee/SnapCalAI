@@ -12,8 +12,16 @@ interface AddFoodModalProps {
   editEntry?: FoodEntry | null;
 }
 
-const resizeImage = (file: File, maxWidth: number = 800): Promise<string> => {
+/**
+ * Aggressively optimizes images for minimal storage footprint while maintaining acceptable quality.
+ * - Resizes to max 600px width (sufficient for food photos on mobile)
+ * - Uses progressive JPEG quality reduction to stay under 150KB target
+ * - Reduces storage usage by ~80-90% compared to raw photos
+ */
+const resizeImage = (file: File, maxWidth: number = 600, targetSizeKB: number = 150, debug: boolean = false): Promise<string> => {
   return new Promise((resolve, reject) => {
+    const originalSizeMB = file.size / (1024 * 1024);
+
     const reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onload = (event) => {
@@ -23,15 +31,54 @@ const resizeImage = (file: File, maxWidth: number = 800): Promise<string> => {
         const canvas = document.createElement('canvas');
         let width = img.width;
         let height = img.height;
+
+        // Resize to max width while maintaining aspect ratio
         if (width > maxWidth) {
           height = (maxWidth / width) * height;
           width = maxWidth;
         }
+
         canvas.width = width;
         canvas.height = height;
         const ctx = canvas.getContext('2d');
         ctx?.drawImage(img, 0, 0, width, height);
-        resolve(canvas.toDataURL('image/jpeg', 0.7));
+
+        // Progressive quality reduction to meet target size
+        let quality = 0.5; // Start with lower quality (significant size reduction)
+        let result = canvas.toDataURL('image/jpeg', quality);
+
+        // Check if we need to compress further
+        const targetSizeBytes = targetSizeKB * 1024;
+        const base64Length = result.split(',')[1].length;
+        const sizeBytes = (base64Length * 3) / 4; // Approximate size in bytes
+
+        if (sizeBytes > targetSizeBytes) {
+          // Too large, reduce quality further
+          quality = 0.35;
+          result = canvas.toDataURL('image/jpeg', quality);
+
+          // Final check - if still too large, use minimum quality
+          const newBase64Length = result.split(',')[1].length;
+          const newSizeBytes = (newBase64Length * 3) / 4;
+
+          if (newSizeBytes > targetSizeBytes) {
+            quality = 0.25; // Minimum acceptable quality
+            result = canvas.toDataURL('image/jpeg', quality);
+          }
+        }
+
+        // Debug logging
+        if (debug) {
+          const finalSizeKB = (result.split(',')[1].length * 3) / 4 / 1024;
+          const savings = ((originalSizeMB * 1024 - finalSizeKB) / (originalSizeMB * 1024)) * 100;
+          console.log(`📸 Image Optimization:
+  Original: ${originalSizeMB.toFixed(2)}MB (${img.width}×${img.height}px)
+  Optimized: ${finalSizeKB.toFixed(0)}KB (${Math.round(width)}×${Math.round(height)}px)
+  Quality: ${(quality * 100).toFixed(0)}%
+  Saved: ${savings.toFixed(0)}% 🎉`);
+        }
+
+        resolve(result);
       };
       img.onerror = (err) => reject(err);
     };
@@ -55,7 +102,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ onClose, onSuccess, 
 
   const now = new Date();
   const defaultTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
-  
+
   const [entryDate, setEntryDate] = useState(editEntry?.date || now.toISOString().split('T')[0]);
   const [entryTime, setEntryTime] = useState(editEntry?.time || defaultTime);
 
@@ -72,7 +119,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ onClose, onSuccess, 
     if (e.target.files && e.target.files[0]) {
       const selectedFile = e.target.files[0];
       try {
-        const resizedBase64 = await resizeImage(selectedFile);
+        const resizedBase64 = await resizeImage(selectedFile, 600, 150, true); // Enable debug logging
         setPreview(resizedBase64);
         setError(null);
       } catch (err) {
@@ -160,11 +207,11 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ onClose, onSuccess, 
       const [year, month, day] = entryDate.split('-').map(Number);
       const [hours, minutes] = entryTime.split(':').map(Number);
       const dateObj = new Date(year, month - 1, day, hours, minutes);
-      
+
       if (isNaN(dateObj.getTime())) {
         throw new Error("Invalid date or time selected.");
       }
-      
+
       const timestamp = dateObj.toISOString();
       const numCalories = Number(calories);
       const numProtein = Number(protein) || 0;
@@ -206,7 +253,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ onClose, onSuccess, 
   return (
     <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center bg-black/40 backdrop-blur-md p-4 animate-in fade-in duration-200">
       <div className="bg-white dark:bg-[#1a1c26] w-full max-w-md rounded-[40px] p-6 shadow-2xl border border-white/50 dark:border-white/5 animate-in slide-in-from-bottom duration-300 max-h-[95vh] overflow-y-auto no-scrollbar">
-        
+
         <div className="flex justify-between items-center mb-4">
           <div className="flex items-center gap-2">
             {step === 'details' && !editEntry && (
@@ -224,15 +271,14 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ onClose, onSuccess, 
         </div>
 
         {error && (
-          <div className={`mb-4 p-4 rounded-3xl flex flex-col gap-3 animate-in shake-1 duration-300 ${
-            isAiQuotaError ? 'bg-amber-50 dark:bg-amber-950/30 border border-amber-100 dark:border-amber-900/30 text-amber-700 dark:text-amber-400' : 
-            isDbQuotaError || isBrowserQuotaError ? 'bg-orange-50 dark:bg-orange-950/30 border border-orange-100 dark:border-orange-900/30 text-orange-700 dark:text-orange-400' : 
-            'bg-red-50 dark:bg-red-950/20 border border-red-100 dark:border-red-900/30 text-red-600 dark:text-red-400'
-          }`}>
+          <div className={`mb-4 p-4 rounded-3xl flex flex-col gap-3 animate-in shake-1 duration-300 ${isAiQuotaError ? 'bg-amber-50 dark:bg-amber-950/30 border border-amber-100 dark:border-amber-900/30 text-amber-700 dark:text-amber-400' :
+            isDbQuotaError || isBrowserQuotaError ? 'bg-orange-50 dark:bg-orange-950/30 border border-orange-100 dark:border-orange-900/30 text-orange-700 dark:text-orange-400' :
+              'bg-red-50 dark:bg-red-950/20 border border-red-100 dark:border-red-900/30 text-red-600 dark:text-red-400'
+            }`}>
             <div className="flex items-start gap-3">
-              {isAiQuotaError ? <Hourglass className="shrink-0 mt-0.5" size={18} /> : 
-               isDbQuotaError || isBrowserQuotaError ? <HardDrive className="shrink-0 mt-0.5" size={18} /> : 
-               <AlertCircle className="shrink-0 mt-0.5" size={18} />}
+              {isAiQuotaError ? <Hourglass className="shrink-0 mt-0.5" size={18} /> :
+                isDbQuotaError || isBrowserQuotaError ? <HardDrive className="shrink-0 mt-0.5" size={18} /> :
+                  <AlertCircle className="shrink-0 mt-0.5" size={18} />}
               <div className="space-y-1">
                 <p className="text-[10px] font-black uppercase tracking-widest">
                   {isAiQuotaError ? 'AI limit reached' : isBrowserQuotaError ? 'Phone Storage Full' : isDbQuotaError ? 'Cloud Storage Full' : 'Action Failed'}
@@ -241,19 +287,19 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ onClose, onSuccess, 
               </div>
             </div>
             {!isBrowserQuotaError && (isAiQuotaError || !isDbQuotaError) && (
-               <button 
-                onClick={() => { setError(null); if(step === 'upload') handleAnalyze(); else handleRecalculate(); }}
+              <button
+                onClick={() => { setError(null); if (step === 'upload') handleAnalyze(); else handleRecalculate(); }}
                 className="w-full py-2 bg-white/50 dark:bg-white/10 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-white/80 dark:hover:bg-white/20 transition-all"
-               >
-                 <RotateCcw size={14} /> Try Again
-               </button>
+              >
+                <RotateCcw size={14} /> Try Again
+              </button>
             )}
             {isBrowserQuotaError && (
-               <div className="pt-2 border-t border-orange-200 dark:border-orange-900/40">
-                  <p className="text-[10px] font-medium text-orange-600/70 dark:text-orange-400/70 italic">
-                    Tip: Photos take up the most space. Delete old entries in the History tab to free up browser storage.
-                  </p>
-               </div>
+              <div className="pt-2 border-t border-orange-200 dark:border-orange-900/40">
+                <p className="text-[10px] font-medium text-orange-600/70 dark:text-orange-400/70 italic">
+                  Tip: Photos take up the most space. Delete old entries in the History tab to free up browser storage.
+                </p>
+              </div>
             )}
           </div>
         )}
@@ -261,21 +307,21 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ onClose, onSuccess, 
         {step === 'upload' ? (
           <div className="space-y-6">
             <div className="flex p-1 bg-gray-100 dark:bg-white/5 rounded-[20px]">
-              <button 
+              <button
                 onClick={() => setMode('scan')}
                 className={`flex-1 py-3 flex items-center justify-center gap-2 rounded-[16px] text-xs font-bold transition-all ${mode === 'scan' ? 'bg-white dark:bg-royal-600 text-royal-700 dark:text-white shadow-sm' : 'text-gray-400 dark:text-gray-500 hover:text-gray-600'}`}
               >
                 <Camera size={16} />
                 Scan
               </button>
-              <button 
+              <button
                 onClick={() => setMode('chat')}
                 className={`flex-1 py-3 flex items-center justify-center gap-2 rounded-[16px] text-xs font-bold transition-all ${mode === 'chat' ? 'bg-white dark:bg-royal-600 text-royal-700 dark:text-white shadow-sm' : 'text-gray-400 dark:text-gray-500 hover:text-gray-600'}`}
               >
                 <MessageSquare size={16} />
                 Chat
               </button>
-              <button 
+              <button
                 onClick={() => setMode('recipe')}
                 className={`flex-1 py-3 flex items-center justify-center gap-2 rounded-[16px] text-xs font-bold transition-all ${mode === 'recipe' ? 'bg-white dark:bg-royal-600 text-royal-700 dark:text-white shadow-sm' : 'text-gray-400 dark:text-gray-500 hover:text-gray-600'}`}
               >
@@ -313,7 +359,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ onClose, onSuccess, 
                   <p className="text-xs font-bold text-royal-600 dark:text-royal-400 uppercase tracking-widest mb-3 flex items-center gap-2">
                     <Sparkles size={14} /> Describe your meal
                   </p>
-                  <textarea 
+                  <textarea
                     value={chatInput}
                     onChange={(e) => setChatInput(e.target.value)}
                     placeholder="e.g. I had two slices of pepperoni pizza and a small Caesar salad with Italian dressing."
@@ -321,10 +367,10 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ onClose, onSuccess, 
                     className="w-full bg-transparent border-none outline-none text-gray-900 dark:text-white font-medium text-sm resize-none placeholder-gray-400 dark:placeholder-gray-600"
                   />
                 </div>
-                <Button 
-                  className="w-full py-5 text-lg font-black shadow-xl shadow-royal-200" 
-                  disabled={!chatInput.trim() || isProcessing} 
-                  isLoading={isProcessing} 
+                <Button
+                  className="w-full py-5 text-lg font-black shadow-xl shadow-royal-200"
+                  disabled={!chatInput.trim() || isProcessing}
+                  isLoading={isProcessing}
                   onClick={handleChatAnalyze}
                 >
                   Ask AI
@@ -334,12 +380,12 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ onClose, onSuccess, 
 
             {mode === 'recipe' && (
               <div className="space-y-4 animate-in fade-in duration-300 text-center py-6">
-                 <ChefHat size={40} className="mx-auto text-royal-400 mb-2" />
-                 <p className="text-sm font-bold text-gray-900 dark:text-white">Recipe Mode Coming Soon</p>
-                 <p className="text-xs font-medium text-gray-400 px-8">For now, use Chat mode to describe your recipe ingredients for estimation.</p>
-                 <Button className="w-full py-3 mt-4 text-xs font-bold text-gray-400 hover:text-royal-500 bg-gray-50 dark:bg-white/5" onClick={() => setStep('details')}>
+                <ChefHat size={40} className="mx-auto text-royal-400 mb-2" />
+                <p className="text-sm font-bold text-gray-900 dark:text-white">Recipe Mode Coming Soon</p>
+                <p className="text-xs font-medium text-gray-400 px-8">For now, use Chat mode to describe your recipe ingredients for estimation.</p>
+                <Button className="w-full py-3 mt-4 text-xs font-bold text-gray-400 hover:text-royal-500 bg-gray-50 dark:bg-white/5" onClick={() => setStep('details')}>
                   Enter Details Manually
-                 </Button>
+                </Button>
               </div>
             )}
 
@@ -354,30 +400,30 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ onClose, onSuccess, 
             {/* Summary Top Section */}
             <div className="bg-royal-600 rounded-[32px] p-6 text-white shadow-xl shadow-royal-200 dark:shadow-none">
               <div className="flex justify-between items-start mb-4">
-                 <div>
-                   <p className="text-royal-100 text-[10px] font-black uppercase tracking-widest mb-1">Estimated Calories</p>
-                   <div className="flex items-baseline gap-1">
-                     <input type="number" value={calories} onChange={(e) => setCalories(e.target.value)} className="bg-transparent text-4xl font-black w-24 outline-none border-b-2 border-white/20 focus:border-white transition-colors" />
-                     <span className="text-xl font-bold opacity-70">kcal</span>
-                   </div>
-                 </div>
-                 <div className="bg-white/20 p-3 rounded-2xl backdrop-blur-md">
-                   <Activity size={24} />
-                 </div>
+                <div>
+                  <p className="text-royal-100 text-[10px] font-black uppercase tracking-widest mb-1">Estimated Calories</p>
+                  <div className="flex items-baseline gap-1">
+                    <input type="number" value={calories} onChange={(e) => setCalories(e.target.value)} className="bg-transparent text-4xl font-black w-24 outline-none border-b-2 border-white/20 focus:border-white transition-colors" />
+                    <span className="text-xl font-bold opacity-70">kcal</span>
+                  </div>
+                </div>
+                <div className="bg-white/20 p-3 rounded-2xl backdrop-blur-md">
+                  <Activity size={24} />
+                </div>
               </div>
               <div className="grid grid-cols-3 gap-2">
-                 <div className="bg-white/10 rounded-xl p-2 flex flex-col items-center">
-                   <span className="text-xs font-black">{protein}g</span>
-                   <span className="text-[8px] uppercase tracking-tighter opacity-70">Protein</span>
-                 </div>
-                 <div className="bg-white/10 rounded-xl p-2 flex flex-col items-center">
-                   <span className="text-xs font-black">{carbs}g</span>
-                   <span className="text-[8px] uppercase tracking-tighter opacity-70">Carbs</span>
-                 </div>
-                 <div className="bg-white/10 rounded-xl p-2 flex flex-col items-center">
-                   <span className="text-xs font-black">{fat}g</span>
-                   <span className="text-[8px] uppercase tracking-tighter opacity-70">Fat</span>
-                 </div>
+                <div className="bg-white/10 rounded-xl p-2 flex flex-col items-center">
+                  <span className="text-xs font-black">{protein}g</span>
+                  <span className="text-[8px] uppercase tracking-tighter opacity-70">Protein</span>
+                </div>
+                <div className="bg-white/10 rounded-xl p-2 flex flex-col items-center">
+                  <span className="text-xs font-black">{carbs}g</span>
+                  <span className="text-[8px] uppercase tracking-tighter opacity-70">Carbs</span>
+                </div>
+                <div className="bg-white/10 rounded-xl p-2 flex flex-col items-center">
+                  <span className="text-xs font-black">{fat}g</span>
+                  <span className="text-[8px] uppercase tracking-tighter opacity-70">Fat</span>
+                </div>
               </div>
             </div>
 
@@ -412,17 +458,17 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ onClose, onSuccess, 
               <div className="space-y-3 max-h-64 overflow-y-auto no-scrollbar pr-1">
                 {ingredients.map((ing, idx) => (
                   <div key={idx} className="flex items-center gap-2 group animate-in slide-in-from-left duration-200">
-                    <input 
-                      type="text" 
-                      value={ing.name} 
+                    <input
+                      type="text"
+                      value={ing.name}
                       onChange={(e) => handleIngredientChange(idx, 'name', e.target.value)}
                       className="flex-1 bg-white dark:bg-white/10 p-2.5 rounded-xl text-xs font-bold border border-gray-100 dark:border-white/10 outline-none focus:border-royal-300 dark:text-white"
                       placeholder="Ingredient"
                     />
                     <div className="relative w-20">
-                      <input 
-                        type="number" 
-                        value={ing.grams === 0 ? '' : ing.grams} 
+                      <input
+                        type="number"
+                        value={ing.grams === 0 ? '' : ing.grams}
                         onChange={(e) => handleIngredientChange(idx, 'grams', e.target.value)}
                         className="w-full bg-white dark:bg-white/10 p-2.5 pr-6 rounded-xl text-xs font-bold border border-gray-100 dark:border-white/10 outline-none text-right dark:text-white"
                       />
@@ -434,8 +480,8 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ onClose, onSuccess, 
                   </div>
                 ))}
               </div>
-              <Button 
-                variant="ghost" 
+              <Button
+                variant="ghost"
                 className="w-full mt-4 py-3 text-[10px] font-black uppercase tracking-widest text-royal-600 bg-royal-100/50 hover:bg-royal-100"
                 onClick={handleRecalculate}
                 isLoading={isRecalculating}

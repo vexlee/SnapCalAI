@@ -1,17 +1,26 @@
-import React, { useEffect, useState } from 'react';
-import { getDailySummaries, deleteEntry, getDailyGoal } from '../services/storage';
+import React, { useEffect, useState, useCallback } from 'react';
+import { getDailySummariesLite, getEntriesForDateLite, getEntryImage, deleteEntry, getDailyGoal } from '../services/storage';
 import { DailySummary, FoodEntry } from '../types';
 import { Card } from '../components/ui/Card';
 import { BarChart, Bar, XAxis, Tooltip, ResponsiveContainer, Cell, ReferenceLine, ComposedChart, Area } from 'recharts';
 import { MealDetailModal } from '../components/MealDetailModal';
 import { DailySummaryModal } from '../components/DailySummaryModal';
 import { AddFoodModal } from '../components/AddFoodModal';
-import { Calendar as CalendarIcon, Filter, ChevronDown, ChevronRight } from 'lucide-react';
+import { Calendar as CalendarIcon, Filter, ChevronDown, ChevronRight, Loader2 } from 'lucide-react';
 
 type ViewMode = 'week' | 'month';
 
+// Lightweight summary type (no entries)
+interface DaySummaryLite {
+  date: string;
+  totalCalories: number;
+  totalProtein: number;
+  totalCarbs: number;
+  totalFat: number;
+}
+
 export const History: React.FC = () => {
-  const [history, setHistory] = useState<DailySummary[]>([]);
+  const [summaries, setSummaries] = useState<DaySummaryLite[]>([]);
   const [dailyGoal, setDailyGoal] = useState(2000);
   const [isLoading, setIsLoading] = useState(true);
   const [viewMode, setViewMode] = useState<ViewMode>('week');
@@ -20,26 +29,36 @@ export const History: React.FC = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [entryToEdit, setEntryToEdit] = useState<FoodEntry | null>(null);
   const [expandedDays, setExpandedDays] = useState<Record<string, boolean>>({});
+  // Lazy-loaded entries per date
+  const [dayEntries, setDayEntries] = useState<Record<string, FoodEntry[]>>({});
+  const [loadingDays, setLoadingDays] = useState<Record<string, boolean>>({});
+  // Lazy-loaded images per entry
+  const [entryImages, setEntryImages] = useState<Record<string, string | null>>({});
 
   const isDarkMode = document.documentElement.classList.contains('dark');
 
   const loadData = async () => {
     setIsLoading(true);
     try {
-      const [historyData, goal] = await Promise.all([
-        getDailySummaries(),
+      const [summaryData, goal] = await Promise.all([
+        getDailySummariesLite(),
         getDailyGoal()
       ]);
-      setHistory(historyData);
+      setSummaries(summaryData);
       setDailyGoal(goal);
 
-      // Auto-expand today, collapse others
+      // Auto-expand today only
       const todayStr = new Date().toISOString().split('T')[0];
       const initialExpanded: Record<string, boolean> = {};
-      historyData.forEach(day => {
+      summaryData.forEach(day => {
         initialExpanded[day.date] = day.date === todayStr;
       });
       setExpandedDays(initialExpanded);
+
+      // Pre-load today's entries
+      if (summaryData.some(d => d.date === todayStr)) {
+        loadEntriesForDate(todayStr);
+      }
     } catch (error) {
       console.error("Failed to load history data", error);
     } finally {
@@ -47,23 +66,65 @@ export const History: React.FC = () => {
     }
   };
 
+  // Lazy load entries for a specific date
+  const loadEntriesForDate = useCallback(async (date: string) => {
+    if (dayEntries[date] || loadingDays[date]) return; // Already loaded or loading
+
+    setLoadingDays(prev => ({ ...prev, [date]: true }));
+    try {
+      const entries = await getEntriesForDateLite(date);
+      setDayEntries(prev => ({ ...prev, [date]: entries }));
+    } catch (error) {
+      console.error(`Failed to load entries for ${date}`, error);
+    } finally {
+      setLoadingDays(prev => ({ ...prev, [date]: false }));
+    }
+  }, [dayEntries, loadingDays]);
+
+  // Lazy load image for a specific entry
+  const loadImageForEntry = useCallback(async (entryId: string) => {
+    if (entryImages[entryId] !== undefined) return; // Already loaded or attempted
+
+    setEntryImages(prev => ({ ...prev, [entryId]: null })); // Mark as loading
+    try {
+      const imageUrl = await getEntryImage(entryId);
+      setEntryImages(prev => ({ ...prev, [entryId]: imageUrl }));
+    } catch (error) {
+      console.error(`Failed to load image for entry ${entryId}`, error);
+    }
+  }, [entryImages]);
+
   useEffect(() => {
     loadData();
 
-    const handleUpdate = () => loadData();
+    const handleUpdate = () => {
+      // Clear cached entries on update to force refresh
+      setDayEntries({});
+      setEntryImages({});
+      loadData();
+    };
     window.addEventListener('food-entry-updated', handleUpdate);
     return () => window.removeEventListener('food-entry-updated', handleUpdate);
   }, []);
 
-  const toggleDay = (date: string) => {
+  const toggleDay = async (date: string) => {
+    const willExpand = !expandedDays[date];
     setExpandedDays(prev => ({
       ...prev,
-      [date]: !prev[date]
+      [date]: willExpand
     }));
+
+    // Lazy load entries when expanding
+    if (willExpand) {
+      await loadEntriesForDate(date);
+    }
   };
 
   const handleDeleteEntry = async (id: string) => {
     await deleteEntry(id);
+    // Clear cache and reload
+    setDayEntries({});
+    setEntryImages({});
     await loadData();
   };
 
@@ -73,8 +134,16 @@ export const History: React.FC = () => {
     setShowEditModal(true);
   };
 
+  const getEntryWithImage = (entry: FoodEntry): FoodEntry => {
+    // Load image lazily if not already loaded
+    if (entryImages[entry.id] === undefined) {
+      loadImageForEntry(entry.id);
+    }
+    return { ...entry, imageUrl: entryImages[entry.id] || undefined };
+  };
+
   const limit = viewMode === 'week' ? 7 : 30;
-  const chartData = [...history]
+  const chartData = [...summaries]
     .slice(0, limit)
     .reverse()
     .map(day => ({
@@ -143,9 +212,12 @@ export const History: React.FC = () => {
                   radius={[8, 8, 8, 8]}
                   onClick={(data: any) => {
                     if (data && data.fullData) {
-                      setSelectedDaySummary(data.fullData);
+                      // Create a full DailySummary for the modal
+                      const entries = dayEntries[data.fullData.date] || [];
+                      setSelectedDaySummary({ ...data.fullData, entries });
                     } else if (data && data.payload && data.payload.fullData) {
-                      setSelectedDaySummary(data.payload.fullData);
+                      const entries = dayEntries[data.payload.fullData.date] || [];
+                      setSelectedDaySummary({ ...data.payload.fullData, entries });
                     }
                   }}
                   className="cursor-pointer"
@@ -186,7 +258,7 @@ export const History: React.FC = () => {
             </div>
           ) : (
             <>
-              {history.map((day) => (
+              {summaries.map((day) => (
                 <div key={day.date} className="animate-in slide-in-from-bottom-2 fade-in duration-500">
                   <div
                     className="flex justify-between items-center mb-3 px-2 cursor-pointer group"
@@ -209,31 +281,40 @@ export const History: React.FC = () => {
 
                   {expandedDays[day.date] && (
                     <div className="bg-white dark:bg-[#1a1c26] rounded-[24px] shadow-diffused dark:shadow-diffused-dark border border-gray-100 dark:border-white/5 overflow-hidden divide-y divide-gray-50 dark:divide-white/5 animate-in slide-in-from-top-2 duration-300">
-                      {day.entries.map(entry => (
-                        <div
-                          key={entry.id}
-                          onClick={() => setSelectedEntry(entry)}
-                          className="p-4 flex justify-between items-center hover:bg-gray-50 dark:hover:bg-white/5 transition-colors cursor-pointer active:scale-[0.99]"
-                        >
-                          <div className="flex items-center gap-4">
-                            <div className="w-10 h-10 rounded-xl bg-gray-50 dark:bg-white/5 overflow-hidden shadow-sm">
-                              {entry.imageUrl ? (
-                                <img src={entry.imageUrl} className="w-full h-full object-cover" />
-                              ) : (
-                                <div className="w-full h-full flex items-center justify-center bg-gray-100 dark:bg-white/10 text-gray-300 dark:text-gray-700">
-                                  <div className="w-2 h-2 rounded-full bg-gray-300 dark:bg-gray-700"></div>
-                                </div>
-                              )}
-                            </div>
-                            <div className="flex flex-col">
-                              <span className="text-sm text-gray-900 dark:text-gray-50 font-bold">{entry.food_item}</span>
-                              <span className="text-[10px] text-gray-400 dark:text-gray-500 font-medium">{entry.time}</span>
-                            </div>
-                          </div>
-                          <span className="text-sm text-gray-700 dark:text-gray-400 font-bold">{entry.calories}</span>
+                      {loadingDays[day.date] ? (
+                        <div className="p-4 flex items-center justify-center gap-2 text-gray-400">
+                          <Loader2 size={16} className="animate-spin" />
+                          <span className="text-xs">Loading entries...</span>
                         </div>
-                      ))}
-                      {day.entries.length === 0 && (
+                      ) : (dayEntries[day.date] || []).length > 0 ? (
+                        (dayEntries[day.date] || []).map(entry => {
+                          const entryWithImage = getEntryWithImage(entry);
+                          return (
+                            <div
+                              key={entry.id}
+                              onClick={() => setSelectedEntry(entryWithImage)}
+                              className="p-4 flex justify-between items-center hover:bg-gray-50 dark:hover:bg-white/5 transition-colors cursor-pointer active:scale-[0.99]"
+                            >
+                              <div className="flex items-center gap-4">
+                                <div className="w-10 h-10 rounded-xl bg-gray-50 dark:bg-white/5 overflow-hidden shadow-sm">
+                                  {entryWithImage.imageUrl ? (
+                                    <img src={entryWithImage.imageUrl} className="w-full h-full object-cover" />
+                                  ) : (
+                                    <div className="w-full h-full flex items-center justify-center bg-gray-100 dark:bg-white/10 text-gray-300 dark:text-gray-700">
+                                      <div className="w-2 h-2 rounded-full bg-gray-300 dark:bg-gray-700"></div>
+                                    </div>
+                                  )}
+                                </div>
+                                <div className="flex flex-col">
+                                  <span className="text-sm text-gray-900 dark:text-gray-50 font-bold">{entry.food_item}</span>
+                                  <span className="text-[10px] text-gray-400 dark:text-gray-500 font-medium">{entry.time}</span>
+                                </div>
+                              </div>
+                              <span className="text-sm text-gray-700 dark:text-gray-400 font-bold">{entry.calories}</span>
+                            </div>
+                          );
+                        })
+                      ) : (
                         <div className="p-4 text-center text-xs text-gray-400 italic">
                           No details available (Summarized)
                         </div>
@@ -242,7 +323,7 @@ export const History: React.FC = () => {
                   )}
                 </div>
               ))}
-              {history.length === 0 && (
+              {summaries.length === 0 && (
                 <div className="text-center py-12">
                   <p className="text-gray-400 dark:text-gray-500 text-sm">No history available yet.</p>
                 </div>
@@ -274,6 +355,8 @@ export const History: React.FC = () => {
             onSuccess={() => {
               setShowEditModal(false);
               setEntryToEdit(null);
+              setDayEntries({});
+              setEntryImages({});
               loadData();
             }}
           />
@@ -282,3 +365,4 @@ export const History: React.FC = () => {
     </div>
   );
 };
+

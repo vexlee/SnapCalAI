@@ -8,6 +8,14 @@ const LS_SETTINGS_KEY = 'snapcal_settings_v1';
 const LS_PROFILE_KEY = 'snapcal_profile_v1';
 const LS_SUMMARIES_KEY = 'snapcal_summaries_v1';
 
+// --- PostgREST Column Selection (Bandwidth Optimization) ---
+// Full columns: for single entry detail views
+const ENTRY_COLUMNS_FULL = 'id, user_id, timestamp, date, time, food_item, calories, protein, carbs, fat, confidence, image_url, is_manual, ingredients, original_ai_response';
+// Lite columns: for list views (excludes heavy image_url and original_ai_response)
+const ENTRY_COLUMNS_LITE = 'id, user_id, timestamp, date, time, food_item, calories, protein, carbs, fat, confidence, is_manual, ingredients';
+// Aggregate columns: for cleanup/summary calculations only
+const ENTRY_COLUMNS_AGGREGATE = 'id, date, calories, protein, carbs, fat';
+
 // --- Helpers for Local Storage ---
 const getLocalEntries = (): FoodEntry[] => {
   try {
@@ -139,15 +147,14 @@ export const getEntries = async (): Promise<FoodEntry[]> => {
 
   const { data, error } = await supabase
     .from('food_entries')
-    .select('*')
+    .select(ENTRY_COLUMNS_FULL)
     .eq('user_id', user.id)
-    .order('timestamp', { ascending: false });
+    .order('timestamp', { ascending: false })
+    .limit(200); // Pagination: limit to 200 entries max
 
   if (error) {
     console.error("Supabase Fetch Error:", error);
-    // Silent fail for fetch is usually better than crashing, unless it's schema error
     if (error.message.includes("relation")) {
-      // We can return empty but log it. The Profile check will handle alerting the user.
       return [];
     }
     return [];
@@ -156,6 +163,193 @@ export const getEntries = async (): Promise<FoodEntry[]> => {
   return data ? data.map(mapRowToEntry) : [];
 };
 
+/**
+ * Get entries without image data (for list views - saves significant bandwidth)
+ */
+export const getEntriesLite = async (): Promise<FoodEntry[]> => {
+  const user = await getCurrentUser();
+  if (!user) return [];
+
+  if (!shouldUseCloud) {
+    // For local storage, just omit imageUrl in the returned objects
+    return getLocalEntries()
+      .filter(e => e.user_id === user.id)
+      .map(e => ({ ...e, imageUrl: undefined, originalAiResponse: undefined }))
+      .sort((a, b) => b.timestamp.localeCompare(a.timestamp));
+  }
+
+  const { data, error } = await supabase
+    .from('food_entries')
+    .select(ENTRY_COLUMNS_LITE)
+    .eq('user_id', user.id)
+    .order('timestamp', { ascending: false })
+    .limit(200);
+
+  if (error) {
+    console.error("Supabase Fetch Lite Error:", error);
+    return [];
+  }
+
+  return data ? data.map(mapRowToEntry) : [];
+};
+
+/**
+ * Get daily summaries WITHOUT entries (for charts/reports - saves bandwidth)
+ * Only fetches aggregate totals, no individual meal data
+ */
+export const getDailySummariesLite = async (): Promise<Omit<DailySummary, 'entries'>[]> => {
+  const user = await getCurrentUser();
+  if (!user) return [];
+
+  if (!shouldUseCloud) {
+    // Calculate from local entries
+    const entries = getLocalEntries().filter(e => e.user_id === user.id);
+    const grouped: Record<string, FoodEntry[]> = {};
+    entries.forEach(entry => {
+      if (!grouped[entry.date]) grouped[entry.date] = [];
+      grouped[entry.date].push(entry);
+    });
+
+    // Also include stored summaries for older data
+    const storedSummaries = getLocalSummaries().filter(s => s.user_id === user.id);
+    const result: Record<string, Omit<DailySummary, 'entries'>> = {};
+
+    storedSummaries.forEach(s => {
+      result[s.date] = {
+        date: s.date,
+        totalCalories: s.total_calories || s.totalCalories,
+        totalProtein: s.total_protein || s.totalProtein || 0,
+        totalCarbs: s.total_carbs || s.totalCarbs || 0,
+        totalFat: s.total_fat || s.totalFat || 0
+      };
+    });
+
+    Object.keys(grouped).forEach(date => {
+      const dayEntries = grouped[date];
+      result[date] = {
+        date,
+        totalCalories: dayEntries.reduce((sum, e) => sum + e.calories, 0),
+        totalProtein: dayEntries.reduce((sum, e) => sum + (e.protein || 0), 0),
+        totalCarbs: dayEntries.reduce((sum, e) => sum + (e.carbs || 0), 0),
+        totalFat: dayEntries.reduce((sum, e) => sum + (e.fat || 0), 0)
+      };
+    });
+
+    return Object.values(result).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  }
+
+  // Cloud: Use SQL aggregation to avoid fetching all entries
+  const { data, error } = await supabase
+    .from('food_entries')
+    .select('date, calories, protein, carbs, fat')
+    .eq('user_id', user.id)
+    .order('date', { ascending: false });
+
+  if (error) {
+    console.error("Supabase summary fetch error:", error);
+    return [];
+  }
+
+  // Group and aggregate client-side (PostgREST doesn't support GROUP BY directly)
+  const grouped: Record<string, { calories: number; protein: number; carbs: number; fat: number }> = {};
+  (data || []).forEach((row: any) => {
+    if (!grouped[row.date]) {
+      grouped[row.date] = { calories: 0, protein: 0, carbs: 0, fat: 0 };
+    }
+    grouped[row.date].calories += row.calories || 0;
+    grouped[row.date].protein += row.protein || 0;
+    grouped[row.date].carbs += row.carbs || 0;
+    grouped[row.date].fat += row.fat || 0;
+  });
+
+  // Also fetch stored summaries for archived days
+  try {
+    const { data: summaryData } = await supabase
+      .from('daily_summaries')
+      .select('date, total_calories, total_protein, total_carbs, total_fat')
+      .eq('user_id', user.id);
+
+    (summaryData || []).forEach((s: any) => {
+      if (!grouped[s.date]) {
+        grouped[s.date] = {
+          calories: s.total_calories,
+          protein: s.total_protein,
+          carbs: s.total_carbs,
+          fat: s.total_fat
+        };
+      }
+    });
+  } catch (e) { /* daily_summaries table may not exist */ }
+
+  return Object.entries(grouped)
+    .map(([date, totals]) => ({
+      date,
+      totalCalories: totals.calories,
+      totalProtein: totals.protein,
+      totalCarbs: totals.carbs,
+      totalFat: totals.fat
+    }))
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+};
+
+/**
+ * Get entries for a specific date (lazy loading for History dropdowns)
+ * Without images for initial load - use getEntryImage() for individual image loading
+ */
+export const getEntriesForDateLite = async (date: string): Promise<FoodEntry[]> => {
+  const user = await getCurrentUser();
+  if (!user) return [];
+
+  if (!shouldUseCloud) {
+    return getLocalEntries()
+      .filter(e => e.user_id === user.id && e.date === date)
+      .map(e => ({ ...e, imageUrl: undefined, originalAiResponse: undefined }))
+      .sort((a, b) => b.timestamp.localeCompare(a.timestamp));
+  }
+
+  const { data, error } = await supabase
+    .from('food_entries')
+    .select(ENTRY_COLUMNS_LITE)
+    .eq('user_id', user.id)
+    .eq('date', date)
+    .order('timestamp', { ascending: false });
+
+  if (error) {
+    console.error("Supabase date fetch error:", error);
+    return [];
+  }
+
+  return data ? data.map(mapRowToEntry) : [];
+};
+
+/**
+ * Get a single entry's image (for lazy image loading)
+ */
+export const getEntryImage = async (entryId: string): Promise<string | null> => {
+  const user = await getCurrentUser();
+  if (!user) return null;
+
+  if (!shouldUseCloud) {
+    const entries = getLocalEntries();
+    const entry = entries.find(e => e.id === entryId && e.user_id === user.id);
+    return entry?.imageUrl || null;
+  }
+
+  const { data, error } = await supabase
+    .from('food_entries')
+    .select('image_url')
+    .eq('id', entryId)
+    .eq('user_id', user.id)
+    .single();
+
+  if (error || !data) return null;
+  return data.image_url;
+};
+
+/**
+ * @deprecated Use getDailySummariesLite() for charts and getEntriesForDateLite() for lazy loading
+ * This function fetches all entries with images - use only when you need full data
+ */
 export const getDailySummaries = async (): Promise<DailySummary[]> => {
   const user = await getCurrentUser();
   if (!user) return [];
@@ -177,7 +371,7 @@ export const getDailySummaries = async (): Promise<DailySummary[]> => {
     try {
       const { data, error } = await supabase
         .from('daily_summaries')
-        .select('*')
+        .select('date, total_calories, total_protein, total_carbs, total_fat')
         .eq('user_id', user.id);
       if (!error && data) storedSummaries = data;
     } catch (e) { console.warn("Summary fetch failed, likely missing table"); }
@@ -228,7 +422,7 @@ export const performDataCleanup = async (): Promise<void> => {
     try {
       const { data } = await supabase
         .from('food_entries')
-        .select('*')
+        .select(ENTRY_COLUMNS_AGGREGATE)
         .eq('user_id', user.id)
         .lt('date', thresholdDateStr);
       if (data) oldEntries = data.map(mapRowToEntry);

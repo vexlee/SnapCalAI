@@ -1,5 +1,5 @@
 import { GoogleGenAI } from "@google/genai";
-import { getUserProfile, getEntries, getDailyGoal } from './storage';
+import { getUserProfile, getEntriesLite, getDailyGoal } from './storage';
 import { FoodEntry } from '../types';
 
 /**
@@ -145,7 +145,7 @@ export const buildCoachContext = async (): Promise<CoachContext> => {
         context.dailyGoal = goal;
 
         // Get food entries
-        const entries = await getEntries();
+        const entries = await getEntriesLite();
 
         // Calculate today's totals
         const today = new Date().toISOString().split('T')[0];
