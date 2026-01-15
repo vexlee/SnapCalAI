@@ -154,7 +154,13 @@ export const History: React.FC = () => {
 
       // Generate dates from 1st to today
       for (let d = new Date(firstDayOfMonth); d <= today; d.setDate(d.getDate() + 1)) {
-        const dateStr = d.toISOString().split('T')[0];
+        // PERMANENT FIX: Use manual local date formatting. 
+        // d.toISOString() converts to UTC, causing off-by-one errors in positive timezones (e.g. Asia).
+        // constant year, month, day ensures we get the LOCAL date value.
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        const dateStr = `${year}-${month}-${day}`;
         days.push({
           id: dateStr,
           name: d.toLocaleDateString('en-US', { weekday: 'short' }),
@@ -513,11 +519,13 @@ export const History: React.FC = () => {
         <div className="grid grid-cols-2 gap-4 mb-8">
           <Card className="p-5 flex flex-col justify-between h-36 bg-gradient-to-br from-royal-500 to-royal-700 text-white border-none shadow-royal-200/50">
             <div>
-              <p className="text-[10px] font-bold text-white/70 uppercase mb-1">{viewMode === 'week' ? 'Weekly' : 'Monthly'} Report</p>
-              <h3 className="text-lg font-black leading-tight">Your Health<br />Summary</h3>
+              <p className="text-[10px] font-bold text-white/70 uppercase mb-1">{viewMode === 'week' ? 'Coach Tips' : 'Monthly Report'}</p>
+              <h3 className="text-lg font-black leading-tight">
+                {viewMode === 'week' ? 'Weekly Review' : <>Your Health<br />Summary</>}
+              </h3>
             </div>
             <div className="mt-2 py-2 bg-white/20 rounded-xl text-[10px] font-bold backdrop-blur-sm flex items-center justify-center gap-2">
-              VIEW DETAILS
+              {viewMode === 'week' ? 'COMING SOON' : 'VIEW DETAILS'}
               <ChevronRight size={12} />
             </div>
           </Card>
