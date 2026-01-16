@@ -53,9 +53,25 @@ export interface UserProfile {
 export enum AppView {
   DASHBOARD = 'DASHBOARD',
   CAL_COACH = 'CAL_COACH',
+  WORKOUT_PLAN = 'WORKOUT_PLAN',
   HISTORY = 'HISTORY',
   PROFILE = 'PROFILE',
   ONBOARDING = 'ONBOARDING',
+}
+
+export interface WorkoutExercise {
+  id: string;
+  name: string;
+  sets: number;
+  reps: string;
+  rest: string;
+  completed: boolean;
+}
+
+export interface DailyWorkout {
+  date: string;
+  title: string;
+  exercises: WorkoutExercise[];
 }
 
 export interface OnboardingState {

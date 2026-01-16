@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Sparkles, Send, Loader2, Settings, ArrowRight } from 'lucide-react';
+import { Sparkles, Send, Loader2, Settings, ArrowRight, Save } from 'lucide-react';
 import { Card } from '../components/ui/Card';
 import { sendCoachMessage, ChatMessage, buildCoachContext, CoachContext } from '../services/coach';
 import { saveChatMessage, getTodayChatMessages, getChatMessagesForDate, cleanupOldChatMessages } from '../services/storage';
 import { AppView } from '../types';
+import { detectWorkoutPlan } from '../utils/workoutParser';
+import { SaveWorkoutModal } from '../components/SaveWorkoutModal';
 
 interface CalCoachProps {
     onNavigate: (view: AppView) => void;
@@ -18,6 +20,8 @@ export const CalCoach: React.FC<CalCoachProps> = ({ onNavigate }) => {
     const [loadedDates, setLoadedDates] = useState<Set<string>>(new Set());
     const [isLoadingHistory, setIsLoadingHistory] = useState(false);
     const [canLoadMore, setCanLoadMore] = useState(true);
+    const [showSaveModal, setShowSaveModal] = useState(false);
+    const [workoutToSave, setWorkoutToSave] = useState('');
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLTextAreaElement>(null);
     const messagesContainerRef = useRef<HTMLDivElement>(null);
@@ -200,7 +204,7 @@ export const CalCoach: React.FC<CalCoachProps> = ({ onNavigate }) => {
                     <Card className="p-8 max-w-md w-full relative overflow-hidden">
                         {/* Background decoration */}
                         <div className="absolute top-0 right-0 -mt-10 -mr-10 w-32 h-32 bg-royal-100 dark:bg-royal-950/20 rounded-full blur-3xl"></div>
-                        <div className="absolute bottom-0 left-0 -mb-10 -ml-10 w-32 h-32 bg-emerald-100 dark:bg-emerald-950/20 rounded-full blur-3xl"></div>
+                        <div className="absolute bottom-0 left-0 -mb-10 -ml-10 w-32 h-32 bg-royal-100 dark:bg-royal-950/20 rounded-full blur-3xl"></div>
 
                         <div className="relative z-10">
                             {/* Icon */}
@@ -322,18 +326,33 @@ export const CalCoach: React.FC<CalCoachProps> = ({ onNavigate }) => {
                                 }`}
                         >
                             {message.role === 'assistant' ? (
-                                <Card className="p-5">
-                                    <div className="prose prose-sm dark:prose-invert max-w-none">
-                                        <div
-                                            className="text-gray-800 dark:text-gray-200 leading-relaxed whitespace-pre-wrap"
-                                            dangerouslySetInnerHTML={{
-                                                __html: message.content
-                                                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                                                    .replace(/\n/g, '<br/>')
+                                <div>
+                                    <Card className="p-5">
+                                        <div className="prose prose-sm dark:prose-invert max-w-none">
+                                            <div
+                                                className="text-gray-800 dark:text-gray-200 leading-relaxed whitespace-pre-wrap"
+                                                dangerouslySetInnerHTML={{
+                                                    __html: message.content
+                                                        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                                                        .replace(/\n/g, '<br/>')
+                                                }}
+                                            />
+                                        </div>
+                                    </Card>
+                                    {/* Save Workout Button */}
+                                    {detectWorkoutPlan(message.content) && (
+                                        <button
+                                            onClick={() => {
+                                                setWorkoutToSave(message.content);
+                                                setShowSaveModal(true);
                                             }}
-                                        />
-                                    </div>
-                                </Card>
+                                            className="mt-3 flex items-center gap-2 px-4 py-2 bg-royal-600 hover:bg-royal-700 text-white text-sm font-semibold rounded-xl transition-all shadow-lg shadow-royal-200 dark:shadow-royal-900/40 active:scale-95"
+                                        >
+                                            <Save size={16} />
+                                            <span>Save as Workout Plan</span>
+                                        </button>
+                                    )}
+                                </div>
                             ) : (
                                 <p className="text-sm font-medium leading-relaxed">{message.content}</p>
                             )}
@@ -345,9 +364,9 @@ export const CalCoach: React.FC<CalCoachProps> = ({ onNavigate }) => {
                     <div className="grid grid-cols-1 gap-3 mt-4 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-300">
                         {[
                             { title: "Analyze Nutrition", desc: "Get insights on your recent eating habits", icon: "📊", text: "Analyze my recent nutrition", color: "from-blue-500/30 to-royal-500/30", baseBg: "bg-blue-50/40 dark:bg-blue-900/10", iconBg: "bg-blue-100 dark:bg-blue-900/40", iconBorder: "border-blue-200 dark:border-blue-700/50" },
-                            { title: "Workout Plan", desc: "Create a personalized fitness routine", icon: "💪", text: "Create a workout plan for me", color: "from-emerald-500/30 to-royal-500/30", baseBg: "bg-emerald-50/40 dark:bg-emerald-900/10", iconBg: "bg-emerald-100 dark:bg-emerald-900/40", iconBorder: "border-emerald-200 dark:border-emerald-700/50" },
+                            { title: "Workout Plan", desc: "Create a personalized fitness routine", icon: "💪", text: "Create a workout plan for me", color: "from-royal-500/30 to-indigo-500/30", baseBg: "bg-royal-50/40 dark:bg-royal-950/20", iconBg: "bg-royal-100 dark:bg-royal-950/40", iconBorder: "border-royal-200 dark:border-royal-700/50" },
                             { title: "Calculate TDEE", desc: "Find out your daily energy expenditure", icon: "🔥", text: "Calculate my TDEE", color: "from-orange-500/30 to-royal-500/30", baseBg: "bg-orange-50/40 dark:bg-orange-900/10", iconBg: "bg-orange-100 dark:bg-orange-900/40", iconBorder: "border-orange-200 dark:border-orange-700/50" },
-                            { title: "Macro Targets", desc: "Set optimal protein, carb, and fat goals", icon: "🎯", text: "Help me set macro targets", color: "from-royal-500/30 to-purple-500/30", baseBg: "bg-royal-50/40 dark:bg-royal-900/10", iconBg: "bg-royal-100 dark:bg-royal-900/40", iconBorder: "border-royal-200 dark:border-royal-700/50" }
+                            { title: "Macro Targets", desc: "Set optimal protein, carb, and fat goals", icon: "🎯", text: "Help me set macro targets", color: "from-violet-500/30 to-fuchsia-500/30", baseBg: "bg-violet-50/40 dark:bg-violet-900/10", iconBg: "bg-violet-100 dark:bg-violet-900/40", iconBorder: "border-violet-200 dark:border-violet-700/50" }
                         ].map((item, idx) => (
                             <button
                                 key={idx}
@@ -362,6 +381,12 @@ export const CalCoach: React.FC<CalCoachProps> = ({ onNavigate }) => {
                                         };
                                         setMessages(prev => [...prev, userMsg]);
                                         setIsLoading(true);
+
+                                        // Save user message to database (non-blocking)
+                                        saveChatMessage(userMsg).catch(err =>
+                                            console.error('Failed to save user message:', err)
+                                        );
+
                                         try {
                                             const response = await sendCoachMessage(text, messages);
                                             const assistantMsg: ChatMessage = {
@@ -371,6 +396,11 @@ export const CalCoach: React.FC<CalCoachProps> = ({ onNavigate }) => {
                                                 timestamp: Date.now()
                                             };
                                             setMessages(prev => [...prev, assistantMsg]);
+
+                                            // Save assistant message to database (non-blocking)
+                                            saveChatMessage(assistantMsg).catch(err =>
+                                                console.error('Failed to save assistant message:', err)
+                                            );
                                         } catch (error: any) {
                                             const errorMsg: ChatMessage = {
                                                 id: `error-${Date.now()}`,
@@ -422,9 +452,9 @@ export const CalCoach: React.FC<CalCoachProps> = ({ onNavigate }) => {
                 <div className="flex gap-3 overflow-x-auto pb-4 px-1 no-scrollbar animate-in fade-in slide-in-from-bottom-2 duration-500">
                     {[
                         { title: "Analyze Nutrition", icon: "📊", text: "Analyze my recent nutrition", color: "from-blue-500/30 to-royal-500/30", baseBg: "bg-blue-50/40 dark:bg-blue-900/10", iconBg: "bg-blue-100 dark:bg-blue-900/40", iconBorder: "border-blue-200 dark:border-blue-700/50" },
-                        { title: "Workout Plan", icon: "💪", text: "Create a workout plan for me", color: "from-emerald-500/30 to-royal-500/30", baseBg: "bg-emerald-50/40 dark:bg-emerald-900/10", iconBg: "bg-emerald-100 dark:bg-emerald-900/40", iconBorder: "border-emerald-200 dark:border-emerald-700/50" },
+                        { title: "Workout Plan", icon: "💪", text: "Create a workout plan for me", color: "from-royal-500/30 to-indigo-500/30", baseBg: "bg-royal-50/40 dark:bg-royal-950/20", iconBg: "bg-royal-100 dark:bg-royal-950/40", iconBorder: "border-royal-200 dark:border-royal-700/50" },
                         { title: "Calculate TDEE", icon: "🔥", text: "Calculate my TDEE", color: "from-orange-500/30 to-royal-500/30", baseBg: "bg-orange-50/40 dark:bg-orange-900/10", iconBg: "bg-orange-100 dark:bg-orange-900/40", iconBorder: "border-orange-200 dark:border-orange-700/50" },
-                        { title: "Macro Targets", icon: "🎯", text: "Help me set macro targets", color: "from-royal-500/30 to-purple-500/30", baseBg: "bg-royal-50/40 dark:bg-royal-900/10", iconBg: "bg-royal-100 dark:bg-royal-900/40", iconBorder: "border-royal-200 dark:border-royal-700/50" }
+                        { title: "Macro Targets", icon: "🎯", text: "Help me set macro targets", color: "from-violet-500/30 to-fuchsia-500/30", baseBg: "bg-violet-50/40 dark:bg-violet-900/10", iconBg: "bg-violet-100 dark:bg-violet-900/40", iconBorder: "border-violet-200 dark:border-violet-700/50" }
                     ].map((item, idx) => (
                         <button
                             key={idx}
@@ -439,6 +469,12 @@ export const CalCoach: React.FC<CalCoachProps> = ({ onNavigate }) => {
                                     };
                                     setMessages(prev => [...prev, userMsg]);
                                     setIsLoading(true);
+
+                                    // Save user message to database (non-blocking)
+                                    saveChatMessage(userMsg).catch(err =>
+                                        console.error('Failed to save user message:', err)
+                                    );
+
                                     try {
                                         const response = await sendCoachMessage(text, messages);
                                         const assistantMsg: ChatMessage = {
@@ -448,6 +484,11 @@ export const CalCoach: React.FC<CalCoachProps> = ({ onNavigate }) => {
                                             timestamp: Date.now()
                                         };
                                         setMessages(prev => [...prev, assistantMsg]);
+
+                                        // Save assistant message to database (non-blocking)
+                                        saveChatMessage(assistantMsg).catch(err =>
+                                            console.error('Failed to save assistant message:', err)
+                                        );
                                     } catch (error: any) {
                                         const errorMsg: ChatMessage = {
                                             id: `error-${Date.now()}`,
@@ -476,6 +517,7 @@ export const CalCoach: React.FC<CalCoachProps> = ({ onNavigate }) => {
                 </div>
             )}
 
+
             {/* Input Area */}
             <div className="flex-shrink-0 bg-white dark:bg-[#1a1c26] rounded-[24px] p-3 shadow-diffused dark:shadow-diffused-dark border border-gray-100 dark:border-white/5">
                 <div className="flex gap-2 items-end">
@@ -502,6 +544,13 @@ export const CalCoach: React.FC<CalCoachProps> = ({ onNavigate }) => {
                     </button>
                 </div>
             </div>
+
+            {/* Save Workout Modal */}
+            <SaveWorkoutModal
+                isOpen={showSaveModal}
+                onClose={() => setShowSaveModal(false)}
+                workoutText={workoutToSave}
+            />
         </div>
     );
 };

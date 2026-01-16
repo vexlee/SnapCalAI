@@ -1,6 +1,6 @@
 import React from 'react';
 import { AppView } from '../types';
-import { Home, BarChart2, User, Sparkles } from 'lucide-react';
+import { Home, BarChart2, User, Sparkles, Dumbbell } from 'lucide-react';
 import { clsx } from 'clsx';
 
 interface LayoutProps {
@@ -44,6 +44,17 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentView, onNavigat
           >
             <Sparkles size={22} strokeWidth={currentView === AppView.CAL_COACH ? 2.5 : 2} />
             {currentView === AppView.CAL_COACH && <span className="text-sm font-semibold animate-in fade-in slide-in-from-left-2 duration-300">Coach</span>}
+          </button>
+
+          <button
+            onClick={() => onNavigate(AppView.WORKOUT_PLAN)}
+            className={clsx(
+              "flex-1 flex items-center justify-center gap-2 py-4 rounded-[24px] transition-all duration-300",
+              currentView === AppView.WORKOUT_PLAN ? "bg-royal-600 text-white shadow-lg shadow-royal-200 dark:shadow-royal-900/40" : "text-gray-400 dark:text-gray-500 hover:text-royal-500 dark:hover:text-royal-400 hover:bg-royal-50/50 dark:hover:bg-white/5"
+            )}
+          >
+            <Dumbbell size={22} strokeWidth={currentView === AppView.WORKOUT_PLAN ? 2.5 : 2} />
+            {currentView === AppView.WORKOUT_PLAN && <span className="text-sm font-semibold animate-in fade-in slide-in-from-left-2 duration-300">Workout</span>}
           </button>
 
           <button

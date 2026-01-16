@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Layout } from './components/Layout';
 import { Dashboard } from './pages/Dashboard';
 import { CalCoach } from './pages/CalCoach';
+import { WorkoutPlan } from './pages/WorkoutPlan';
 import { History } from './pages/History';
 import { Login } from './pages/Login';
 import { Profile } from './pages/Profile';
@@ -86,6 +87,7 @@ function App() {
     <Layout currentView={currentView} onNavigate={setCurrentView}>
       {currentView === AppView.DASHBOARD && <Dashboard />}
       {currentView === AppView.CAL_COACH && <CalCoach onNavigate={setCurrentView} />}
+      {currentView === AppView.WORKOUT_PLAN && <WorkoutPlan onNavigate={setCurrentView} />}
       {currentView === AppView.HISTORY && <History />}
       {currentView === AppView.PROFILE && <Profile />}
     </Layout>
