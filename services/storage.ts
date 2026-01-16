@@ -2,12 +2,14 @@ import { supabase, shouldUseCloud } from './supabase';
 import { getCurrentUser } from './auth';
 import { FoodEntry, DailySummary, UserProfile } from '../types';
 import { cache, CACHE_KEYS, withCache } from '../utils/cache';
+import type { ChatMessage } from './coach';
 
 // --- Local Storage Fallback Keys ---
 const LS_KEY = 'snapcal_data_v1';
 const LS_SETTINGS_KEY = 'snapcal_settings_v1';
 const LS_PROFILE_KEY = 'snapcal_profile_v1';
 const LS_SUMMARIES_KEY = 'snapcal_summaries_v1';
+const LS_COACH_MESSAGES_KEY = 'snapcal_coach_messages_v1';
 
 // --- PostgREST Column Selection (Bandwidth Optimization) ---
 // Full columns: for single entry detail views
@@ -809,10 +811,157 @@ export const skipOnboarding = async (user: any): Promise<void> => {
   await markOnboardingComplete(user);
 };
 
+
 /**
  * Manually clear all data caches (useful for debugging or force refresh)
  */
 export const clearAllCaches = (): void => {
   cache.clear();
   console.log('✨ All data caches cleared');
+};
+
+// --- Chat History Management ---
+
+/**
+ * Helper to get local chat messages from localStorage
+ */
+const getLocalChatMessages = (): ChatMessage[] => {
+  try {
+    const data = localStorage.getItem(LS_COACH_MESSAGES_KEY);
+    return data ? JSON.parse(data) : [];
+  } catch (e) {
+    return [];
+  }
+};
+
+/**
+ * Helper to save local chat messages to localStorage
+ */
+const saveLocalChatMessages = (messages: ChatMessage[]) => {
+  try {
+    localStorage.setItem(LS_COACH_MESSAGES_KEY, JSON.stringify(messages));
+  } catch (error: any) {
+    console.error('Failed to save chat messages to local storage:', error);
+  }
+};
+
+/**
+ * Save a single chat message to database
+ */
+export const saveChatMessage = async (message: ChatMessage): Promise<void> => {
+  const user = await getCurrentUser();
+  if (!user) {
+    console.warn('User not logged in, cannot save chat message');
+    return;
+  }
+
+  // Extract date from timestamp (YYYY-MM-DD format)
+  const date = new Date(message.timestamp).toISOString().split('T')[0];
+
+  if (!shouldUseCloud) {
+    const messages = getLocalChatMessages();
+    const messageWithUser = { ...message, user_id: user.id, date };
+    messages.push(messageWithUser);
+    saveLocalChatMessages(messages);
+    return;
+  }
+
+  try {
+    const { error } = await supabase
+      .from('coach_messages')
+      .insert({
+        id: message.id,
+        user_id: user.id,
+        role: message.role,
+        content: message.content,
+        timestamp: message.timestamp,
+        date: date
+      });
+
+    if (error) {
+      console.error('Failed to save chat message to Supabase:', error);
+    }
+  } catch (error) {
+    console.error('Exception saving chat message:', error);
+  }
+};
+
+/**
+ * Get chat messages for a specific date
+ * Returns messages in chronological order (oldest first)
+ */
+export const getChatMessagesForDate = async (date: string): Promise<ChatMessage[]> => {
+  const user = await getCurrentUser();
+  if (!user) return [];
+
+  if (!shouldUseCloud) {
+    const allMessages = getLocalChatMessages();
+    return allMessages
+      .filter((m: any) => m.user_id === user.id && m.date === date)
+      .sort((a, b) => a.timestamp - b.timestamp);
+  }
+
+  try {
+    const { data, error } = await supabase
+      .from('coach_messages')
+      .select('id, role, content, timestamp')
+      .eq('user_id', user.id)
+      .eq('date', date)
+      .order('timestamp', { ascending: true });
+
+    if (error) {
+      console.error('Failed to fetch chat messages:', error);
+      return [];
+    }
+
+    return data || [];
+  } catch (error) {
+    console.error('Exception fetching chat messages:', error);
+    return [];
+  }
+};
+
+/**
+ * Get today's chat messages
+ * Convenience function for loading same-day conversation
+ */
+export const getTodayChatMessages = async (): Promise<ChatMessage[]> => {
+  const today = new Date().toISOString().split('T')[0];
+  return getChatMessagesForDate(today);
+};
+
+/**
+ * Clean up chat messages older than 7 days
+ * Called automatically when loading chat history
+ */
+export const cleanupOldChatMessages = async (): Promise<void> => {
+  const user = await getCurrentUser();
+  if (!user) return;
+
+  const sevenDaysAgo = new Date();
+  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+  const thresholdDate = sevenDaysAgo.toISOString().split('T')[0];
+
+  if (!shouldUseCloud) {
+    const messages = getLocalChatMessages();
+    const filtered = messages.filter((m: any) =>
+      m.user_id !== user.id || m.date >= thresholdDate
+    );
+    saveLocalChatMessages(filtered);
+    return;
+  }
+
+  try {
+    const { error } = await supabase
+      .from('coach_messages')
+      .delete()
+      .eq('user_id', user.id)
+      .lt('date', thresholdDate);
+
+    if (error) {
+      console.error('Failed to cleanup old chat messages:', error);
+    }
+  } catch (error) {
+    console.error('Exception during chat cleanup:', error);
+  }
 };

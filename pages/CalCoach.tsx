@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Sparkles, Send, Loader2, Settings, ArrowRight } from 'lucide-react';
 import { Card } from '../components/ui/Card';
 import { sendCoachMessage, ChatMessage, buildCoachContext, CoachContext } from '../services/coach';
+import { saveChatMessage, getTodayChatMessages, getChatMessagesForDate, cleanupOldChatMessages } from '../services/storage';
 import { AppView } from '../types';
 
 interface CalCoachProps {
@@ -14,8 +15,12 @@ export const CalCoach: React.FC<CalCoachProps> = ({ onNavigate }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [context, setContext] = useState<CoachContext | null>(null);
     const [showGoalsPrompt, setShowGoalsPrompt] = useState(false);
+    const [loadedDates, setLoadedDates] = useState<Set<string>>(new Set());
+    const [isLoadingHistory, setIsLoadingHistory] = useState(false);
+    const [canLoadMore, setCanLoadMore] = useState(true);
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLTextAreaElement>(null);
+    const messagesContainerRef = useRef<HTMLDivElement>(null);
 
     // Check if training goals are filled
     const hasTrainingGoals = (ctx: CoachContext): boolean => {
@@ -34,27 +39,27 @@ export const CalCoach: React.FC<CalCoachProps> = ({ onNavigate }) => {
                 return;
             }
 
-            // Add welcome message
-            const welcomeMessage: ChatMessage = {
-                id: 'welcome',
-                role: 'assistant',
-                content: `👋 **Welcome to SnapCal AI Elite Coach**
+            // Cleanup old messages (7+ days)
+            await cleanupOldChatMessages();
 
-I'm your dual-certified Professional Fitness Trainer (NSCA-CPT) and Clinical Nutritionist. I'm here to provide science-based fitness and nutrition programming tailored specifically to your goals.
+            // Load today's chat history
+            const today = new Date().toISOString().split('T')[0];
+            const todayMessages = await getTodayChatMessages();
 
-${ctx.userName ? `Great to see you, ${ctx.userName}! ` : ''}I can analyze your nutrition data, create personalized workout plans, calculate your TDEE, set macro targets, and provide evidence-based recommendations.
-
-**How can I help you today?**
-- "Analyze my recent nutrition"
-- "Create a workout plan for me"
-- "Calculate my TDEE"
-- "Help me set macro targets"
-
-*Disclaimer: Always consult with a physician before starting any new exercise or nutrition program.*`,
-                timestamp: Date.now()
-            };
-
-            setMessages([welcomeMessage]);
+            if (todayMessages.length > 0) {
+                // Load existing conversation
+                setMessages(todayMessages);
+                setLoadedDates(new Set([today]));
+            } else {
+                // Add welcome message for new conversation
+                const welcomeMessage: ChatMessage = {
+                    id: 'welcome',
+                    role: 'assistant',
+                    content: `👋 **Hi ${ctx.userName || 'there'}! I'm Cal Coach.**\n\nHow can I help you today?`,
+                    timestamp: Date.now()
+                };
+                setMessages([welcomeMessage]);
+            }
         };
 
         initChat();
@@ -79,6 +84,11 @@ ${ctx.userName ? `Great to see you, ${ctx.userName}! ` : ''}I can analyze your n
         setInputValue('');
         setIsLoading(true);
 
+        // Save user message to database (non-blocking)
+        saveChatMessage(userMessage).catch(err =>
+            console.error('Failed to save user message:', err)
+        );
+
         try {
             const response = await sendCoachMessage(inputValue, messages);
 
@@ -90,6 +100,11 @@ ${ctx.userName ? `Great to see you, ${ctx.userName}! ` : ''}I can analyze your n
             };
 
             setMessages(prev => [...prev, assistantMessage]);
+
+            // Save assistant message to database (non-blocking)
+            saveChatMessage(assistantMessage).catch(err =>
+                console.error('Failed to save assistant message:', err)
+            );
         } catch (error: any) {
             const errorMessage: ChatMessage = {
                 id: `error-${Date.now()}`,
@@ -114,6 +129,67 @@ ${ctx.userName ? `Great to see you, ${ctx.userName}! ` : ''}I can analyze your n
     const handleGoToProfile = () => {
         // Navigate to Profile view using the passed onNavigate function
         onNavigate(AppView.PROFILE);
+    };
+
+    // Load previous day's messages when scrolling to top
+    const loadPreviousDay = async () => {
+        if (isLoadingHistory || !canLoadMore) return;
+
+        setIsLoadingHistory(true);
+
+        try {
+            // Find the earliest loaded date
+            const sortedDates = Array.from(loadedDates).sort();
+            const earliestDate = sortedDates[0];
+
+            if (!earliestDate) {
+                setCanLoadMore(false);
+                return;
+            }
+
+            // Calculate previous day
+            const prevDate = new Date(earliestDate);
+            prevDate.setDate(prevDate.getDate() - 1);
+            const prevDateStr = prevDate.toISOString().split('T')[0];
+
+            // Check if we've gone back 7 days
+            const today = new Date().toISOString().split('T')[0];
+            const daysDiff = Math.floor(
+                (new Date(today).getTime() - new Date(prevDateStr).getTime()) / (1000 * 60 * 60 * 24)
+            );
+
+            if (daysDiff >= 7) {
+                setCanLoadMore(false);
+                return;
+            }
+
+            // Load previous day's messages
+            const previousMessages = await getChatMessagesForDate(prevDateStr);
+
+            if (previousMessages.length > 0) {
+                // Prepend messages to existing state
+                setMessages(prev => [...previousMessages, ...prev]);
+                setLoadedDates(prev => new Set([...prev, prevDateStr]));
+            } else {
+                // No messages found, check even earlier
+                setLoadedDates(prev => new Set([...prev, prevDateStr]));
+            }
+        } catch (error) {
+            console.error('Failed to load previous day messages:', error);
+        } finally {
+            setIsLoadingHistory(false);
+        }
+    };
+
+    // Handle scroll to detect when user reaches top
+    const handleScroll = () => {
+        const container = messagesContainerRef.current;
+        if (!container) return;
+
+        // If scrolled to top (with small threshold)
+        if (container.scrollTop < 50 && !isLoadingHistory && canLoadMore) {
+            loadPreviousDay();
+        }
     };
 
     // Show training goals prompt modal if training goals not set
@@ -208,7 +284,32 @@ ${ctx.userName ? `Great to see you, ${ctx.userName}! ` : ''}I can analyze your n
             </header>
 
             {/* Messages Container */}
-            <div className="flex-1 overflow-y-auto space-y-4 mb-4 no-scrollbar">
+            <div
+                ref={messagesContainerRef}
+                onScroll={handleScroll}
+                className="flex-1 overflow-y-auto space-y-4 mb-4 no-scrollbar"
+            >
+                {/* Load More Indicator */}
+                {isLoadingHistory && (
+                    <div className="flex justify-center py-3 animate-in fade-in duration-300">
+                        <div className="flex items-center gap-2 text-gray-400 dark:text-gray-500 text-sm">
+                            <Loader2 size={14} className="animate-spin" />
+                            <span>Loading earlier messages...</span>
+                        </div>
+                    </div>
+                )}
+
+                {/* Show "Load More" button when at top and there's more to load */}
+                {!isLoadingHistory && canLoadMore && messages.length > 0 && loadedDates.size > 0 && (
+                    <div className="flex justify-center py-2">
+                        <button
+                            onClick={loadPreviousDay}
+                            className="text-xs text-gray-400 dark:text-gray-500 hover:text-royal-600 dark:hover:text-royal-400 transition-colors"
+                        >
+                            ↑ Load previous day
+                        </button>
+                    </div>
+                )}
                 {messages.map((message) => (
                     <div
                         key={message.id}
@@ -239,6 +340,68 @@ ${ctx.userName ? `Great to see you, ${ctx.userName}! ` : ''}I can analyze your n
                         </div>
                     </div>
                 ))}
+                {/* Initial Phase Suggestion Cards - Centrally in Message List */}
+                {messages.length === 1 && messages[0].id === 'welcome' && !isLoading && (
+                    <div className="grid grid-cols-1 gap-3 mt-4 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-300">
+                        {[
+                            { title: "Analyze Nutrition", desc: "Get insights on your recent eating habits", icon: "📊", text: "Analyze my recent nutrition", color: "from-blue-500/30 to-royal-500/30", baseBg: "bg-blue-50/40 dark:bg-blue-900/10", iconBg: "bg-blue-100 dark:bg-blue-900/40", iconBorder: "border-blue-200 dark:border-blue-700/50" },
+                            { title: "Workout Plan", desc: "Create a personalized fitness routine", icon: "💪", text: "Create a workout plan for me", color: "from-emerald-500/30 to-royal-500/30", baseBg: "bg-emerald-50/40 dark:bg-emerald-900/10", iconBg: "bg-emerald-100 dark:bg-emerald-900/40", iconBorder: "border-emerald-200 dark:border-emerald-700/50" },
+                            { title: "Calculate TDEE", desc: "Find out your daily energy expenditure", icon: "🔥", text: "Calculate my TDEE", color: "from-orange-500/30 to-royal-500/30", baseBg: "bg-orange-50/40 dark:bg-orange-900/10", iconBg: "bg-orange-100 dark:bg-orange-900/40", iconBorder: "border-orange-200 dark:border-orange-700/50" },
+                            { title: "Macro Targets", desc: "Set optimal protein, carb, and fat goals", icon: "🎯", text: "Help me set macro targets", color: "from-royal-500/30 to-purple-500/30", baseBg: "bg-royal-50/40 dark:bg-royal-900/10", iconBg: "bg-royal-100 dark:bg-royal-900/40", iconBorder: "border-royal-200 dark:border-royal-700/50" }
+                        ].map((item, idx) => (
+                            <button
+                                key={idx}
+                                onClick={() => {
+                                    const sendDirectly = async (text: string) => {
+                                        if (isLoading) return;
+                                        const userMsg: ChatMessage = {
+                                            id: `user-${Date.now()}`,
+                                            role: 'user',
+                                            content: text,
+                                            timestamp: Date.now()
+                                        };
+                                        setMessages(prev => [...prev, userMsg]);
+                                        setIsLoading(true);
+                                        try {
+                                            const response = await sendCoachMessage(text, messages);
+                                            const assistantMsg: ChatMessage = {
+                                                id: `assistant-${Date.now()}`,
+                                                role: 'assistant',
+                                                content: response,
+                                                timestamp: Date.now()
+                                            };
+                                            setMessages(prev => [...prev, assistantMsg]);
+                                        } catch (error: any) {
+                                            const errorMsg: ChatMessage = {
+                                                id: `error-${Date.now()}`,
+                                                role: 'assistant',
+                                                content: `⚠️ ${error.message || 'Failed to get response.'}`,
+                                                timestamp: Date.now()
+                                            };
+                                            setMessages(prev => [...prev, errorMsg]);
+                                        } finally {
+                                            setIsLoading(false);
+                                        }
+                                    };
+                                    sendDirectly(item.text);
+                                }}
+                                className={`flex items-center gap-4 p-4 ${item.baseBg} border-2 border-gray-100 dark:border-white/10 rounded-2xl hover:border-royal-500 dark:hover:border-royal-400 hover:shadow-xl hover:shadow-royal-500/10 transition-all text-left group active:scale-[0.98] relative overflow-hidden`}
+                            >
+                                <div className={`absolute inset-0 bg-gradient-to-br ${item.color} opacity-0 group-hover:opacity-100 transition-opacity`} />
+                                <div className={`relative z-10 w-12 h-12 ${item.iconBg} ${item.iconBorder} border rounded-xl flex items-center justify-center text-2xl group-hover:scale-110 transition-transform shadow-sm group-hover:shadow-md`}>
+                                    {item.icon}
+                                </div>
+                                <div className="relative z-10 flex-1">
+                                    <h3 className="font-extrabold text-gray-900 dark:text-gray-50 text-sm tracking-tight">{item.title}</h3>
+                                    <p className="text-xs text-gray-600 dark:text-gray-300 mt-0.5 font-semibold opacity-80">{item.desc}</p>
+                                </div>
+                                <div className="relative z-10 w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 dark:bg-white/10 group-hover:bg-royal-500 group-hover:text-white transition-all shadow-sm">
+                                    <ArrowRight size={16} className="text-gray-400 dark:text-gray-500 group-hover:text-white group-hover:translate-x-0.5 transition-all" />
+                                </div>
+                            </button>
+                        ))}
+                    </div>
+                )}
 
                 {isLoading && (
                     <div className="flex justify-start animate-in fade-in duration-300">
@@ -253,6 +416,65 @@ ${ctx.userName ? `Great to see you, ${ctx.userName}! ` : ''}I can analyze your n
 
                 <div ref={messagesEndRef} />
             </div>
+
+            {/* Active Phase Persistent Suggestion Bar - Compact Horizontal Scroll */}
+            {messages.length > 1 && !isLoading && (
+                <div className="flex gap-3 overflow-x-auto pb-4 px-1 no-scrollbar animate-in fade-in slide-in-from-bottom-2 duration-500">
+                    {[
+                        { title: "Analyze Nutrition", icon: "📊", text: "Analyze my recent nutrition", color: "from-blue-500/30 to-royal-500/30", baseBg: "bg-blue-50/40 dark:bg-blue-900/10", iconBg: "bg-blue-100 dark:bg-blue-900/40", iconBorder: "border-blue-200 dark:border-blue-700/50" },
+                        { title: "Workout Plan", icon: "💪", text: "Create a workout plan for me", color: "from-emerald-500/30 to-royal-500/30", baseBg: "bg-emerald-50/40 dark:bg-emerald-900/10", iconBg: "bg-emerald-100 dark:bg-emerald-900/40", iconBorder: "border-emerald-200 dark:border-emerald-700/50" },
+                        { title: "Calculate TDEE", icon: "🔥", text: "Calculate my TDEE", color: "from-orange-500/30 to-royal-500/30", baseBg: "bg-orange-50/40 dark:bg-orange-900/10", iconBg: "bg-orange-100 dark:bg-orange-900/40", iconBorder: "border-orange-200 dark:border-orange-700/50" },
+                        { title: "Macro Targets", icon: "🎯", text: "Help me set macro targets", color: "from-royal-500/30 to-purple-500/30", baseBg: "bg-royal-50/40 dark:bg-royal-900/10", iconBg: "bg-royal-100 dark:bg-royal-900/40", iconBorder: "border-royal-200 dark:border-royal-700/50" }
+                    ].map((item, idx) => (
+                        <button
+                            key={idx}
+                            onClick={() => {
+                                const sendDirectly = async (text: string) => {
+                                    if (isLoading) return;
+                                    const userMsg: ChatMessage = {
+                                        id: `user-${Date.now()}`,
+                                        role: 'user',
+                                        content: text,
+                                        timestamp: Date.now()
+                                    };
+                                    setMessages(prev => [...prev, userMsg]);
+                                    setIsLoading(true);
+                                    try {
+                                        const response = await sendCoachMessage(text, messages);
+                                        const assistantMsg: ChatMessage = {
+                                            id: `assistant-${Date.now()}`,
+                                            role: 'assistant',
+                                            content: response,
+                                            timestamp: Date.now()
+                                        };
+                                        setMessages(prev => [...prev, assistantMsg]);
+                                    } catch (error: any) {
+                                        const errorMsg: ChatMessage = {
+                                            id: `error-${Date.now()}`,
+                                            role: 'assistant',
+                                            content: `⚠️ ${error.message || 'Failed to get response.'}`,
+                                            timestamp: Date.now()
+                                        };
+                                        setMessages(prev => [...prev, errorMsg]);
+                                    } finally {
+                                        setIsLoading(false);
+                                    }
+                                };
+                                sendDirectly(item.text);
+                            }}
+                            className={`flex flex-shrink-0 items-center gap-3 p-3 min-w-[180px] ${item.baseBg} border-2 border-gray-100 dark:border-white/10 rounded-2xl hover:border-royal-500 dark:hover:border-royal-400 transition-all text-left group active:scale-[0.98] relative overflow-hidden`}
+                        >
+                            <div className={`absolute inset-0 bg-gradient-to-br ${item.color} opacity-0 group-hover:opacity-100 transition-opacity`} />
+                            <div className={`relative z-10 w-10 h-10 ${item.iconBg} ${item.iconBorder} border rounded-xl flex items-center justify-center text-xl group-hover:scale-110 transition-transform shadow-sm`}>
+                                {item.icon}
+                            </div>
+                            <div className="relative z-10 flex-1">
+                                <h3 className="font-extrabold text-gray-900 dark:text-gray-50 text-xs tracking-tight leading-tight">{item.title}</h3>
+                            </div>
+                        </button>
+                    ))}
+                </div>
+            )}
 
             {/* Input Area */}
             <div className="flex-shrink-0 bg-white dark:bg-[#1a1c26] rounded-[24px] p-3 shadow-diffused dark:shadow-diffused-dark border border-gray-100 dark:border-white/5">

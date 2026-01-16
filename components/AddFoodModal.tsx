@@ -412,17 +412,41 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ onClose, onSuccess, 
                 </div>
               </div>
               <div className="grid grid-cols-3 gap-2">
-                <div className="bg-white/10 rounded-xl p-2 flex flex-col items-center">
-                  <span className="text-xs font-black">{protein}g</span>
-                  <span className="text-[8px] uppercase tracking-tighter opacity-70">Protein</span>
+                <div className="bg-white/10 rounded-xl p-3 flex flex-col items-center">
+                  <div className="relative w-full">
+                    <input
+                      type="number"
+                      value={protein}
+                      onChange={(e) => setProtein(e.target.value)}
+                      className="bg-transparent text-xs font-black w-full outline-none border-b border-white/20 focus:border-white transition-colors text-center pb-1"
+                    />
+                    <span className="absolute -bottom-0 right-0 text-[10px] font-bold opacity-50">g</span>
+                  </div>
+                  <span className="text-[8px] uppercase tracking-tighter opacity-70 mt-1">Protein</span>
                 </div>
-                <div className="bg-white/10 rounded-xl p-2 flex flex-col items-center">
-                  <span className="text-xs font-black">{carbs}g</span>
-                  <span className="text-[8px] uppercase tracking-tighter opacity-70">Carbs</span>
+                <div className="bg-white/10 rounded-xl p-3 flex flex-col items-center">
+                  <div className="relative w-full">
+                    <input
+                      type="number"
+                      value={carbs}
+                      onChange={(e) => setCarbs(e.target.value)}
+                      className="bg-transparent text-xs font-black w-full outline-none border-b border-white/20 focus:border-white transition-colors text-center pb-1"
+                    />
+                    <span className="absolute -bottom-0 right-0 text-[10px] font-bold opacity-50">g</span>
+                  </div>
+                  <span className="text-[8px] uppercase tracking-tighter opacity-70 mt-1">Carbs</span>
                 </div>
-                <div className="bg-white/10 rounded-xl p-2 flex flex-col items-center">
-                  <span className="text-xs font-black">{fat}g</span>
-                  <span className="text-[8px] uppercase tracking-tighter opacity-70">Fat</span>
+                <div className="bg-white/10 rounded-xl p-3 flex flex-col items-center">
+                  <div className="relative w-full">
+                    <input
+                      type="number"
+                      value={fat}
+                      onChange={(e) => setFat(e.target.value)}
+                      className="bg-transparent text-xs font-black w-full outline-none border-b border-white/20 focus:border-white transition-colors text-center pb-1"
+                    />
+                    <span className="absolute -bottom-0 right-0 text-[10px] font-bold opacity-50">g</span>
+                  </div>
+                  <span className="text-[8px] uppercase tracking-tighter opacity-70 mt-1">Fat</span>
                 </div>
               </div>
             </div>
