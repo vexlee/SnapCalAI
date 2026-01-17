@@ -595,6 +595,10 @@ export const History: React.FC = () => {
             setEntryImages({});
             loadData();
           }}
+          onOpenSharedMeal={() => {
+            // No-op or redirect to SharedMeal handled elsewhere if needed
+            setShowEditModal(false);
+          }}
         />
       )}
     </div>
