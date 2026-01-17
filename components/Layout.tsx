@@ -27,8 +27,10 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentView, onNavigat
           <button
             onClick={() => onNavigate(AppView.DASHBOARD)}
             className={clsx(
-              "flex-1 flex items-center justify-center gap-2 py-4 rounded-[24px] transition-all duration-300",
-              currentView === AppView.DASHBOARD ? "bg-royal-600 text-white shadow-lg shadow-royal-200 dark:shadow-royal-900/40" : "text-gray-400 dark:text-gray-500 hover:text-royal-500 dark:hover:text-royal-400 hover:bg-royal-50/50 dark:hover:bg-white/5"
+              "flex items-center justify-center gap-2 py-3 rounded-[24px] transition-all duration-500",
+              currentView === AppView.DASHBOARD
+                ? "flex-[1.6] bg-royal-600 text-white shadow-lg shadow-royal-200 dark:shadow-royal-900/40 px-4"
+                : "flex-1 text-gray-400 dark:text-gray-500 hover:text-royal-500 dark:hover:text-royal-400 hover:bg-royal-50/50 dark:hover:bg-white/5"
             )}
           >
             <Home size={22} strokeWidth={currentView === AppView.DASHBOARD ? 2.5 : 2} />
@@ -38,8 +40,10 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentView, onNavigat
           <button
             onClick={() => onNavigate(AppView.CAL_COACH)}
             className={clsx(
-              "flex-1 flex items-center justify-center gap-2 py-4 rounded-[24px] transition-all duration-300",
-              currentView === AppView.CAL_COACH ? "bg-royal-600 text-white shadow-lg shadow-royal-200 dark:shadow-royal-900/40" : "text-gray-400 dark:text-gray-500 hover:text-royal-500 dark:hover:text-royal-400 hover:bg-royal-50/50 dark:hover:bg-white/5"
+              "flex items-center justify-center gap-2 py-3 rounded-[24px] transition-all duration-500",
+              currentView === AppView.CAL_COACH
+                ? "flex-[1.6] bg-royal-600 text-white shadow-lg shadow-royal-200 dark:shadow-royal-900/40 px-4"
+                : "flex-1 text-gray-400 dark:text-gray-500 hover:text-royal-500 dark:hover:text-royal-400 hover:bg-royal-50/50 dark:hover:bg-white/5"
             )}
           >
             <Sparkles size={22} strokeWidth={currentView === AppView.CAL_COACH ? 2.5 : 2} />
@@ -49,8 +53,10 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentView, onNavigat
           <button
             onClick={() => onNavigate(AppView.WORKOUT_PLAN)}
             className={clsx(
-              "flex-1 flex items-center justify-center gap-2 py-4 rounded-[24px] transition-all duration-300",
-              currentView === AppView.WORKOUT_PLAN ? "bg-royal-600 text-white shadow-lg shadow-royal-200 dark:shadow-royal-900/40" : "text-gray-400 dark:text-gray-500 hover:text-royal-500 dark:hover:text-royal-400 hover:bg-royal-50/50 dark:hover:bg-white/5"
+              "flex items-center justify-center gap-2 py-3 rounded-[24px] transition-all duration-500",
+              currentView === AppView.WORKOUT_PLAN
+                ? "flex-[2] bg-royal-600 text-white shadow-lg shadow-royal-200 dark:shadow-royal-900/40 px-4"
+                : "flex-1 text-gray-400 dark:text-gray-500 hover:text-royal-500 dark:hover:text-royal-400 hover:bg-royal-50/50 dark:hover:bg-white/5"
             )}
           >
             <Dumbbell size={22} strokeWidth={currentView === AppView.WORKOUT_PLAN ? 2.5 : 2} />
@@ -60,8 +66,10 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentView, onNavigat
           <button
             onClick={() => onNavigate(AppView.HISTORY)}
             className={clsx(
-              "flex-1 flex items-center justify-center gap-2 py-4 rounded-[24px] transition-all duration-300",
-              currentView === AppView.HISTORY ? "bg-royal-600 text-white shadow-lg shadow-royal-200 dark:shadow-royal-900/40" : "text-gray-400 dark:text-gray-500 hover:text-royal-500 dark:hover:text-royal-400 hover:bg-royal-50/50 dark:hover:bg-white/5"
+              "flex items-center justify-center gap-2 py-3 rounded-[24px] transition-all duration-500",
+              currentView === AppView.HISTORY
+                ? "flex-[1.6] bg-royal-600 text-white shadow-lg shadow-royal-200 dark:shadow-royal-900/40 px-4"
+                : "flex-1 text-gray-400 dark:text-gray-500 hover:text-royal-500 dark:hover:text-royal-400 hover:bg-royal-50/50 dark:hover:bg-white/5"
             )}
           >
             <BarChart2 size={22} strokeWidth={currentView === AppView.HISTORY ? 2.5 : 2} />
@@ -71,8 +79,10 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentView, onNavigat
           <button
             onClick={() => onNavigate(AppView.PROFILE)}
             className={clsx(
-              "flex-1 flex items-center justify-center gap-2 py-4 rounded-[24px] transition-all duration-300",
-              currentView === AppView.PROFILE ? "bg-royal-600 text-white shadow-lg shadow-royal-200 dark:shadow-royal-900/40" : "text-gray-400 dark:text-gray-500 hover:text-royal-500 dark:hover:text-royal-400 hover:bg-royal-50/50 dark:hover:bg-white/5"
+              "flex items-center justify-center gap-2 py-3 rounded-[24px] transition-all duration-500",
+              currentView === AppView.PROFILE
+                ? "flex-[1.6] bg-royal-600 text-white shadow-lg shadow-royal-200 dark:shadow-royal-900/40 px-4"
+                : "flex-1 text-gray-400 dark:text-gray-500 hover:text-royal-500 dark:hover:text-royal-400 hover:bg-royal-50/50 dark:hover:bg-white/5"
             )}
           >
             <User size={22} strokeWidth={currentView === AppView.PROFILE ? 2.5 : 2} />

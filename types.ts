@@ -84,3 +84,19 @@ export interface OnboardingState {
     weight: number;
   };
 }
+
+export interface DetectedDish {
+  dish_name: string;
+  bounding_box: [number, number, number, number]; // [ymin, xmin, ymax, xmax] normalized 0-1000
+  estimated_total_calories: number;
+  confidence_score: number;
+}
+
+export interface SharedMealAnalysis {
+  dishes: DetectedDish[];
+}
+
+export interface SelectedPortion {
+  dishIndex: number;
+  percentage: number;
+}

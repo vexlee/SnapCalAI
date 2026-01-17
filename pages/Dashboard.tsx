@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Plus, Sparkles, User, PenTool, Edit2, AlertTriangle, Utensils, TrendingUp } from 'lucide-react';
+import { Plus, Sparkles, User, PenTool, Edit2, AlertTriangle, Utensils, TrendingUp, Users } from 'lucide-react';
 import { Card } from '../components/ui/Card';
 import { getEntries, deleteEntry, getDailyGoal, saveDailyGoal, getUserProfile, getDailySummaries } from '../services/storage';
 import { FoodEntry, DailySummary } from '../types';
@@ -7,6 +7,7 @@ import { AddFoodModal } from '../components/AddFoodModal';
 import { EditGoalModal } from '../components/EditGoalModal';
 import { MealDetailModal } from '../components/MealDetailModal';
 import { AreaChart, Area, ResponsiveContainer } from 'recharts';
+import { SharedMealModal } from '../components/SharedMealModal';
 
 export const Dashboard: React.FC = () => {
   const [entries, setEntries] = useState<FoodEntry[]>([]);
@@ -20,6 +21,8 @@ export const Dashboard: React.FC = () => {
   const [progress, setProgress] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [userName, setUserName] = useState('');
+  const [showSharedMealModal, setShowSharedMealModal] = useState(false);
+  const [initialSharedImage, setInitialSharedImage] = useState<string | null>(null);
 
   const loadData = async () => {
     try {
@@ -329,6 +332,12 @@ export const Dashboard: React.FC = () => {
             setEntryToEdit(null);
             loadData();
           }}
+          onOpenSharedMeal={(image?: string) => {
+            setShowAddModal(false);
+            setEntryToEdit(null);
+            if (image) setInitialSharedImage(image);
+            setTimeout(() => setShowSharedMealModal(true), 100); // Small delay for smooth transition
+          }}
         />
       )}
 
@@ -346,6 +355,21 @@ export const Dashboard: React.FC = () => {
           onClose={() => setSelectedEntry(null)}
           onDelete={handleDeleteEntry}
           onEdit={handleEditEntry}
+        />
+      )}
+
+      {showSharedMealModal && (
+        <SharedMealModal
+          initialImage={initialSharedImage}
+          onClose={() => {
+            setShowSharedMealModal(false);
+            setInitialSharedImage(null);
+          }}
+          onSuccess={() => {
+            setShowSharedMealModal(false);
+            setInitialSharedImage(null);
+            loadData();
+          }}
         />
       )}
     </div>

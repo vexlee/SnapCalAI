@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { X, Camera, AlertCircle, ChevronLeft, Sparkles, RefreshCw, ThumbsUp, ChefHat, Image as ImageIcon, Calendar, Clock, Zap, Activity, Droplets, Trash2, PlusCircle, MessageSquare, Hourglass, RotateCcw, Database, HardDrive } from 'lucide-react';
+import { X, Camera, AlertCircle, ChevronLeft, Sparkles, RefreshCw, ThumbsUp, ChefHat, Image as ImageIcon, Calendar, Clock, Zap, Activity, Droplets, Trash2, PlusCircle, MessageSquare, Hourglass, RotateCcw, Database, HardDrive, Users } from 'lucide-react';
 import { Button } from './ui/Button';
 import { analyzeFoodImage, calculateCaloriesFromText, calculateRecipe, RecipeResult, Ingredient } from '../services/gemini';
 import { saveEntry } from '../services/storage';
@@ -9,6 +9,7 @@ import { v4 as uuidv4 } from 'uuid';
 interface AddFoodModalProps {
   onClose: () => void;
   onSuccess: () => void;
+  onOpenSharedMeal: (image?: string) => void;
   editEntry?: FoodEntry | null;
 }
 
@@ -86,9 +87,9 @@ const resizeImage = (file: File, maxWidth: number = 600, targetSizeKB: number = 
   });
 };
 
-type Mode = 'scan' | 'recipe' | 'chat';
+type Mode = 'scan' | 'recipe' | 'chat' | 'shared';
 
-export const AddFoodModal: React.FC<AddFoodModalProps> = ({ onClose, onSuccess, editEntry }) => {
+export const AddFoodModal: React.FC<AddFoodModalProps> = ({ onClose, onSuccess, onOpenSharedMeal, editEntry }) => {
   const [mode, setMode] = useState<Mode>('scan');
   const [step, setStep] = useState<'upload' | 'details'>(editEntry ? 'details' : 'upload');
   const [preview, setPreview] = useState<string | null>(editEntry?.imageUrl || null);
@@ -322,6 +323,13 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ onClose, onSuccess, 
                 Chat
               </button>
               <button
+                onClick={() => setMode('shared')}
+                className={`flex-1 py-3 flex items-center justify-center gap-2 rounded-[16px] text-xs font-bold transition-all ${mode === 'shared' ? 'bg-white dark:bg-royal-600 text-royal-700 dark:text-white shadow-sm' : 'text-gray-400 dark:text-gray-500 hover:text-gray-600'}`}
+              >
+                <Users size={16} />
+                Shared
+              </button>
+              <button
                 onClick={() => setMode('recipe')}
                 className={`flex-1 py-3 flex items-center justify-center gap-2 rounded-[16px] text-xs font-bold transition-all ${mode === 'recipe' ? 'bg-white dark:bg-royal-600 text-royal-700 dark:text-white shadow-sm' : 'text-gray-400 dark:text-gray-500 hover:text-gray-600'}`}
               >
@@ -389,7 +397,56 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ onClose, onSuccess, 
               </div>
             )}
 
-            {mode !== 'recipe' && (
+            {mode === 'shared' && (
+              <>
+                <div className="bg-royal-50 dark:bg-royal-950/40 p-4 rounded-[24px] mb-6 border border-royal-100 dark:border-royal-900/30 flex gap-3 items-start">
+                  <div className="p-2 bg-royal-100 dark:bg-royal-900/50 rounded-full shrink-0">
+                    <Users size={16} className="text-royal-600 dark:text-royal-400" />
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-bold text-gray-900 dark:text-white mb-1">Shared Meal Mode</h4>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
+                      Upload a photo of the entire table. Connect directly to our multi-dish analysis engine.
+                    </p>
+                  </div>
+                </div>
+
+                {!preview ? (
+                  <div onClick={() => fileInputRef.current?.click()} className="border-2 border-dashed border-gray-200 dark:border-white/10 rounded-[32px] h-64 flex flex-col items-center justify-center cursor-pointer hover:border-royal-400 hover:bg-royal-50 dark:hover:bg-white/5 transition-all group">
+                    <Camera size={48} className="text-gray-300 group-hover:text-royal-600 mb-4 transition-colors" />
+                    <p className="text-gray-900 dark:text-gray-50 font-bold">Snap or Upload Photo</p>
+                    <p className="text-gray-400 text-xs mt-1 italic">Capture the whole table</p>
+                  </div>
+                ) : (
+                  <div className="rounded-[32px] overflow-hidden h-64 relative mb-6 shadow-xl border border-white/10 shadow-royal-200/20">
+                    <img src={preview} className="w-full h-full object-cover" alt="preview" />
+                    <button onClick={() => setPreview(null)} className="absolute top-4 right-4 bg-black/40 text-white p-2 rounded-full backdrop-blur-md hover:bg-black/60 transition-colors">
+                      <X size={20} />
+                    </button>
+                    <div className="absolute bottom-4 left-4 right-4 bg-black/60 backdrop-blur-md p-3 rounded-2xl border border-white/10">
+                      <p className="text-white text-xs font-semibold text-center flex items-center justify-center gap-2">
+                        <Sparkles size={14} className="text-yellow-400" />
+                        Ready to analyze dishes
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                <input type="file" ref={fileInputRef} accept="image/*" onChange={handleFileChange} className="hidden" />
+
+                <div className="flex gap-3">
+                  <Button
+                    className="w-full py-5 text-lg font-black shadow-xl shadow-royal-200 dark:shadow-none bg-emerald-500 hover:bg-emerald-600 text-white"
+                    disabled={!preview}
+                    onClick={() => onOpenSharedMeal(preview || undefined)}
+                  >
+                    Start Shared Meal
+                  </Button>
+                </div>
+              </>
+            )}
+
+            {mode !== 'recipe' && mode !== 'shared' && (
               <button onClick={() => setStep('details')} className="w-full py-3 text-sm font-bold text-gray-400 dark:text-gray-600 hover:text-royal-500">
                 Enter Details Manually
               </button>
