@@ -1,5 +1,6 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { X, Camera, AlertCircle, ChevronLeft, Sparkles, RefreshCw, ThumbsUp, ChefHat, Image as ImageIcon, Calendar, Clock, Zap, Activity, Droplets, Trash2, PlusCircle, MessageSquare, Hourglass, RotateCcw, Database, HardDrive, Users } from 'lucide-react';
+import { getCurrentDateString } from '../utils/midnight';
 import { Button } from './ui/Button';
 import { analyzeFoodImage, calculateCaloriesFromText, calculateRecipe, RecipeResult, Ingredient } from '../services/gemini';
 import { saveEntry } from '../services/storage';
@@ -73,9 +74,9 @@ const resizeImage = (file: File, maxWidth: number = 600, targetSizeKB: number = 
           const finalSizeKB = (result.split(',')[1].length * 3) / 4 / 1024;
           const savings = ((originalSizeMB * 1024 - finalSizeKB) / (originalSizeMB * 1024)) * 100;
           console.log(`📸 Image Optimization:
-  Original: ${originalSizeMB.toFixed(2)}MB (${img.width}×${img.height}px)
-  Optimized: ${finalSizeKB.toFixed(0)}KB (${Math.round(width)}×${Math.round(height)}px)
-  Quality: ${(quality * 100).toFixed(0)}%
+Original: ${originalSizeMB.toFixed(2)} MB(${img.width}×${img.height}px)
+Optimized: ${finalSizeKB.toFixed(0)} KB(${Math.round(width)}×${Math.round(height)}px)
+Quality: ${(quality * 100).toFixed(0)}%
   Saved: ${savings.toFixed(0)}% 🎉`);
         }
 
@@ -102,9 +103,9 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ onClose, onSuccess, 
   const [chatInput, setChatInput] = useState('');
 
   const now = new Date();
-  const defaultTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+  const defaultTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')} `;
 
-  const [entryDate, setEntryDate] = useState(editEntry?.date || now.toISOString().split('T')[0]);
+  const [entryDate, setEntryDate] = useState(editEntry?.date || getCurrentDateString());
   const [entryTime, setEntryTime] = useState(editEntry?.time || defaultTime);
 
   const [foodName, setFoodName] = useState(editEntry?.food_item || '');
@@ -272,10 +273,10 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ onClose, onSuccess, 
         </div>
 
         {error && (
-          <div className={`mb-4 p-4 rounded-3xl flex flex-col gap-3 animate-in shake-1 duration-300 ${isAiQuotaError ? 'bg-amber-50 dark:bg-amber-950/30 border border-amber-100 dark:border-amber-900/30 text-amber-700 dark:text-amber-400' :
-            isDbQuotaError || isBrowserQuotaError ? 'bg-orange-50 dark:bg-orange-950/30 border border-orange-100 dark:border-orange-900/30 text-orange-700 dark:text-orange-400' :
-              'bg-red-50 dark:bg-red-950/20 border border-red-100 dark:border-red-900/30 text-red-600 dark:text-red-400'
-            }`}>
+          <div className={`mb - 4 p - 4 rounded - 3xl flex flex - col gap - 3 animate -in shake - 1 duration - 300 ${isAiQuotaError ? 'bg-amber-50 dark:bg-amber-950/30 border border-amber-100 dark:border-amber-900/30 text-amber-700 dark:text-amber-400' :
+              isDbQuotaError || isBrowserQuotaError ? 'bg-orange-50 dark:bg-orange-950/30 border border-orange-100 dark:border-orange-900/30 text-orange-700 dark:text-orange-400' :
+                'bg-red-50 dark:bg-red-950/20 border border-red-100 dark:border-red-900/30 text-red-600 dark:text-red-400'
+            } `}>
             <div className="flex items-start gap-3">
               {isAiQuotaError ? <Hourglass className="shrink-0 mt-0.5" size={18} /> :
                 isDbQuotaError || isBrowserQuotaError ? <HardDrive className="shrink-0 mt-0.5" size={18} /> :
@@ -310,28 +311,28 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ onClose, onSuccess, 
             <div className="flex p-1 bg-gray-100 dark:bg-white/5 rounded-[20px]">
               <button
                 onClick={() => setMode('scan')}
-                className={`flex-1 py-3 flex items-center justify-center gap-2 rounded-[16px] text-xs font-bold transition-all ${mode === 'scan' ? 'bg-white dark:bg-royal-600 text-royal-700 dark:text-white shadow-sm' : 'text-gray-400 dark:text-gray-500 hover:text-gray-600'}`}
+                className={`flex - 1 py - 3 flex items - center justify - center gap - 2 rounded - [16px] text - xs font - bold transition - all ${mode === 'scan' ? 'bg-white dark:bg-royal-600 text-royal-700 dark:text-white shadow-sm' : 'text-gray-400 dark:text-gray-500 hover:text-gray-600'} `}
               >
                 <Camera size={16} />
                 Scan
               </button>
               <button
                 onClick={() => setMode('chat')}
-                className={`flex-1 py-3 flex items-center justify-center gap-2 rounded-[16px] text-xs font-bold transition-all ${mode === 'chat' ? 'bg-white dark:bg-royal-600 text-royal-700 dark:text-white shadow-sm' : 'text-gray-400 dark:text-gray-500 hover:text-gray-600'}`}
+                className={`flex - 1 py - 3 flex items - center justify - center gap - 2 rounded - [16px] text - xs font - bold transition - all ${mode === 'chat' ? 'bg-white dark:bg-royal-600 text-royal-700 dark:text-white shadow-sm' : 'text-gray-400 dark:text-gray-500 hover:text-gray-600'} `}
               >
                 <MessageSquare size={16} />
                 Chat
               </button>
               <button
                 onClick={() => setMode('shared')}
-                className={`flex-1 py-3 flex items-center justify-center gap-2 rounded-[16px] text-xs font-bold transition-all ${mode === 'shared' ? 'bg-white dark:bg-royal-600 text-royal-700 dark:text-white shadow-sm' : 'text-gray-400 dark:text-gray-500 hover:text-gray-600'}`}
+                className={`flex - 1 py - 3 flex items - center justify - center gap - 2 rounded - [16px] text - xs font - bold transition - all ${mode === 'shared' ? 'bg-white dark:bg-royal-600 text-royal-700 dark:text-white shadow-sm' : 'text-gray-400 dark:text-gray-500 hover:text-gray-600'} `}
               >
                 <Users size={16} />
                 Shared
               </button>
               <button
                 onClick={() => setMode('recipe')}
-                className={`flex-1 py-3 flex items-center justify-center gap-2 rounded-[16px] text-xs font-bold transition-all ${mode === 'recipe' ? 'bg-white dark:bg-royal-600 text-royal-700 dark:text-white shadow-sm' : 'text-gray-400 dark:text-gray-500 hover:text-gray-600'}`}
+                className={`flex - 1 py - 3 flex items - center justify - center gap - 2 rounded - [16px] text - xs font - bold transition - all ${mode === 'recipe' ? 'bg-white dark:bg-royal-600 text-royal-700 dark:text-white shadow-sm' : 'text-gray-400 dark:text-gray-500 hover:text-gray-600'} `}
               >
                 <ChefHat size={16} />
                 Recipe
@@ -567,7 +568,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ onClose, onSuccess, 
                 onClick={handleRecalculate}
                 isLoading={isRecalculating}
               >
-                <RefreshCw size={14} className={`mr-2 ${isRecalculating ? 'animate-spin' : ''}`} />
+                <RefreshCw size={14} className={`mr - 2 ${isRecalculating ? 'animate-spin' : ''} `} />
                 Recalculate Totals
               </Button>
             </div>

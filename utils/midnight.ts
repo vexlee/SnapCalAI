@@ -55,3 +55,37 @@ export const getCurrentDateString = (): string => {
     const day = String(now.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
 };
+
+const LAST_ACTIVE_DATE_KEY = 'snapcal_last_active_date';
+
+/**
+ * Check if we're in a new day compared to the last time the app was active
+ * Returns true if the day has changed
+ */
+export const hasDateChanged = (): boolean => {
+    const currentDate = getCurrentDateString();
+    const lastActiveDate = localStorage.getItem(LAST_ACTIVE_DATE_KEY);
+
+    if (!lastActiveDate) {
+        // First time running or no previous date stored
+        localStorage.setItem(LAST_ACTIVE_DATE_KEY, currentDate);
+        return false;
+    }
+
+    const dateChanged = lastActiveDate !== currentDate;
+
+    if (dateChanged) {
+        console.log(`📅 Day changed detected: ${lastActiveDate} → ${currentDate}`);
+        // Update to current date
+        localStorage.setItem(LAST_ACTIVE_DATE_KEY, currentDate);
+    }
+
+    return dateChanged;
+};
+
+/**
+ * Update the last active date to current date
+ */
+export const updateLastActiveDate = (): void => {
+    localStorage.setItem(LAST_ACTIVE_DATE_KEY, getCurrentDateString());
+};

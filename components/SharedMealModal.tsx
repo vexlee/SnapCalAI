@@ -1,5 +1,6 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { X, Camera, CheckCircle, Percent, TrendingUp, AlertCircle, ChevronDown, ChevronUp } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { X, Users, Camera, Sparkles, ChefHat, AlertCircle, Check, Loader, Calendar, Clock, TrendingUp, CheckCircle, ChevronDown, Percent } from 'lucide-react';
+import { getCurrentDateString } from '../utils/midnight';
 import { Button } from './ui/Button';
 import { analyzeSharedMeal } from '../services/sharedMeal';
 import { DetectedDish, FoodEntry } from '../types';
@@ -230,7 +231,7 @@ export const SharedMealModal: React.FC<SharedMealModalProps> = ({ onClose, onSuc
         try {
             const now = new Date();
             const timestamp = now.toISOString();
-            const date = now.toISOString().split('T')[0];
+            const date = getCurrentDateString();
             const time = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
 
             for (const [dishIndex, percentage] of Array.from(selectedPortions.entries())) {

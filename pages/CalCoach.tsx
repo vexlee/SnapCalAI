@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Sparkles, Send, Loader2, Settings, ArrowRight, Save } from 'lucide-react';
+import { Send, Sparkles, MessageSquare, Dumbbell, TrendingUp, Calendar, Zap, ChevronDown, ChevronUp, Target, Activity, Check, Clock, Loader, Loader2, Settings, ArrowRight, Save } from 'lucide-react';
+import { getCurrentDateString } from '../utils/midnight';
 import { Card } from '../components/ui/Card';
 import { sendCoachMessage, ChatMessage, buildCoachContext, CoachContext } from '../services/coach';
 import { saveChatMessage, getTodayChatMessages, getChatMessagesForDate, cleanupOldChatMessages } from '../services/storage';
 import { AppView } from '../types';
 import { detectWorkoutPlan } from '../utils/workoutParser';
 import { SaveWorkoutModal } from '../components/SaveWorkoutModal';
-
 interface CalCoachProps {
     onNavigate: (view: AppView) => void;
 }
@@ -47,7 +47,7 @@ export const CalCoach: React.FC<CalCoachProps> = ({ onNavigate }) => {
             await cleanupOldChatMessages();
 
             // Load today's chat history
-            const today = new Date().toISOString().split('T')[0];
+            const today = getCurrentDateString();
             const todayMessages = await getTodayChatMessages();
 
             if (todayMessages.length > 0) {
@@ -59,7 +59,7 @@ export const CalCoach: React.FC<CalCoachProps> = ({ onNavigate }) => {
                 const welcomeMessage: ChatMessage = {
                     id: 'welcome',
                     role: 'assistant',
-                    content: `👋 **Hi ${ctx.userName || 'there'}! I'm Cal Coach.**\n\nHow can I help you today?`,
+                    content: `👋 ** Hi ${ctx.userName || 'there'} !I'm Cal Coach.**\n\nHow can I help you today?`,
                     timestamp: Date.now()
                 };
                 setMessages([welcomeMessage]);

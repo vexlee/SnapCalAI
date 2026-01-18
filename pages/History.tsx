@@ -7,6 +7,7 @@ import { MealDetailModal } from '../components/MealDetailModal';
 import { DailySummaryModal } from '../components/DailySummaryModal';
 import { AddFoodModal } from '../components/AddFoodModal';
 import { Calendar as CalendarIcon, Filter, ChevronDown, ChevronRight, Loader2, Info, ChevronLeft } from 'lucide-react';
+import { getCurrentDateString } from '../utils/midnight';
 
 type ViewMode = 'week' | 'month';
 
@@ -30,7 +31,7 @@ export const History: React.FC = () => {
   const [entryToEdit, setEntryToEdit] = useState<FoodEntry | null>(null);
 
   // New Layout States
-  const [selectedDate, setSelectedDate] = useState<string>(new Date().toISOString().split('T')[0]);
+  const [selectedDate, setSelectedDate] = useState<string>(getCurrentDateString());
   const [selectedMonth, setSelectedMonth] = useState<string>(new Date().toISOString().substring(0, 7)); // YYYY-MM
   const [isFullLogView, setIsFullLogView] = useState(false);
   const [expandedDays, setExpandedDays] = useState<Record<string, boolean>>({});

@@ -231,7 +231,8 @@ export const WorkoutPlan: React.FC<WorkoutPlanProps> = ({ onNavigate }) => {
 
                             const isSelected = isSameDay(date, selectedDate);
                             const isToday = isSameDay(date, today);
-                            const dateStr = date.toISOString().split('T')[0];
+                            // Use local timezone to avoid one-day offset
+                            const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
                             const hasPlan = planDates.has(dateStr);
 
                             return (

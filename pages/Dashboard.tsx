@@ -8,6 +8,7 @@ import { EditGoalModal } from '../components/EditGoalModal';
 import { MealDetailModal } from '../components/MealDetailModal';
 import { AreaChart, Area, ResponsiveContainer } from 'recharts';
 import { SharedMealModal } from '../components/SharedMealModal';
+import { getCurrentDateString } from '../utils/midnight';
 
 export const Dashboard: React.FC = () => {
   const [entries, setEntries] = useState<FoodEntry[]>([]);
@@ -27,7 +28,7 @@ export const Dashboard: React.FC = () => {
   const loadData = async () => {
     try {
       const allEntries = await getEntries();
-      const today = new Date().toISOString().split('T')[0];
+      const today = getCurrentDateString(); // Use local date, not UTC
       const todaysEntries = allEntries.filter(e => e.date === today);
       todaysEntries.sort((a, b) => b.timestamp.localeCompare(a.timestamp));
 

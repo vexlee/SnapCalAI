@@ -10,7 +10,7 @@ import { Onboarding } from './pages/Onboarding';
 import { AppView } from './types';
 import { getCurrentUser, onAuthStateChange, User } from './services/auth';
 import { performDataCleanup, hasCompletedOnboarding } from './services/storage';
-import { scheduleAtMidnight } from './utils/midnight';
+import { scheduleAtMidnight, hasDateChanged } from './utils/midnight';
 import { cache } from './utils/cache';
 
 function App() {
@@ -47,6 +47,15 @@ function App() {
 
   // Setup midnight refresh timer
   useEffect(() => {
+    // IMMEDIATE CHECK: Clear cache if we're in a new day
+    if (hasDateChanged()) {
+      console.log('🌅 New day detected on app load! Clearing stale caches...');
+      cache.clearDateSensitiveCaches();
+      // Broadcast refresh event to all components
+      window.dispatchEvent(new CustomEvent('midnight-refresh'));
+    }
+
+    // SCHEDULED CHECK: Set up timer for next midnight
     const cancelMidnightTimer = scheduleAtMidnight(() => {
       console.log('🌙 Midnight! Clearing caches and broadcasting refresh event...');
 
