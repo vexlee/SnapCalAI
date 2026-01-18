@@ -81,6 +81,17 @@ class DataCache {
     }
 
     /**
+     * Invalidate all caches that are date-sensitive (used at midnight)
+     */
+    clearDateSensitiveCaches(): void {
+        console.log('🗑️ Clearing date-sensitive caches...');
+        // Clear all food-related caches as they are date-dependent
+        this.invalidatePattern(/^food:/);
+        // User profile and settings can persist across days
+        console.log('✅ Date-sensitive caches cleared');
+    }
+
+    /**
      * Get cache statistics
      */
     getStats(): { size: number; keys: string[] } {

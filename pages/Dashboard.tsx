@@ -63,7 +63,18 @@ export const Dashboard: React.FC = () => {
     // Listener for specific record updates (like clearing an image)
     const handleUpdate = () => loadData();
     window.addEventListener('food-entry-updated', handleUpdate);
-    return () => window.removeEventListener('food-entry-updated', handleUpdate);
+
+    // Listener for midnight refresh
+    const handleMidnightRefresh = () => {
+      console.log('📊 Dashboard: Midnight detected, reloading data...');
+      loadData();
+    };
+    window.addEventListener('midnight-refresh', handleMidnightRefresh);
+
+    return () => {
+      window.removeEventListener('food-entry-updated', handleUpdate);
+      window.removeEventListener('midnight-refresh', handleMidnightRefresh);
+    };
   }, []);
 
   useEffect(() => {

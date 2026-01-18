@@ -10,6 +10,8 @@ import { Onboarding } from './pages/Onboarding';
 import { AppView } from './types';
 import { getCurrentUser, onAuthStateChange, User } from './services/auth';
 import { performDataCleanup, hasCompletedOnboarding } from './services/storage';
+import { scheduleAtMidnight } from './utils/midnight';
+import { cache } from './utils/cache';
 
 function App() {
   const [currentView, setCurrentView] = useState<AppView>(AppView.DASHBOARD);
@@ -41,6 +43,23 @@ function App() {
     });
 
     return () => unsubscribe();
+  }, []);
+
+  // Setup midnight refresh timer
+  useEffect(() => {
+    const cancelMidnightTimer = scheduleAtMidnight(() => {
+      console.log('🌙 Midnight! Clearing caches and broadcasting refresh event...');
+
+      // Clear all date-sensitive caches
+      cache.clearDateSensitiveCaches();
+
+      // Broadcast event to all components to refresh their data
+      window.dispatchEvent(new CustomEvent('midnight-refresh'));
+    });
+
+    return () => {
+      cancelMidnightTimer();
+    };
   }, []);
 
   // Check onboarding status when user changes
