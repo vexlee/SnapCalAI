@@ -57,7 +57,7 @@ export const CalCoach: React.FC<CalCoachProps> = ({ onNavigate }) => {
             } else {
                 // Add welcome message for new conversation
                 const welcomeMessage: ChatMessage = {
-                    id: 'welcome',
+                    id: crypto.randomUUID(),
                     role: 'assistant',
                     content: `👋 ** Hi ${ctx.userName || 'there'} !I'm Cal Coach.**\n\nHow can I help you today?`,
                     timestamp: Date.now()
@@ -78,7 +78,7 @@ export const CalCoach: React.FC<CalCoachProps> = ({ onNavigate }) => {
         if (!inputValue.trim() || isLoading) return;
 
         const userMessage: ChatMessage = {
-            id: `user-${Date.now()}`,
+            id: crypto.randomUUID(),
             role: 'user',
             content: inputValue,
             timestamp: Date.now()
@@ -97,7 +97,7 @@ export const CalCoach: React.FC<CalCoachProps> = ({ onNavigate }) => {
             const response = await sendCoachMessage(inputValue, messages);
 
             const assistantMessage: ChatMessage = {
-                id: `assistant-${Date.now()}`,
+                id: crypto.randomUUID(),
                 role: 'assistant',
                 content: response,
                 timestamp: Date.now()
@@ -111,7 +111,7 @@ export const CalCoach: React.FC<CalCoachProps> = ({ onNavigate }) => {
             );
         } catch (error: any) {
             const errorMessage: ChatMessage = {
-                id: `error-${Date.now()}`,
+                id: crypto.randomUUID(),
                 role: 'assistant',
                 content: `⚠️ ${error.message || 'Failed to get response. Please try again.'}`,
                 timestamp: Date.now()
@@ -171,9 +171,21 @@ export const CalCoach: React.FC<CalCoachProps> = ({ onNavigate }) => {
             const previousMessages = await getChatMessagesForDate(prevDateStr);
 
             if (previousMessages.length > 0) {
-                // Prepend messages to existing state
+                // Save scroll position before adding messages
+                const container = messagesContainerRef.current;
+                const scrollHeightBefore = container?.scrollHeight || 0;
+
+                // Prepend messages to existing state (at top)
                 setMessages(prev => [...previousMessages, ...prev]);
                 setLoadedDates(prev => new Set([...prev, prevDateStr]));
+
+                // Restore scroll position after render to prevent jumping
+                setTimeout(() => {
+                    if (container) {
+                        const scrollHeightAfter = container.scrollHeight;
+                        container.scrollTop = scrollHeightAfter - scrollHeightBefore;
+                    }
+                }, 0);
             } else {
                 // No messages found, check even earlier
                 setLoadedDates(prev => new Set([...prev, prevDateStr]));
@@ -190,8 +202,10 @@ export const CalCoach: React.FC<CalCoachProps> = ({ onNavigate }) => {
         const container = messagesContainerRef.current;
         if (!container) return;
 
-        // If scrolled to top (with small threshold)
-        if (container.scrollTop < 50 && !isLoadingHistory && canLoadMore) {
+        // Only trigger if scrolled to top and user has interacted
+        const hasInteracted = loadedDates.size > 0;
+
+        if (container.scrollTop < 100 && !isLoadingHistory && canLoadMore && hasInteracted) {
             loadPreviousDay();
         }
     };
@@ -293,27 +307,25 @@ export const CalCoach: React.FC<CalCoachProps> = ({ onNavigate }) => {
                 onScroll={handleScroll}
                 className="flex-1 overflow-y-auto space-y-4 mb-4 no-scrollbar"
             >
-                {/* Load More Indicator */}
+                {/* Load More Indicator at top */}
                 {isLoadingHistory && (
                     <div className="flex justify-center py-3 animate-in fade-in duration-300">
                         <div className="flex items-center gap-2 text-gray-400 dark:text-gray-500 text-sm">
                             <Loader2 size={14} className="animate-spin" />
-                            <span>Loading earlier messages...</span>
+                            <span>Loading previous messages...</span>
                         </div>
                     </div>
                 )}
 
-                {/* Show "Load More" button when at top and there's more to load */}
-                {!isLoadingHistory && canLoadMore && messages.length > 0 && loadedDates.size > 0 && (
+                {/* Show hint when can load more */}
+                {!isLoadingHistory && canLoadMore && messages.length > 1 && (
                     <div className="flex justify-center py-2">
-                        <button
-                            onClick={loadPreviousDay}
-                            className="text-xs text-gray-400 dark:text-gray-500 hover:text-royal-600 dark:hover:text-royal-400 transition-colors"
-                        >
-                            ↑ Load previous day
-                        </button>
+                        <div className="text-xs text-gray-400 dark:text-gray-500">
+                            ↑ Scroll up to load older messages
+                        </div>
                     </div>
                 )}
+
                 {messages.map((message) => (
                     <div
                         key={message.id}
@@ -374,7 +386,7 @@ export const CalCoach: React.FC<CalCoachProps> = ({ onNavigate }) => {
                                     const sendDirectly = async (text: string) => {
                                         if (isLoading) return;
                                         const userMsg: ChatMessage = {
-                                            id: `user-${Date.now()}`,
+                                            id: crypto.randomUUID(),
                                             role: 'user',
                                             content: text,
                                             timestamp: Date.now()
@@ -390,7 +402,7 @@ export const CalCoach: React.FC<CalCoachProps> = ({ onNavigate }) => {
                                         try {
                                             const response = await sendCoachMessage(text, messages);
                                             const assistantMsg: ChatMessage = {
-                                                id: `assistant-${Date.now()}`,
+                                                id: crypto.randomUUID(),
                                                 role: 'assistant',
                                                 content: response,
                                                 timestamp: Date.now()
@@ -403,7 +415,7 @@ export const CalCoach: React.FC<CalCoachProps> = ({ onNavigate }) => {
                                             );
                                         } catch (error: any) {
                                             const errorMsg: ChatMessage = {
-                                                id: `error-${Date.now()}`,
+                                                id: crypto.randomUUID(),
                                                 role: 'assistant',
                                                 content: `⚠️ ${error.message || 'Failed to get response.'}`,
                                                 timestamp: Date.now()
@@ -478,7 +490,7 @@ export const CalCoach: React.FC<CalCoachProps> = ({ onNavigate }) => {
                                     try {
                                         const response = await sendCoachMessage(text, messages);
                                         const assistantMsg: ChatMessage = {
-                                            id: `assistant-${Date.now()}`,
+                                            id: crypto.randomUUID(),
                                             role: 'assistant',
                                             content: response,
                                             timestamp: Date.now()

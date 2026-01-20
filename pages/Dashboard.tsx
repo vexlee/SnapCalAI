@@ -6,18 +6,20 @@ import { FoodEntry, DailySummary } from '../types';
 import { AddFoodModal } from '../components/AddFoodModal';
 import { EditGoalModal } from '../components/EditGoalModal';
 import { MealDetailModal } from '../components/MealDetailModal';
-import { AreaChart, Area, ResponsiveContainer } from 'recharts';
 import { SharedMealModal } from '../components/SharedMealModal';
 import { getCurrentDateString } from '../utils/midnight';
 
 export const Dashboard: React.FC = () => {
   const [entries, setEntries] = useState<FoodEntry[]>([]);
-  const [weeklyData, setWeeklyData] = useState<any[]>([]);
+  // Weekly data removed
   const [showAddModal, setShowAddModal] = useState(false);
   const [showGoalModal, setShowGoalModal] = useState(false);
   const [selectedEntry, setSelectedEntry] = useState<FoodEntry | null>(null);
   const [entryToEdit, setEntryToEdit] = useState<FoodEntry | null>(null);
   const [todayCalories, setTodayCalories] = useState(0);
+  const [todayProtein, setTodayProtein] = useState(0);
+  const [todayCarbs, setTodayCarbs] = useState(0);
+  const [todayFat, setTodayFat] = useState(0);
   const [dailyGoal, setDailyGoal] = useState(2000);
   const [progress, setProgress] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
@@ -34,6 +36,9 @@ export const Dashboard: React.FC = () => {
 
       setEntries(todaysEntries);
       setTodayCalories(todaysEntries.reduce((acc, curr) => acc + curr.calories, 0));
+      setTodayProtein(todaysEntries.reduce((acc, curr) => acc + (curr.protein || 0), 0));
+      setTodayCarbs(todaysEntries.reduce((acc, curr) => acc + (curr.carbs || 0), 0));
+      setTodayFat(todaysEntries.reduce((acc, curr) => acc + (curr.fat || 0), 0));
 
       const goal = await getDailyGoal();
       setDailyGoal(goal);
@@ -42,14 +47,6 @@ export const Dashboard: React.FC = () => {
       if (profile?.name) {
         setUserName(profile.name);
       }
-
-      const summaries = await getDailySummaries();
-      const last7Days = summaries.slice(0, 7).reverse().map(s => ({ cal: s.totalCalories }));
-      // Ensure at least 7 points for a nice sparkline
-      while (last7Days.length < 7) {
-        last7Days.unshift({ cal: 0 });
-      }
-      setWeeklyData(last7Days);
 
     } catch (error) {
       console.error("Failed to load dashboard data", error);
@@ -229,7 +226,7 @@ export const Dashboard: React.FC = () => {
               </div>
             </div>
 
-            <div className="flex justify-end">
+            <div className="flex justify-end mb-6">
               {todayCalories > dailyGoal ? (
                 <div className="flex items-center gap-1.5 bg-white/20 backdrop-blur-md px-3 py-1 rounded-full animate-pulse">
                   <AlertTriangle size={14} className="text-white" fill="white" />
@@ -243,32 +240,38 @@ export const Dashboard: React.FC = () => {
                 </p>
               )}
             </div>
+
+            {/* Macro Breakdown */}
+            <div className="grid grid-cols-3 gap-3 mt-5 pt-4 border-t border-white/10">
+              <div className="flex flex-col items-center justify-center p-2 rounded-2xl bg-emerald-500/20 border border-emerald-400/20 shadow-sm relative overflow-hidden group">
+                <div className="absolute inset-0 bg-gradient-to-br from-emerald-400/10 to-transparent opacity-50" />
+                <p className="text-[9px] uppercase font-bold text-emerald-100 mb-0.5 relative z-10 tracking-wider">Protein</p>
+                <div className="flex items-baseline gap-0.5 relative z-10">
+                  <span className="text-xl font-black text-emerald-50 shadow-black/10 drop-shadow-sm">{todayProtein}</span>
+                  <span className="text-[10px] font-bold text-emerald-200/80">g</span>
+                </div>
+              </div>
+
+              <div className="flex flex-col items-center justify-center p-2 rounded-2xl bg-amber-500/20 border border-amber-400/20 shadow-sm relative overflow-hidden group">
+                <div className="absolute inset-0 bg-gradient-to-br from-amber-400/10 to-transparent opacity-50" />
+                <p className="text-[9px] uppercase font-bold text-amber-100 mb-0.5 relative z-10 tracking-wider">Carbs</p>
+                <div className="flex items-baseline gap-0.5 relative z-10">
+                  <span className="text-xl font-black text-amber-50 shadow-black/10 drop-shadow-sm">{todayCarbs}</span>
+                  <span className="text-[10px] font-bold text-amber-200/80">g</span>
+                </div>
+              </div>
+
+              <div className="flex flex-col items-center justify-center p-2 rounded-2xl bg-rose-500/20 border border-rose-400/20 shadow-sm relative overflow-hidden group">
+                <div className="absolute inset-0 bg-gradient-to-br from-rose-400/10 to-transparent opacity-50" />
+                <p className="text-[9px] uppercase font-bold text-rose-100 mb-0.5 relative z-10 tracking-wider">Fat</p>
+                <div className="flex items-baseline gap-0.5 relative z-10">
+                  <span className="text-xl font-black text-rose-50 shadow-black/10 drop-shadow-sm">{todayFat}</span>
+                  <span className="text-[10px] font-bold text-rose-200/80">g</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-
-        {/* Weekly Sparkline Card */}
-        <Card className="flex items-center justify-between p-4 overflow-hidden relative">
-          <div className="z-10">
-            <div className="flex items-center gap-2 mb-1">
-              <TrendingUp size={14} className="text-royal-600 dark:text-royal-400" />
-              <span className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest">Weekly Trend</span>
-            </div>
-            <p className="text-sm font-bold text-gray-900 dark:text-gray-50">Consistent Tracking</p>
-          </div>
-          <div className="absolute right-0 bottom-0 top-0 w-32 opacity-50 dark:opacity-30">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={weeklyData}>
-                <defs>
-                  <linearGradient id="colorCal" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#7c3aed" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="#7c3aed" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <Area type="monotone" dataKey="cal" stroke="#7c3aed" strokeWidth={3} fillOpacity={1} fill="url(#colorCal)" />
-              </AreaChart>
-            </ResponsiveContainer>
-          </div>
-        </Card>
       </div>
 
       {/* Entries List Header - Still Fixed */}

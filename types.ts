@@ -69,6 +69,7 @@ export interface WorkoutExercise {
 }
 
 export interface DailyWorkout {
+  id?: string; // Unique identifier for each workout plan
   date: string;
   title: string;
   exercises: WorkoutExercise[];

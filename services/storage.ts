@@ -994,20 +994,25 @@ const saveLocalWorkoutPlans = (plans: any[]) => {
 
 /**
  * Save a workout plan for a specific date
+ * Now supports multiple workouts per date by generating unique IDs
  */
 export const saveWorkoutPlan = async (
   date: string,
   title: string,
-  exercises: WorkoutExercise[]
-): Promise<void> => {
+  exercises: WorkoutExercise[],
+  workoutId?: string // Optional: provide existing ID for updates
+): Promise<string> => {
   const user = await getCurrentUser();
   if (!user) {
     console.warn('User not logged in, cannot save workout plan');
-    return;
+    return '';
   }
 
+  // Generate unique ID if not provided (for new workouts)
+  const id = workoutId || `${user.id}_${date}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
   const planWithUser = {
-    id: `${user.id}_${date}`,
+    id,
     user_id: user.id,
     date,
     title,
@@ -1017,7 +1022,7 @@ export const saveWorkoutPlan = async (
   // Always save to localStorage as backup
   const plans = getLocalWorkoutPlans();
   const existingIndex = plans.findIndex(
-    (p: any) => p.user_id === user.id && p.date === date
+    (p: any) => p.id === id
   );
 
   if (existingIndex >= 0) {
@@ -1033,7 +1038,7 @@ export const saveWorkoutPlan = async (
       const { error } = await supabase
         .from('workout_plans')
         .upsert({
-          id: `${user.id}_${date}`,
+          id,
           user_id: user.id,
           date,
           title,
@@ -1047,55 +1052,71 @@ export const saveWorkoutPlan = async (
       console.warn('Exception saving workout plan to Supabase, using localStorage fallback:', error);
     }
   }
+
+  return id;
 };
 
 /**
- * Get workout plan for a specific date
+ * Get workout plan for a specific date (legacy - returns first workout)
+ * @deprecated Use getWorkoutPlansForDate to get all workouts for a date
  */
 export const getWorkoutPlan = async (date: string): Promise<DailyWorkout | null> => {
+  const workouts = await getWorkoutPlansForDate(date);
+  return workouts.length > 0 ? workouts[0] : null;
+};
+
+/**
+ * Get all workout plans for a specific date
+ * Returns array of workouts to support multiple workouts per day
+ */
+export const getWorkoutPlansForDate = async (date: string): Promise<DailyWorkout[]> => {
   const user = await getCurrentUser();
-  if (!user) return null;
+  if (!user) return [];
+
+  const workouts: DailyWorkout[] = [];
 
   // Always check localStorage first
   const plans = getLocalWorkoutPlans();
-  const localPlan = plans.find((p: any) => p.user_id === user.id && p.date === date);
+  const localPlans = plans.filter((p: any) => p.user_id === user.id && p.date === date);
 
-  if (localPlan) {
-    return {
-      date: localPlan.date,
-      title: localPlan.title,
-      exercises: localPlan.exercises
-    };
-  }
+  localPlans.forEach((p: any) => {
+    workouts.push({
+      id: p.id,
+      date: p.date,
+      title: p.title,
+      exercises: p.exercises
+    });
+  });
 
-  // If not in localStorage and cloud is enabled, try Supabase
+  // If cloud is enabled, also get from Supabase and merge
   if (shouldUseCloud) {
     try {
       const { data, error } = await supabase
         .from('workout_plans')
-        .select('date, title, exercises')
+        .select('id, date, title, exercises')
         .eq('user_id', user.id)
-        .eq('date', date)
-        .maybeSingle();
+        .eq('date', date);
 
-      if (error) {
-        console.warn('Supabase fetch failed, no local data available:', error.message);
-        return null;
-      }
-
-      if (data) {
-        return {
-          date: data.date,
-          title: data.title,
-          exercises: data.exercises
-        };
+      if (!error && data) {
+        // Merge cloud data, avoiding duplicates by ID
+        const localIds = new Set(workouts.map(w => w.id));
+        data.forEach((cloudPlan: any) => {
+          if (!localIds.has(cloudPlan.id)) {
+            workouts.push({
+              id: cloudPlan.id,
+              date: cloudPlan.date,
+              title: cloudPlan.title,
+              exercises: cloudPlan.exercises
+            });
+          }
+        });
       }
     } catch (error) {
-      console.warn('Exception fetching workout plan from Supabase:', error);
+      console.warn('Exception fetching workout plans from Supabase, using localStorage only:', error);
     }
   }
 
-  return null;
+  return workouts;
 };
 
 /**
@@ -1186,7 +1207,8 @@ export const saveMultiDayWorkoutPlan = async (
 };
 
 /**
- * Delete a workout plan for a specific date
+ * Delete a workout plan for a specific date (legacy - deletes all workouts)
+ * @deprecated Use deleteWorkoutPlanById to delete specific workout
  */
 export const deleteWorkoutPlan = async (date: string): Promise<void> => {
   const user = await getCurrentUser();
@@ -1216,5 +1238,41 @@ export const deleteWorkoutPlan = async (date: string): Promise<void> => {
     }
   } catch (error) {
     console.error('Exception deleting workout plan:', error);
+  }
+};
+
+/**
+ * Delete a specific workout plan by ID
+ * Supports deleting individual workouts when multiple exist per day
+ */
+export const deleteWorkoutPlanById = async (workoutId: string): Promise<void> => {
+  const user = await getCurrentUser();
+  if (!user) {
+    console.warn('User not logged in, cannot delete workout plan');
+    return;
+  }
+
+  // Delete from localStorage
+  const plans = getLocalWorkoutPlans();
+  const filtered = plans.filter(
+    (p: any) => p.id !== workoutId
+  );
+  saveLocalWorkoutPlans(filtered);
+
+  // Also delete from Supabase if in cloud mode
+  if (shouldUseCloud) {
+    try {
+      const { error } = await supabase
+        .from('workout_plans')
+        .delete()
+        .eq('id', workoutId)
+        .eq('user_id', user.id);
+
+      if (error) {
+        console.warn('Failed to delete workout plan from Supabase:', error.message);
+      }
+    } catch (error) {
+      console.warn('Exception deleting workout plan from Supabase:', error);
+    }
   }
 };

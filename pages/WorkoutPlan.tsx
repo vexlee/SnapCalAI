@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Dumbbell, Calendar, CheckCircle2, Circle, ChevronLeft, ChevronRight, Plus, Sparkles, Pencil, Trash2 } from 'lucide-react';
 import { Card } from '../components/ui/Card';
 import { WorkoutExercise, DailyWorkout, AppView } from '../types';
-import { getWorkoutPlan, getWorkoutPlansForMonth, saveWorkoutPlan } from '../services/storage';
+import { getWorkoutPlansForDate, getWorkoutPlansForMonth, saveWorkoutPlan, deleteWorkoutPlanById } from '../services/storage';
 import { AddWorkoutModal } from '../components/AddWorkoutModal';
 import { EditExerciseModal } from '../components/EditExerciseModal';
 
@@ -13,11 +13,12 @@ interface WorkoutPlanProps {
 export const WorkoutPlan: React.FC<WorkoutPlanProps> = ({ onNavigate }) => {
     const [currentMonth, setCurrentMonth] = useState(new Date());
     const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-    const [workoutPlan, setWorkoutPlan] = useState<DailyWorkout | null>(null);
+    const [workoutPlans, setWorkoutPlans] = useState<DailyWorkout[]>([]); // Changed to array
     const [planDates, setPlanDates] = useState<Set<string>>(new Set());
     const [loading, setLoading] = useState(false);
     const [showAddModal, setShowAddModal] = useState(false);
     const [editingExercise, setEditingExercise] = useState<WorkoutExercise | null>(null);
+    const [editingWorkoutId, setEditingWorkoutId] = useState<string | null>(null); // Track which workout is being edited
     const [showEditModal, setShowEditModal] = useState(false);
 
     // Reload function for when a workout is saved
@@ -28,10 +29,10 @@ export const WorkoutPlan: React.FC<WorkoutPlanProps> = ({ onNavigate }) => {
         const dates = await getWorkoutPlansForMonth(year, month);
         setPlanDates(new Set(dates));
 
-        // Reload current workout plan
+        // Reload current workout plans
         const dateStr = `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(2, '0')}`;
-        const plan = await getWorkoutPlan(dateStr);
-        setWorkoutPlan(plan);
+        const plans = await getWorkoutPlansForDate(dateStr);
+        setWorkoutPlans(plans);
     };
 
     // Load workout plans for current month
@@ -51,8 +52,8 @@ export const WorkoutPlan: React.FC<WorkoutPlanProps> = ({ onNavigate }) => {
         const loadWorkoutPlan = async () => {
             setLoading(true);
             const dateStr = `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(2, '0')}`;
-            const plan = await getWorkoutPlan(dateStr);
-            setWorkoutPlan(plan);
+            const plans = await getWorkoutPlansForDate(dateStr);
+            setWorkoutPlans(plans);
             setLoading(false);
         };
 
@@ -107,63 +108,88 @@ export const WorkoutPlan: React.FC<WorkoutPlanProps> = ({ onNavigate }) => {
         setSelectedDate(date);
     };
 
-    const toggleExerciseComplete = (id: string) => {
-        if (!workoutPlan) return;
-
-        setWorkoutPlan({
-            ...workoutPlan,
-            exercises: workoutPlan.exercises.map(ex =>
-                ex.id === id ? { ...ex, completed: !ex.completed } : ex
+    const toggleExerciseComplete = (workoutId: string, exerciseId: string) => {
+        setWorkoutPlans(prevPlans =>
+            prevPlans.map(plan =>
+                plan.id === workoutId
+                    ? {
+                        ...plan,
+                        exercises: plan.exercises.map(ex =>
+                            ex.id === exerciseId ? { ...ex, completed: !ex.completed } : ex
+                        )
+                    }
+                    : plan
             )
-        });
+        );
     };
 
-    const handleEditExercise = (exercise: WorkoutExercise) => {
+    const handleEditExercise = (workoutId: string, exercise: WorkoutExercise) => {
+        setEditingWorkoutId(workoutId);
         setEditingExercise(exercise);
         setShowEditModal(true);
     };
 
-    const handleDeleteExercise = async (id: string) => {
-        if (!workoutPlan) return;
+    const handleDeleteExercise = async (workoutId: string, exerciseId: string) => {
+        const workout = workoutPlans.find(w => w.id === workoutId);
+        if (!workout) return;
 
         if (confirm('Are you sure you want to delete this exercise?')) {
-            const updatedExercises = workoutPlan.exercises.filter(ex => ex.id !== id);
+            const updatedExercises = workout.exercises.filter(ex => ex.id !== exerciseId);
 
             // Update local state
-            setWorkoutPlan({
-                ...workoutPlan,
-                exercises: updatedExercises
-            });
+            setWorkoutPlans(prevPlans =>
+                prevPlans.map(plan =>
+                    plan.id === workoutId
+                        ? { ...plan, exercises: updatedExercises }
+                        : plan
+                )
+            );
 
             // Save to storage
             const dateStr = `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(2, '0')}`;
-            await saveWorkoutPlan(dateStr, workoutPlan.title, updatedExercises);
+            await saveWorkoutPlan(dateStr, workout.title, updatedExercises, workoutId);
+        }
+    };
+
+    const handleDeleteWorkout = async (workoutId: string) => {
+        if (confirm('Are you sure you want to delete this entire workout plan?')) {
+            await deleteWorkoutPlanById(workoutId);
+            await reloadWorkout();
         }
     };
 
     const handleSaveEdit = async (updatedExercise: WorkoutExercise) => {
-        if (!workoutPlan) return;
+        if (!editingWorkoutId) return;
 
-        const updatedExercises = workoutPlan.exercises.map(ex =>
+        const workout = workoutPlans.find(w => w.id === editingWorkoutId);
+        if (!workout) return;
+
+        const updatedExercises = workout.exercises.map(ex =>
             ex.id === updatedExercise.id ? updatedExercise : ex
         );
 
         // Update local state
-        setWorkoutPlan({
-            ...workoutPlan,
-            exercises: updatedExercises
-        });
+        setWorkoutPlans(prevPlans =>
+            prevPlans.map(plan =>
+                plan.id === editingWorkoutId
+                    ? { ...plan, exercises: updatedExercises }
+                    : plan
+            )
+        );
 
         // Save to storage
         const dateStr = `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(2, '0')}`;
-        await saveWorkoutPlan(dateStr, workoutPlan.title, updatedExercises);
+        await saveWorkoutPlan(dateStr, workout.title, updatedExercises, editingWorkoutId);
 
         setShowEditModal(false);
         setEditingExercise(null);
+        setEditingWorkoutId(null);
     };
 
-    const completedCount = workoutPlan?.exercises.filter(ex => ex.completed).length || 0;
-    const totalCount = workoutPlan?.exercises.length || 0;
+    // Calculate total progress across all workouts
+    const allExercises = workoutPlans.flatMap(w => w.exercises);
+    const completedCount = allExercises.filter(ex => ex.completed).length;
+    const totalCount = allExercises.length;
     const progressPercent = totalCount > 0 ? (completedCount / totalCount) * 100 : 0;
 
     const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -267,16 +293,17 @@ export const WorkoutPlan: React.FC<WorkoutPlanProps> = ({ onNavigate }) => {
                             <div className="w-8 h-8 border-2 border-royal-600 border-t-transparent rounded-full animate-spin" />
                         </div>
                     </Card>
-                ) : workoutPlan ? (
-                    /* Workout Display */
-                    <div>
-                        <div className="flex items-center justify-between mb-4">
+                ) : workoutPlans.length > 0 ? (
+                    /* Workout Display - Multiple Workouts */
+                    <div className="space-y-6">
+                        {/* Overall Progress Header */}
+                        <div className="flex items-center justify-between">
                             <div>
                                 <h2 className="text-lg font-extrabold text-gray-900 dark:text-gray-50">
-                                    {isSameDay(selectedDate, today) ? "Today's Workout" : "Workout Plan"}
+                                    {isSameDay(selectedDate, today) ? "Today's Workouts" : "Workout Plans"}
                                 </h2>
                                 <p className="text-xs text-gray-500 dark:text-gray-400 font-semibold mt-0.5">
-                                    {workoutPlan.title}
+                                    {workoutPlans.length} {workoutPlans.length === 1 ? 'workout' : 'workouts'} scheduled
                                 </p>
                             </div>
                             <div className="text-right">
@@ -284,125 +311,191 @@ export const WorkoutPlan: React.FC<WorkoutPlanProps> = ({ onNavigate }) => {
                                     {completedCount}/{totalCount}
                                 </p>
                                 <p className="text-xs text-gray-500 dark:text-gray-400 font-semibold">
-                                    Completed
+                                    Overall Progress
                                 </p>
                             </div>
                         </div>
 
-                        {/* Progress Bar */}
-                        <div className="mb-6 bg-gray-100 dark:bg-white/5 rounded-full h-2 overflow-hidden">
+                        {/* Overall Progress Bar */}
+                        <div className="bg-gray-100 dark:bg-white/5 rounded-full h-2 overflow-hidden">
                             <div
                                 className="h-full bg-gradient-to-r from-royal-500 to-royal-600 transition-all duration-500 ease-out rounded-full"
                                 style={{ width: `${progressPercent}%` }}
                             />
                         </div>
 
-                        {/* Exercise List */}
-                        <div className="space-y-3">
-                            {workoutPlan.exercises.map((exercise) => (
-                                <button
-                                    key={exercise.id}
-                                    onClick={() => toggleExerciseComplete(exercise.id)}
-                                    className={`
-                                        w-full text-left transition-all active:scale-[0.98]
-                                        ${exercise.completed ? 'opacity-60' : ''}
-                                    `}
-                                >
-                                    <Card className={`p-4 ${exercise.completed ? 'bg-royal-50/50 dark:bg-royal-900/10' : ''}`}>
-                                        <div className="flex items-start gap-3">
-                                            <div className="flex-shrink-0 mt-0.5">
-                                                {exercise.completed ? (
-                                                    <CheckCircle2
-                                                        size={24}
-                                                        className="text-royal-600 dark:text-royal-400"
-                                                        strokeWidth={2.5}
-                                                    />
-                                                ) : (
-                                                    <Circle
-                                                        size={24}
-                                                        className="text-gray-300 dark:text-gray-600"
-                                                        strokeWidth={2}
-                                                    />
-                                                )}
-                                            </div>
-                                            <div className="flex-1 min-w-0">
-                                                <h3 className={`
-                                                    font-bold text-sm mb-2
-                                                    ${exercise.completed
-                                                        ? 'text-gray-500 dark:text-gray-400 line-through'
-                                                        : 'text-gray-900 dark:text-gray-50'
-                                                    }
-                                                `}>
-                                                    {exercise.name}
-                                                </h3>
-                                                <div className="flex items-center gap-4 text-xs">
-                                                    <div className="flex items-center gap-1">
-                                                        <span className="font-semibold text-gray-500 dark:text-gray-400">
-                                                            Sets:
-                                                        </span>
-                                                        <span className="font-bold text-gray-700 dark:text-gray-300">
-                                                            {exercise.sets}
-                                                        </span>
-                                                    </div>
-                                                    <div className="flex items-center gap-1">
-                                                        <span className="font-semibold text-gray-500 dark:text-gray-400">
-                                                            Reps:
-                                                        </span>
-                                                        <span className="font-bold text-gray-700 dark:text-gray-300">
-                                                            {exercise.reps}
-                                                        </span>
-                                                    </div>
-                                                    <div className="flex items-center gap-1">
-                                                        <span className="font-semibold text-gray-500 dark:text-gray-400">
-                                                            Rest:
-                                                        </span>
-                                                        <span className="font-bold text-gray-700 dark:text-gray-300">
-                                                            {exercise.rest}
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            {/* Edit and Delete Buttons */}
-                                            <div className="flex items-center gap-1 flex-shrink-0 ml-2">
-                                                <button
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        handleEditExercise(exercise);
-                                                    }}
-                                                    className="p-1.5 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
-                                                    title="Edit exercise"
-                                                >
-                                                    <Pencil size={14} className="text-blue-600 dark:text-blue-400" />
-                                                </button>
-                                                <button
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        handleDeleteExercise(exercise.id);
-                                                    }}
-                                                    className="p-1.5 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
-                                                    title="Delete exercise"
-                                                >
-                                                    <Trash2 size={14} className="text-red-600 dark:text-red-400" />
-                                                </button>
+                        {/* Individual Workout Plans */}
+                        {workoutPlans.map((workout) => {
+                            const workoutCompletedCount = workout.exercises.filter(ex => ex.completed).length;
+                            const workoutTotalCount = workout.exercises.length;
+                            const workoutProgressPercent = workoutTotalCount > 0 ? (workoutCompletedCount / workoutTotalCount) * 100 : 0;
+
+                            return (
+                                <Card key={workout.id} className="p-6 border-2 border-gray-200 dark:border-white/10">
+                                    {/* Workout Header */}
+                                    <div className="flex items-start justify-between mb-4">
+                                        <div className="flex-1">
+                                            <h3 className="text-base font-extrabold text-gray-900 dark:text-gray-50 mb-1">
+                                                {workout.title}
+                                            </h3>
+                                            <div className="flex items-center gap-2">
+                                                <span className="text-xs font-bold text-royal-600 dark:text-royal-400">
+                                                    {workoutCompletedCount}/{workoutTotalCount} completed
+                                                </span>
+                                                <span className="text-xs text-gray-400">•</span>
+                                                <span className="text-xs text-gray-500 dark:text-gray-400">
+                                                    {Math.round(workoutProgressPercent)}%
+                                                </span>
                                             </div>
                                         </div>
-                                    </Card>
-                                </button>
-                            ))}
-                        </div>
+                                        {/* Delete Workout Button */}
+                                        <button
+                                            onClick={() => handleDeleteWorkout(workout.id!)}
+                                            className="p-2 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                                            title="Delete entire workout"
+                                        >
+                                            <Trash2 size={16} className="text-red-600 dark:text-red-400" />
+                                        </button>
+                                    </div>
 
-                        {/* Completion Message */}
+                                    {/* Workout Progress Bar */}
+                                    <div className="mb-4 bg-gray-100 dark:bg-white/5 rounded-full h-1.5 overflow-hidden">
+                                        <div
+                                            className="h-full bg-gradient-to-r from-royal-500 to-royal-600 transition-all duration-500 ease-out rounded-full"
+                                            style={{ width: `${workoutProgressPercent}%` }}
+                                        />
+                                    </div>
+
+                                    {/* Exercise List */}
+                                    <div className="space-y-3">
+                                        {workout.exercises.map((exercise) => (
+                                            <button
+                                                key={exercise.id}
+                                                onClick={() => toggleExerciseComplete(workout.id!, exercise.id)}
+                                                className={`
+                                                    w-full text-left transition-all active:scale-[0.98]
+                                                    ${exercise.completed ? 'opacity-60' : ''}
+                                                `}
+                                            >
+                                                <Card className={`p-4 ${exercise.completed ? 'bg-royal-50/50 dark:bg-royal-900/10' : ''}`}>
+                                                    <div className="flex items-start gap-3">
+                                                        <div className="flex-shrink-0 mt-0.5">
+                                                            {exercise.completed ? (
+                                                                <CheckCircle2
+                                                                    size={20}
+                                                                    className="text-royal-600 dark:text-royal-400"
+                                                                    strokeWidth={2.5}
+                                                                />
+                                                            ) : (
+                                                                <Circle
+                                                                    size={20}
+                                                                    className="text-gray-300 dark:text-gray-600"
+                                                                    strokeWidth={2}
+                                                                />
+                                                            )}
+                                                        </div>
+                                                        <div className="flex-1 min-w-0">
+                                                            <h4 className={`
+                                                                font-bold text-sm mb-1.5
+                                                                ${exercise.completed
+                                                                    ? 'text-gray-500 dark:text-gray-400 line-through'
+                                                                    : 'text-gray-900 dark:text-gray-50'
+                                                                }
+                                                            `}>
+                                                                {exercise.name}
+                                                            </h4>
+                                                            <div className="flex items-center gap-3 text-xs">
+                                                                <div className="flex items-center gap-1">
+                                                                    <span className="font-semibold text-gray-500 dark:text-gray-400">
+                                                                        Sets:
+                                                                    </span>
+                                                                    <span className="font-bold text-gray-700 dark:text-gray-300">
+                                                                        {exercise.sets}
+                                                                    </span>
+                                                                </div>
+                                                                <div className="flex items-center gap-1">
+                                                                    <span className="font-semibold text-gray-500 dark:text-gray-400">
+                                                                        Reps:
+                                                                    </span>
+                                                                    <span className="font-bold text-gray-700 dark:text-gray-300">
+                                                                        {exercise.reps}
+                                                                    </span>
+                                                                </div>
+                                                                <div className="flex items-center gap-1">
+                                                                    <span className="font-semibold text-gray-500 dark:text-gray-400">
+                                                                        Rest:
+                                                                    </span>
+                                                                    <span className="font-bold text-gray-700 dark:text-gray-300">
+                                                                        {exercise.rest}
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        {/* Edit and Delete Buttons */}
+                                                        <div className="flex items-center gap-1 flex-shrink-0 ml-2">
+                                                            <button
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    handleEditExercise(workout.id!, exercise);
+                                                                }}
+                                                                className="p-1.5 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
+                                                                title="Edit exercise"
+                                                            >
+                                                                <Pencil size={14} className="text-blue-600 dark:text-blue-400" />
+                                                            </button>
+                                                            <button
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    handleDeleteExercise(workout.id!, exercise.id);
+                                                                }}
+                                                                className="p-1.5 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                                                                title="Delete exercise"
+                                                            >
+                                                                <Trash2 size={14} className="text-red-600 dark:text-red-400" />
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </Card>
+                                            </button>
+                                        ))}
+                                    </div>
+
+                                    {/* Workout Completion Message */}
+                                    {workoutCompletedCount === workoutTotalCount && workoutTotalCount > 0 && (
+                                        <div className="mt-4 p-4 bg-gradient-to-br from-royal-50 to-royal-100 dark:from-royal-950/30 dark:to-royal-900/20 border-2 border-royal-200 dark:border-royal-800/50 rounded-xl">
+                                            <div className="flex items-center gap-3">
+                                                <CheckCircle2 size={20} className="text-royal-600 dark:text-royal-400" strokeWidth={2.5} />
+                                                <p className="text-sm font-bold text-royal-900 dark:text-royal-100">
+                                                    Workout Complete! 🎉
+                                                </p>
+                                            </div>
+                                        </div>
+                                    )}
+                                </Card>
+                            );
+                        })}
+
+                        {/* Add Another Workout Button */}
+                        <button
+                            onClick={() => setShowAddModal(true)}
+                            className="w-full flex items-center justify-center gap-2 py-4 bg-white dark:bg-white/5 hover:bg-royal-50 dark:hover:bg-royal-900/20 text-gray-900 dark:text-gray-50 rounded-[20px] font-bold transition-all border-2 border-dashed border-gray-300 dark:border-white/20 hover:border-royal-400 dark:hover:border-royal-600 active:scale-95"
+                        >
+                            <Plus size={20} />
+                            <span>Add Another Workout</span>
+                        </button>
+
+                        {/* Overall Completion Message */}
                         {completedCount === totalCount && totalCount > 0 && (
-                            <Card className="p-6 mt-6 bg-gradient-to-br from-royal-50 to-royal-100 dark:from-royal-950/30 dark:to-royal-900/20 border-2 border-royal-200 dark:border-royal-800/50 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                            <Card className="p-6 bg-gradient-to-br from-royal-50 to-royal-100 dark:from-royal-950/30 dark:to-royal-900/20 border-2 border-royal-200 dark:border-royal-800/50 animate-in fade-in slide-in-from-bottom-4 duration-500">
                                 <div className="text-center">
                                     <div className="w-16 h-16 bg-royal-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
                                         <CheckCircle2 size={32} className="text-white" strokeWidth={2.5} />
                                     </div>
                                     <h3 className="text-xl font-extrabold text-royal-900 dark:text-royal-100 mb-2">
-                                        Workout Complete! 🎉
+                                        All Workouts Complete! 🎉
                                     </h3>
                                     <p className="text-sm text-royal-700 dark:text-royal-300 font-semibold">
-                                        Great job! You've completed all exercises for today.
+                                        Amazing work! You've completed all exercises for {isSameDay(selectedDate, today) ? 'today' : 'this day'}.
                                     </p>
                                 </div>
                             </Card>
@@ -453,6 +546,7 @@ export const WorkoutPlan: React.FC<WorkoutPlanProps> = ({ onNavigate }) => {
                 onClose={() => {
                     setShowEditModal(false);
                     setEditingExercise(null);
+                    setEditingWorkoutId(null);
                 }}
                 exercise={editingExercise}
                 onSave={handleSaveEdit}

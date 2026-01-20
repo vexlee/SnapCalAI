@@ -6,6 +6,7 @@ import { analyzeFoodImage, calculateCaloriesFromText, calculateRecipe, RecipeRes
 import { saveEntry } from '../services/storage';
 import { FoodEntry } from '../types';
 import { v4 as uuidv4 } from 'uuid';
+import { ScanningAnimation } from './ScanningAnimation';
 
 interface AddFoodModalProps {
   onClose: () => void;
@@ -256,26 +257,26 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ onClose, onSuccess, 
     <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center bg-black/40 backdrop-blur-md p-4 animate-in fade-in duration-200">
       <div className="bg-white dark:bg-[#1a1c26] w-full max-w-md rounded-[40px] p-6 shadow-2xl border border-white/50 dark:border-white/5 animate-in slide-in-from-bottom duration-300 max-h-[95vh] overflow-y-auto no-scrollbar">
 
-        <div className="flex justify-between items-center mb-4">
-          <div className="flex items-center gap-2">
+        <div className="flex justify-between items-center mb-6">
+          <div className="flex items-center gap-3">
             {step === 'details' && !editEntry && (
-              <button onClick={() => setStep('upload')} className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:hover:bg-white/5 transition-colors">
+              <button onClick={() => setStep('upload')} className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:hover:bg-white/10 transition-all active:scale-95">
                 <ChevronLeft size={24} className="text-gray-900 dark:text-gray-50" />
               </button>
             )}
-            <h2 className="text-2xl font-black text-gray-900 dark:text-gray-50 tracking-tight">
+            <h2 className="text-3xl font-black text-gray-900 dark:text-gray-50 tracking-tight">
               {editEntry ? 'Edit Record' : (step === 'upload' ? 'Track Meal' : 'Meal Receipt')}
             </h2>
           </div>
-          <button onClick={onClose} className="p-2 bg-gray-100 dark:bg-white/5 rounded-full hover:bg-gray-200 dark:hover:bg-white/10 transition-colors">
-            <X size={20} className="text-gray-600 dark:text-gray-400" />
+          <button onClick={onClose} className="p-2.5 bg-gray-100 dark:bg-white/10 rounded-full hover:bg-gray-200 dark:hover:bg-white/20 transition-all active:scale-90">
+            <X size={22} className="text-gray-600 dark:text-gray-400" />
           </button>
         </div>
 
         {error && (
-          <div className={`mb - 4 p - 4 rounded - 3xl flex flex - col gap - 3 animate -in shake - 1 duration - 300 ${isAiQuotaError ? 'bg-amber-50 dark:bg-amber-950/30 border border-amber-100 dark:border-amber-900/30 text-amber-700 dark:text-amber-400' :
-              isDbQuotaError || isBrowserQuotaError ? 'bg-orange-50 dark:bg-orange-950/30 border border-orange-100 dark:border-orange-900/30 text-orange-700 dark:text-orange-400' :
-                'bg-red-50 dark:bg-red-950/20 border border-red-100 dark:border-red-900/30 text-red-600 dark:text-red-400'
+          <div className={`mb-4 p-4 rounded-3xl flex flex-col gap-3 animate-in shake-1 duration-300 ${isAiQuotaError ? 'bg-amber-50 dark:bg-amber-950/30 border border-amber-100 dark:border-amber-900/30 text-amber-700 dark:text-amber-400' :
+            isDbQuotaError || isBrowserQuotaError ? 'bg-orange-50 dark:bg-orange-950/30 border border-orange-100 dark:border-orange-900/30 text-orange-700 dark:text-orange-400' :
+              'bg-red-50 dark:bg-red-950/20 border border-red-100 dark:border-red-900/30 text-red-600 dark:text-red-400'
             } `}>
             <div className="flex items-start gap-3">
               {isAiQuotaError ? <Hourglass className="shrink-0 mt-0.5" size={18} /> :
@@ -308,34 +309,34 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ onClose, onSuccess, 
 
         {step === 'upload' ? (
           <div className="space-y-6">
-            <div className="flex p-1 bg-gray-100 dark:bg-white/5 rounded-[20px]">
+            <div className="flex p-1.5 bg-gray-100/80 dark:bg-white/5 rounded-[24px] backdrop-blur-sm border border-black/5 dark:border-white/5">
               <button
                 onClick={() => setMode('scan')}
-                className={`flex - 1 py - 3 flex items - center justify - center gap - 2 rounded - [16px] text - xs font - bold transition - all ${mode === 'scan' ? 'bg-white dark:bg-royal-600 text-royal-700 dark:text-white shadow-sm' : 'text-gray-400 dark:text-gray-500 hover:text-gray-600'} `}
+                className={`flex-1 py-3.5 flex items-center justify-center gap-2 rounded-[18px] text-[13px] font-bold transition-all duration-300 ${mode === 'scan' ? 'bg-white dark:bg-royal-600 text-royal-600 dark:text-white shadow-[0_4px_12px_rgba(0,0,0,0.08)]' : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300'} `}
               >
-                <Camera size={16} />
-                Scan
+                <Camera size={18} className={mode === 'scan' ? 'animate-pulse' : ''} />
+                <span>Scan</span>
               </button>
               <button
                 onClick={() => setMode('chat')}
-                className={`flex - 1 py - 3 flex items - center justify - center gap - 2 rounded - [16px] text - xs font - bold transition - all ${mode === 'chat' ? 'bg-white dark:bg-royal-600 text-royal-700 dark:text-white shadow-sm' : 'text-gray-400 dark:text-gray-500 hover:text-gray-600'} `}
+                className={`flex-1 py-3.5 flex items-center justify-center gap-2 rounded-[18px] text-[13px] font-bold transition-all duration-300 ${mode === 'chat' ? 'bg-white dark:bg-royal-600 text-royal-600 dark:text-white shadow-[0_4px_12px_rgba(0,0,0,0.08)]' : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300'} `}
               >
-                <MessageSquare size={16} />
-                Chat
+                <MessageSquare size={18} />
+                <span>Chat</span>
               </button>
               <button
                 onClick={() => setMode('shared')}
-                className={`flex - 1 py - 3 flex items - center justify - center gap - 2 rounded - [16px] text - xs font - bold transition - all ${mode === 'shared' ? 'bg-white dark:bg-royal-600 text-royal-700 dark:text-white shadow-sm' : 'text-gray-400 dark:text-gray-500 hover:text-gray-600'} `}
+                className={`flex-1 py-3.5 flex items-center justify-center gap-2 rounded-[18px] text-[13px] font-bold transition-all duration-300 ${mode === 'shared' ? 'bg-white dark:bg-royal-600 text-royal-600 dark:text-white shadow-[0_4px_12px_rgba(0,0,0,0.08)]' : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300'} `}
               >
-                <Users size={16} />
-                Shared
+                <Users size={18} />
+                <span>Shared</span>
               </button>
               <button
                 onClick={() => setMode('recipe')}
-                className={`flex - 1 py - 3 flex items - center justify - center gap - 2 rounded - [16px] text - xs font - bold transition - all ${mode === 'recipe' ? 'bg-white dark:bg-royal-600 text-royal-700 dark:text-white shadow-sm' : 'text-gray-400 dark:text-gray-500 hover:text-gray-600'} `}
+                className={`flex-1 py-3.5 flex items-center justify-center gap-2 rounded-[18px] text-[13px] font-bold transition-all duration-300 ${mode === 'recipe' ? 'bg-white dark:bg-royal-600 text-royal-600 dark:text-white shadow-[0_4px_12px_rgba(0,0,0,0.08)]' : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300'} `}
               >
-                <ChefHat size={16} />
-                Recipe
+                <ChefHat size={18} />
+                <span>Recipe</span>
               </button>
             </div>
 
@@ -448,8 +449,12 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ onClose, onSuccess, 
             )}
 
             {mode !== 'recipe' && mode !== 'shared' && (
-              <button onClick={() => setStep('details')} className="w-full py-3 text-sm font-bold text-gray-400 dark:text-gray-600 hover:text-royal-500">
-                Enter Details Manually
+              <button
+                onClick={() => setStep('details')}
+                className="w-full py-4 text-sm font-bold text-gray-400 dark:text-gray-500 hover:text-royal-500 transition-all flex items-center justify-center gap-2 group"
+              >
+                <span>Enter Details Manually</span>
+                <ChevronLeft size={16} className="rotate-180 opacity-0 group-hover:opacity-100 transition-all transform -translate-x-1 group-hover:translate-x-0" />
               </button>
             )}
           </div>
@@ -568,7 +573,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ onClose, onSuccess, 
                 onClick={handleRecalculate}
                 isLoading={isRecalculating}
               >
-                <RefreshCw size={14} className={`mr - 2 ${isRecalculating ? 'animate-spin' : ''} `} />
+                <RefreshCw size={14} className={`mr-2 ${isRecalculating ? 'animate-spin' : ''} `} />
                 Recalculate Totals
               </Button>
             </div>
@@ -579,6 +584,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ onClose, onSuccess, 
           </div>
         )}
       </div>
+      <ScanningAnimation isActive={isProcessing} message={mode === 'chat' ? 'Analyzing Request...' : 'Analyzing Meal...'} />
     </div>
   );
 };

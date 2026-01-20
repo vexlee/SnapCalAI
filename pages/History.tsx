@@ -9,7 +9,7 @@ import { AddFoodModal } from '../components/AddFoodModal';
 import { Calendar as CalendarIcon, Filter, ChevronDown, ChevronRight, Loader2, Info, ChevronLeft } from 'lucide-react';
 import { getCurrentDateString } from '../utils/midnight';
 
-type ViewMode = 'week' | 'month';
+type ViewMode = 'day' | 'week' | 'month';
 
 // Lightweight summary type (no entries)
 interface DaySummaryLite {
@@ -24,7 +24,7 @@ export const History: React.FC = () => {
   const [summaries, setSummaries] = useState<DaySummaryLite[]>([]);
   const [dailyGoal, setDailyGoal] = useState(2000);
   const [isLoading, setIsLoading] = useState(true);
-  const [viewMode, setViewMode] = useState<ViewMode>('week');
+  const [viewMode, setViewMode] = useState<ViewMode>('day');
   const [selectedEntry, setSelectedEntry] = useState<FoodEntry | null>(null);
   const [selectedDaySummary, setSelectedDaySummary] = useState<DailySummary | null>(null);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -33,6 +33,17 @@ export const History: React.FC = () => {
   // New Layout States
   const [selectedDate, setSelectedDate] = useState<string>(getCurrentDateString());
   const [selectedMonth, setSelectedMonth] = useState<string>(new Date().toISOString().substring(0, 7)); // YYYY-MM
+  const [selectedWeek, setSelectedWeek] = useState<string>(() => {
+    const today = new Date();
+    const dayOfWeek = today.getDay();
+    const diffToMon = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+    const currentWeekMon = new Date(today);
+    currentWeekMon.setDate(today.getDate() + diffToMon);
+    const year = currentWeekMon.getFullYear();
+    const month = String(currentWeekMon.getMonth() + 1).padStart(2, '0');
+    const day = String(currentWeekMon.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  });
   const [isFullLogView, setIsFullLogView] = useState(false);
   const [expandedDays, setExpandedDays] = useState<Record<string, boolean>>({});
 
@@ -147,8 +158,8 @@ export const History: React.FC = () => {
 
   // Weekly/Monthly Selector Logic
   const scrollItems = useMemo(() => {
-    if (viewMode === 'week') {
-      // Weekly: Show all dates from 1st of current month to today
+    if (viewMode === 'day') {
+      // Daily: Show all dates from 1st of current month to today
       const days = [];
       const today = new Date();
       const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
@@ -156,8 +167,6 @@ export const History: React.FC = () => {
       // Generate dates from 1st to today
       for (let d = new Date(firstDayOfMonth); d <= today; d.setDate(d.getDate() + 1)) {
         // PERMANENT FIX: Use manual local date formatting. 
-        // d.toISOString() converts to UTC, causing off-by-one errors in positive timezones (e.g. Asia).
-        // constant year, month, day ensures we get the LOCAL date value.
         const year = d.getFullYear();
         const month = String(d.getMonth() + 1).padStart(2, '0');
         const day = String(d.getDate()).padStart(2, '0');
@@ -170,6 +179,40 @@ export const History: React.FC = () => {
         });
       }
       return days;
+    } else if (viewMode === 'week') {
+      // Weekly: Show last 8 weeks (Mon-Sun ranges)
+      const weeks = [];
+      const today = new Date();
+      // Find Monday of current week
+      const dayOfWeek = today.getDay(); // 0 (Sun) - 6 (Sat)
+      const diffToMon = dayOfWeek === 0 ? -6 : 1 - dayOfWeek; // Mon is 1
+      const currentWeekMon = new Date(today);
+      currentWeekMon.setDate(today.getDate() + diffToMon);
+
+      for (let i = 0; i < 8; i++) {
+        const start = new Date(currentWeekMon);
+        start.setDate(currentWeekMon.getDate() - (i * 7));
+        const end = new Date(start);
+        end.setDate(start.getDate() + 6);
+
+        // Format label "Jan 19 - 25"
+        const startLabel = start.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        const endLabel = end.toLocaleDateString('en-US', { day: 'numeric' });
+
+        // ID is start date YYYY-MM-DD
+        const year = start.getFullYear();
+        const month = String(start.getMonth() + 1).padStart(2, '0');
+        const day = String(start.getDate()).padStart(2, '0');
+        const id = `${year}-${month}-${day}`;
+
+        weeks.push({
+          id: id,
+          name: 'Week',
+          label: `${startLabel} - ${endLabel}`,
+          date: id,
+        });
+      }
+      return weeks.reverse(); // Show chronological
     } else {
       // Monthly: Only show months that have data
       const monthsWithData = new Set<string>();
@@ -192,18 +235,51 @@ export const History: React.FC = () => {
           date: monthKey,
         };
       });
-
     }
   }, [viewMode, summaries]);
 
   const activeSummary = useMemo(() => {
-    if (viewMode === 'week') {
+    if (viewMode === 'day') {
       return summaries.find(s => s.date === selectedDate) || {
         date: selectedDate,
         totalCalories: 0,
         totalProtein: 0,
         totalCarbs: 0,
         totalFat: 0,
+      };
+    } else if (viewMode === 'week') {
+      // Aggregate for the selected week (Mon-Sun)
+      if (!selectedWeek) return {
+        date: '', totalCalories: 0, totalProtein: 0, totalCarbs: 0, totalFat: 0
+      };
+
+      const start = new Date(selectedWeek);
+      const end = new Date(start);
+      end.setDate(start.getDate() + 6);
+
+      const startStr = selectedWeek; // YYYY-MM-DD
+      // Need end string? summaries store date as YYYY-MM-DD
+      // Filter summaries where date is >= start and <= end
+      // Simple string comparison works for ISO dates? Yes.
+
+      // Calculate end date string for comparison
+      const endYear = end.getFullYear();
+      const endMonth = String(end.getMonth() + 1).padStart(2, '0');
+      const endDay = String(end.getDate()).padStart(2, '0');
+      const endStr = `${endYear}-${endMonth}-${endDay}`;
+
+      const weekSummaries = summaries.filter(s => s.date >= startStr && s.date <= endStr);
+
+      const totals = weekSummaries.reduce((acc, curr) => ({
+        totalCalories: acc.totalCalories + curr.totalCalories,
+        totalProtein: acc.totalProtein + curr.totalProtein,
+        totalCarbs: acc.totalCarbs + curr.totalCarbs,
+        totalFat: acc.totalFat + curr.totalFat,
+      }), { totalCalories: 0, totalProtein: 0, totalCarbs: 0, totalFat: 0 });
+
+      return {
+        date: selectedWeek,
+        ...totals,
       };
     } else {
       // Aggregate for the selected month
@@ -220,27 +296,60 @@ export const History: React.FC = () => {
         ...totals,
       };
     }
-  }, [summaries, selectedDate, selectedMonth, viewMode]);
+  }, [summaries, selectedDate, selectedMonth, selectedWeek, viewMode]);
 
   const monthEntriesList = useMemo(() => {
-    if (viewMode !== 'month') return [];
-    // This is expensive if there are lots of entries, but we only have lite summaries here
-    // We would need to fetch all entries for the month if we wanted a full list
-    // For now, let's just show a simplified grouping or empty list if not fetched
+    if (viewMode === 'day') return [];
+
+    // Filter by date capability
+    const isInRange = (dateStr: string) => {
+      if (viewMode === 'month') return dateStr.startsWith(selectedMonth);
+      if (viewMode === 'week' && selectedWeek) {
+        try {
+          const [year, month, day] = selectedWeek.split('-').map(Number);
+          const start = new Date(year, month - 1, day);
+          const end = new Date(start);
+          end.setDate(start.getDate() + 6);
+
+          // Simple string comparison for YYYY-MM-DD works if formatted correctly
+          // But safer to compare timestamps or ensure formatting
+          const d = new Date(dateStr);
+          return d >= start && d <= end;
+        } catch (e) { return false; }
+      }
+      return false;
+    };
+
     const entries = Object.entries(dayEntries)
-      .filter(([date]) => date.startsWith(selectedMonth))
+      .filter(([date]) => isInRange(date))
       .flatMap(([_, items]) => items)
       .sort((a, b) => b.timestamp.localeCompare(a.timestamp));
     return entries;
-  }, [dayEntries, selectedMonth, viewMode]);
+  }, [dayEntries, selectedMonth, selectedWeek, viewMode]);
 
-  // Group monthly entries by date for toggle view
+  // Group entries by date for toggle view (Weeks & Months)
   const monthEntriesGrouped = useMemo(() => {
-    if (viewMode !== 'month') return {};
+    if (viewMode === 'day') return {};
+
+    const isInRange = (dateStr: string) => {
+      if (viewMode === 'month') return dateStr.startsWith(selectedMonth);
+      if (viewMode === 'week' && selectedWeek) {
+        try {
+          const [year, month, day] = selectedWeek.split('-').map(Number);
+          const start = new Date(year, month - 1, day);
+          const end = new Date(start);
+          end.setDate(start.getDate() + 6);
+          const d = new Date(dateStr);
+          return d >= start && d <= end;
+        } catch (e) { return false; }
+      }
+      return false;
+    };
+
     const grouped: Record<string, FoodEntry[]> = {};
 
     Object.entries(dayEntries)
-      .filter(([date]) => date.startsWith(selectedMonth))
+      .filter(([date]) => isInRange(date))
       .forEach(([date, entries]) => {
         if (entries.length > 0) {
           grouped[date] = entries.sort((a, b) => b.timestamp.localeCompare(a.timestamp));
@@ -248,7 +357,7 @@ export const History: React.FC = () => {
       });
 
     return grouped;
-  }, [dayEntries, selectedMonth, viewMode]);
+  }, [dayEntries, selectedMonth, selectedWeek, viewMode]);
 
   const toggleDayExpansion = (date: string) => {
     setExpandedDays(prev => ({ ...prev, [date]: !prev[date] }));
@@ -288,7 +397,7 @@ export const History: React.FC = () => {
           </div>
 
           <div className="space-y-4">
-            {viewMode === 'week' ? (
+            {viewMode === 'day' ? (
               loadingDays[selectedDate] ? (
                 <div className="space-y-4">
                   {[1, 2, 3, 4, 5].map(i => (
@@ -407,7 +516,7 @@ export const History: React.FC = () => {
               ) : (
                 <div className="bg-white dark:bg-[#1A1C26] rounded-[24px] p-12 text-center border border-dashed border-gray-200 dark:border-white/10">
                   <CalendarIcon size={32} className="mx-auto text-gray-200 dark:text-white/5 mb-4" />
-                  <p className="text-gray-400 dark:text-gray-500 text-sm font-medium">No data for this month.</p>
+                  <p className="text-gray-400 dark:text-gray-500 text-sm font-medium">No data for this {viewMode === 'month' ? 'month' : 'week'}.</p>
                 </div>
               )
             )}
@@ -434,6 +543,12 @@ export const History: React.FC = () => {
           <h1 className="text-2xl font-black text-gray-900 dark:text-gray-50 tracking-tight">Report</h1>
           <div className="flex p-1 bg-white dark:bg-[#1A1C26] rounded-xl border border-gray-100 dark:border-white/5 shadow-sm">
             <button
+              onClick={() => setViewMode('day')}
+              className={`px-3 py-1 rounded-lg text-[10px] font-bold transition-all ${viewMode === 'day' ? 'bg-royal-600 text-white shadow-sm' : 'text-gray-400 dark:text-gray-500 hover:text-royal-500'}`}
+            >
+              Daily
+            </button>
+            <button
               onClick={() => setViewMode('week')}
               className={`px-3 py-1 rounded-lg text-[10px] font-bold transition-all ${viewMode === 'week' ? 'bg-royal-600 text-white shadow-sm' : 'text-gray-400 dark:text-gray-500 hover:text-royal-500'}`}
             >
@@ -456,14 +571,33 @@ export const History: React.FC = () => {
             style={{ WebkitOverflowScrolling: 'touch' }}
           >
             {scrollItems.map((item) => {
-              const isSelected = viewMode === 'week' ? item.id === selectedDate : item.id === selectedMonth;
-              const hasData = summaries.some(s => viewMode === 'week' ? s.date === item.id : s.date.startsWith(item.id));
+              const isSelected = viewMode === 'day' ? item.id === selectedDate
+                : viewMode === 'week' ? item.id === selectedWeek
+                  : item.id === selectedMonth;
+
+              const hasData = summaries.some(s => {
+                if (viewMode === 'day') return s.date === item.id;
+                if (viewMode === 'week') {
+                  // Check if summary date falls in week range
+                  const [year, month, day] = item.id.split('-').map(Number);
+                  const start = new Date(year, month - 1, day);
+                  const end = new Date(start);
+                  end.setDate(start.getDate() + 6);
+                  const sDate = new Date(s.date);
+                  return sDate >= start && sDate <= end;
+                }
+                return s.date.startsWith(item.id);
+              });
 
               return (
                 <button
                   key={item.id}
-                  onClick={() => viewMode === 'week' ? setSelectedDate(item.id) : setSelectedMonth(item.id)}
-                  className={`flex-shrink-0 flex flex-col items-center justify-center w-12 py-3 rounded-2xl transition-all duration-300 snap-center ${isSelected
+                  onClick={() => {
+                    if (viewMode === 'day') setSelectedDate(item.id);
+                    else if (viewMode === 'week') setSelectedWeek(item.id);
+                    else setSelectedMonth(item.id);
+                  }}
+                  className={`flex-shrink-0 flex flex-col items-center justify-center ${viewMode === 'week' ? 'w-24' : 'w-12'} py-3 rounded-2xl transition-all duration-300 snap-center ${isSelected
                     ? 'bg-royal-600 text-white shadow-lg shadow-royal-200 dark:shadow-royal-900/40 transform scale-110'
                     : 'bg-white dark:bg-[#1A1C26] text-gray-400 dark:text-gray-500 border border-gray-100 dark:border-white/5'
                     }`}
@@ -488,7 +622,7 @@ export const History: React.FC = () => {
         <div className="mb-8">
           <div className="bg-white dark:bg-[#1A1C26] rounded-[28px] p-6 shadow-sm border border-gray-100 dark:border-white/5 flex flex-col items-center">
             <span className="text-[9px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-1">
-              {viewMode === 'week' ? 'Daily Total' : 'Monthly Total'}
+              {viewMode === 'day' ? 'Daily Total' : viewMode === 'week' ? 'Weekly Total' : 'Monthly Total'}
             </span>
             <div className="flex flex-col items-center mb-6">
               <span className="text-5xl font-black text-gray-900 dark:text-gray-50 tracking-tighter">
@@ -520,13 +654,13 @@ export const History: React.FC = () => {
         <div className="grid grid-cols-2 gap-4 mb-8">
           <Card className="p-5 flex flex-col justify-between h-36 bg-gradient-to-br from-royal-500 to-royal-700 text-white border-none shadow-royal-200/50">
             <div>
-              <p className="text-[10px] font-bold text-white/70 uppercase mb-1">{viewMode === 'week' ? 'Coach Tips' : 'Monthly Report'}</p>
+              <p className="text-[10px] font-bold text-white/70 uppercase mb-1">{viewMode === 'day' ? 'Coach Tips' : 'Report'}</p>
               <h3 className="text-lg font-black leading-tight">
-                {viewMode === 'week' ? 'Weekly Review' : <>Your Health<br />Summary</>}
+                {viewMode === 'day' ? 'Daily Review' : viewMode === 'week' ? 'Weekly Summary' : <>Your Health<br />Summary</>}
               </h3>
             </div>
             <div className="mt-2 py-2 bg-white/20 rounded-xl text-[10px] font-bold backdrop-blur-sm flex items-center justify-center gap-2">
-              {viewMode === 'week' ? 'COMING SOON' : 'VIEW DETAILS'}
+              {viewMode === 'day' ? 'COMING SOON' : 'VIEW DETAILS'}
               <ChevronRight size={12} />
             </div>
           </Card>

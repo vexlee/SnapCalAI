@@ -6,6 +6,7 @@ import { analyzeSharedMeal } from '../services/sharedMeal';
 import { DetectedDish, FoodEntry } from '../types';
 import { saveEntry } from '../services/storage';
 import { v4 as uuidv4 } from 'uuid';
+import { ScanningAnimation } from './ScanningAnimation';
 
 interface SharedMealModalProps {
     onClose: () => void;
@@ -317,13 +318,10 @@ export const SharedMealModal: React.FC<SharedMealModalProps> = ({ onClose, onSuc
                 )}
 
                 {step === 'analyzing' && (
-                    <div className="py-20 text-center">
-                        <div className="w-16 h-16 bg-royal-100 dark:bg-royal-950/30 rounded-full flex items-center justify-center mx-auto mb-4 animate-pulse">
-                            <TrendingUp size={32} className="text-royal-600 dark:text-royal-400" />
-                        </div>
-                        <p className="text-gray-900 dark:text-gray-50 font-bold mb-2">Analyzing dishes...</p>
-                        <p className="text-xs text-gray-400">This may take a few seconds</p>
-                    </div>
+                    <ScanningAnimation
+                        isActive={true}
+                        message="Analyzing Shared Meal..."
+                    />
                 )}
 
                 {step === 'selection' && preview && (
