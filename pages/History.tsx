@@ -131,7 +131,7 @@ export const History: React.FC = () => {
 
   // Update entries when selectedDate changes
   useEffect(() => {
-    if (selectedDate && viewMode === 'week') {
+    if (selectedDate && (viewMode === 'day' || viewMode === 'week')) {
       loadEntriesForDate(selectedDate);
     }
   }, [selectedDate, loadEntriesForDate, viewMode]);
@@ -675,7 +675,7 @@ export const History: React.FC = () => {
                 <ChevronRight size={10} className="text-gray-300" />
               </div>
               <p className="text-xs font-black text-gray-900 dark:text-gray-50">
-                {viewMode === 'week' ? (dayEntries[selectedDate] || []).length : monthEntriesList.length} Meals
+                {viewMode === 'day' ? (dayEntries[selectedDate] || []).length : monthEntriesList.length} Meals
               </p>
             </Card>
 
@@ -688,11 +688,11 @@ export const History: React.FC = () => {
                 <div className="flex-1 h-1 bg-gray-100 dark:bg-white/5 rounded-full overflow-hidden">
                   <div
                     className="h-full bg-royal-500 rounded-full"
-                    style={{ width: `${Math.min((activeSummary.totalCalories / (viewMode === 'week' ? dailyGoal : dailyGoal * 30)) * 100, 100)}%` }}
+                    style={{ width: `${Math.min((activeSummary.totalCalories / (viewMode === 'day' ? dailyGoal : viewMode === 'week' ? dailyGoal * 7 : dailyGoal * 30)) * 100, 100)}%` }}
                   />
                 </div>
                 <span className="text-[10px] font-black text-gray-900 dark:text-gray-50">
-                  {Math.round((activeSummary.totalCalories / (viewMode === 'week' ? dailyGoal : dailyGoal * 30)) * 100)}%
+                  {Math.round((activeSummary.totalCalories / (viewMode === 'day' ? dailyGoal : viewMode === 'week' ? dailyGoal * 7 : dailyGoal * 30)) * 100)}%
                 </span>
               </div>
             </Card>

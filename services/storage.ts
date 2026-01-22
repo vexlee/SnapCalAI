@@ -430,9 +430,9 @@ export const performDataCleanup = async (): Promise<void> => {
   const user = await getCurrentUser();
   if (!user) return;
 
-  const sevenDaysAgo = new Date();
-  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-  const thresholdDateStr = sevenDaysAgo.toISOString().split('T')[0];
+  const thirtyDaysAgo = new Date();
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+  const thresholdDateStr = thirtyDaysAgo.toISOString().split('T')[0];
 
   let oldEntries: FoodEntry[] = [];
   if (!shouldUseCloud) {
@@ -932,16 +932,16 @@ export const getTodayChatMessages = async (): Promise<ChatMessage[]> => {
 };
 
 /**
- * Clean up chat messages older than 7 days
+ * Clean up chat messages older than 30 days (one month)
  * Called automatically when loading chat history
  */
 export const cleanupOldChatMessages = async (): Promise<void> => {
   const user = await getCurrentUser();
   if (!user) return;
 
-  const sevenDaysAgo = new Date();
-  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-  const thresholdDate = sevenDaysAgo.toISOString().split('T')[0];
+  const thirtyDaysAgo = new Date();
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+  const thresholdDate = thirtyDaysAgo.toISOString().split('T')[0];
 
   if (!shouldUseCloud) {
     const messages = getLocalChatMessages();

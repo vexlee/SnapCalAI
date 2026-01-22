@@ -180,18 +180,18 @@ export const buildCoachContext = async (): Promise<CoachContext> => {
         context.todayCarbs = todayEntries.reduce((sum, e) => sum + e.carbs, 0);
         context.todayFat = todayEntries.reduce((sum, e) => sum + e.fat, 0);
 
-        // Group entries by date for last 7 days
-        const last7Days = new Map<string, FoodEntry[]>();
+        // Group entries by date for last 30 days
+        const last30Days = new Map<string, FoodEntry[]>();
         entries.forEach(entry => {
-            if (!last7Days.has(entry.date)) {
-                last7Days.set(entry.date, []);
+            if (!last30Days.has(entry.date)) {
+                last30Days.set(entry.date, []);
             }
-            last7Days.get(entry.date)!.push(entry);
+            last30Days.get(entry.date)!.push(entry);
         });
 
         // Calculate daily summaries
-        context.recentEntries = Array.from(last7Days.entries())
-            .slice(0, 7)
+        context.recentEntries = Array.from(last30Days.entries())
+            .slice(0, 30)
             .map(([date, dayEntries]) => ({
                 date,
                 totalCalories: dayEntries.reduce((sum, e) => sum + e.calories, 0),
@@ -258,7 +258,7 @@ const formatContextForAI = (context: CoachContext): string => {
     contextText += `- Fat: ${context.todayFat || 0}g\n`;
 
     if (context.recentEntries && context.recentEntries.length > 0) {
-        contextText += `\n**Last 7 Days Summary:**\n`;
+        contextText += `\n**Last 30 Days Summary:**\n`;
         context.recentEntries.forEach(day => {
             contextText += `\n${day.date}:\n`;
             contextText += `  - ${day.totalCalories} kcal | Protein: ${day.totalProtein}g | Carbs: ${day.totalCarbs}g | Fat: ${day.totalFat}g | Meals: ${day.entryCount}\n`;

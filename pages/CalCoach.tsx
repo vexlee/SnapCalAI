@@ -43,7 +43,7 @@ export const CalCoach: React.FC<CalCoachProps> = ({ onNavigate }) => {
                 return;
             }
 
-            // Cleanup old messages (7+ days)
+            // Cleanup old messages (30+ days)
             await cleanupOldChatMessages();
 
             // Load today's chat history
@@ -156,13 +156,13 @@ export const CalCoach: React.FC<CalCoachProps> = ({ onNavigate }) => {
             prevDate.setDate(prevDate.getDate() - 1);
             const prevDateStr = prevDate.toISOString().split('T')[0];
 
-            // Check if we've gone back 7 days
+            // Check if we've gone back 30 days
             const today = new Date().toISOString().split('T')[0];
             const daysDiff = Math.floor(
                 (new Date(today).getTime() - new Date(prevDateStr).getTime()) / (1000 * 60 * 60 * 24)
             );
 
-            if (daysDiff >= 7) {
+            if (daysDiff >= 30) {
                 setCanLoadMore(false);
                 return;
             }
@@ -372,7 +372,7 @@ export const CalCoach: React.FC<CalCoachProps> = ({ onNavigate }) => {
                     </div>
                 ))}
                 {/* Initial Phase Suggestion Cards - Centrally in Message List */}
-                {messages.length === 1 && messages[0].id === 'welcome' && !isLoading && (
+                {messages.length === 1 && messages[0].role === 'assistant' && !isLoading && (
                     <div className="grid grid-cols-1 gap-3 mt-4 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-300">
                         {[
                             { title: "Analyze Nutrition", desc: "Get insights on your recent eating habits", icon: "📊", text: "Analyze my recent nutrition", color: "from-blue-500/30 to-royal-500/30", baseBg: "bg-blue-50/40 dark:bg-blue-900/10", iconBg: "bg-blue-100 dark:bg-blue-900/40", iconBorder: "border-blue-200 dark:border-blue-700/50" },

@@ -243,30 +243,30 @@ export const Dashboard: React.FC = () => {
 
             {/* Macro Breakdown */}
             <div className="grid grid-cols-3 gap-3 mt-5 pt-4 border-t border-white/10">
-              <div className="flex flex-col items-center justify-center p-2 rounded-2xl bg-emerald-500/20 border border-emerald-400/20 shadow-sm relative overflow-hidden group">
-                <div className="absolute inset-0 bg-gradient-to-br from-emerald-400/10 to-transparent opacity-50" />
-                <p className="text-[9px] uppercase font-bold text-emerald-100 mb-0.5 relative z-10 tracking-wider">Protein</p>
+              <div className="flex flex-col items-center justify-center p-2 rounded-2xl bg-royal-800 border border-royal-700 shadow-sm relative overflow-hidden group">
+                <div className="absolute inset-0 bg-gradient-to-br from-royal-400/10 to-transparent opacity-50" />
+                <p className="text-[9px] uppercase font-bold text-royal-200 mb-0.5 relative z-10 tracking-wider">Protein</p>
                 <div className="flex items-baseline gap-0.5 relative z-10">
-                  <span className="text-xl font-black text-emerald-50 shadow-black/10 drop-shadow-sm">{todayProtein}</span>
-                  <span className="text-[10px] font-bold text-emerald-200/80">g</span>
+                  <span className="text-xl font-black text-white shadow-black/10 drop-shadow-sm">{todayProtein}</span>
+                  <span className="text-[10px] font-bold text-royal-300">g</span>
                 </div>
               </div>
 
-              <div className="flex flex-col items-center justify-center p-2 rounded-2xl bg-amber-500/20 border border-amber-400/20 shadow-sm relative overflow-hidden group">
-                <div className="absolute inset-0 bg-gradient-to-br from-amber-400/10 to-transparent opacity-50" />
-                <p className="text-[9px] uppercase font-bold text-amber-100 mb-0.5 relative z-10 tracking-wider">Carbs</p>
+              <div className="flex flex-col items-center justify-center p-2 rounded-2xl bg-royal-800 border border-royal-700 shadow-sm relative overflow-hidden group">
+                <div className="absolute inset-0 bg-gradient-to-br from-royal-400/10 to-transparent opacity-50" />
+                <p className="text-[9px] uppercase font-bold text-royal-200 mb-0.5 relative z-10 tracking-wider">Carbs</p>
                 <div className="flex items-baseline gap-0.5 relative z-10">
-                  <span className="text-xl font-black text-amber-50 shadow-black/10 drop-shadow-sm">{todayCarbs}</span>
-                  <span className="text-[10px] font-bold text-amber-200/80">g</span>
+                  <span className="text-xl font-black text-white shadow-black/10 drop-shadow-sm">{todayCarbs}</span>
+                  <span className="text-[10px] font-bold text-royal-300">g</span>
                 </div>
               </div>
 
-              <div className="flex flex-col items-center justify-center p-2 rounded-2xl bg-rose-500/20 border border-rose-400/20 shadow-sm relative overflow-hidden group">
-                <div className="absolute inset-0 bg-gradient-to-br from-rose-400/10 to-transparent opacity-50" />
-                <p className="text-[9px] uppercase font-bold text-rose-100 mb-0.5 relative z-10 tracking-wider">Fat</p>
+              <div className="flex flex-col items-center justify-center p-2 rounded-2xl bg-royal-800 border border-royal-700 shadow-sm relative overflow-hidden group">
+                <div className="absolute inset-0 bg-gradient-to-br from-royal-400/10 to-transparent opacity-50" />
+                <p className="text-[9px] uppercase font-bold text-royal-200 mb-0.5 relative z-10 tracking-wider">Fat</p>
                 <div className="flex items-baseline gap-0.5 relative z-10">
-                  <span className="text-xl font-black text-rose-50 shadow-black/10 drop-shadow-sm">{todayFat}</span>
-                  <span className="text-[10px] font-bold text-rose-200/80">g</span>
+                  <span className="text-xl font-black text-white shadow-black/10 drop-shadow-sm">{todayFat}</span>
+                  <span className="text-[10px] font-bold text-royal-300">g</span>
                 </div>
               </div>
             </div>
