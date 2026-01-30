@@ -48,6 +48,7 @@ export interface UserProfile {
   activityLevel?: 'sedentary' | 'light' | 'moderate' | 'very' | 'extra';
   goal?: 'cut' | 'bulk' | 'maintain';
   equipmentAccess?: 'gym' | 'home' | 'bodyweight';
+  targetWeight?: number;
 }
 
 export enum AppView {
@@ -72,6 +73,7 @@ export interface DailyWorkout {
   id?: string; // Unique identifier for each workout plan
   date: string;
   title: string;
+  workoutTypeId?: string; // Reference to workout type for icon/color
   exercises: WorkoutExercise[];
 }
 
@@ -100,4 +102,53 @@ export interface SharedMealAnalysis {
 export interface SelectedPortion {
   dishIndex: number;
   percentage: number;
+}
+
+// --- Engagement System Types ---
+
+export interface StreakData {
+  currentStreak: number;
+  longestStreak: number;
+  lastLogDate: string | null;
+  streakFreezes: number;
+  lastFreezeUsedDate: string | null;
+  qualifyingDates: string[];
+}
+
+export interface WeightGoal {
+  startWeight: number;
+  targetWeight: number;
+  dailyCalorieLimit: number;
+}
+
+// --- Coach Reports Types ---
+
+export interface CoachReportTip {
+  emoji: string;
+  title: string;
+  description: string;
+}
+
+export interface CoachReportMetrics {
+  avgCalories: number;
+  avgProtein: number;
+  avgCarbs: number;
+  avgFat: number;
+  totalMeals: number;
+  workoutsCompleted: number;
+  daysTracked: number;
+  calorieGoalHitRate: number; // percentage 0-100
+}
+
+export interface CoachReport {
+  id: string;
+  userId: string;
+  reportType: 'daily' | 'weekly' | 'monthly';
+  periodStart: string;  // YYYY-MM-DD
+  periodEnd: string;    // YYYY-MM-DD
+  summary: string;
+  tips: CoachReportTip[];
+  metrics: CoachReportMetrics;
+  weightAtReport?: number;
+  createdAt: string;
 }

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Plus, Sparkles, User, PenTool, Edit2, AlertTriangle, Utensils, TrendingUp, Users } from 'lucide-react';
+import { Plus, Sparkles, User, PenTool, Edit2, AlertTriangle, Utensils, TrendingUp, Users, Flame, Target } from 'lucide-react';
 import { Card } from '../components/ui/Card';
 import { getEntries, deleteEntry, getDailyGoal, saveDailyGoal, getUserProfile, getDailySummaries } from '../services/storage';
 import { FoodEntry, DailySummary } from '../types';
@@ -8,6 +8,8 @@ import { EditGoalModal } from '../components/EditGoalModal';
 import { MealDetailModal } from '../components/MealDetailModal';
 import { SharedMealModal } from '../components/SharedMealModal';
 import { getCurrentDateString } from '../utils/midnight';
+import { Avatar } from '../components/Avatar';
+import { getStreakData, predictWeightGoal, formatPredictionMessage, WeightPrediction } from '../services/streak';
 
 export const Dashboard: React.FC = () => {
   const [entries, setEntries] = useState<FoodEntry[]>([]);
@@ -26,6 +28,10 @@ export const Dashboard: React.FC = () => {
   const [userName, setUserName] = useState('');
   const [showSharedMealModal, setShowSharedMealModal] = useState(false);
   const [initialSharedImage, setInitialSharedImage] = useState<string | null>(null);
+  // Engagement system state
+  const [currentStreak, setCurrentStreak] = useState(0);
+  const [weightPrediction, setWeightPrediction] = useState<WeightPrediction | null>(null);
+  const [showAvatarTooltip, setShowAvatarTooltip] = useState(false);
 
   const loadData = async () => {
     try {
@@ -48,6 +54,13 @@ export const Dashboard: React.FC = () => {
         setUserName(profile.name);
       }
 
+      // Load engagement system data
+      const streakData = await getStreakData();
+      setCurrentStreak(streakData.currentStreak);
+
+      const prediction = await predictWeightGoal();
+      setWeightPrediction(prediction);
+
     } catch (error) {
       console.error("Failed to load dashboard data", error);
     } finally {
@@ -62,6 +75,10 @@ export const Dashboard: React.FC = () => {
     const handleUpdate = () => loadData();
     window.addEventListener('food-entry-updated', handleUpdate);
 
+    // Listener for streak updates
+    const handleStreakUpdate = () => loadData();
+    window.addEventListener('streak-updated', handleStreakUpdate);
+
     // Listener for midnight refresh
     const handleMidnightRefresh = () => {
       console.log('📊 Dashboard: Midnight detected, reloading data...');
@@ -71,6 +88,7 @@ export const Dashboard: React.FC = () => {
 
     return () => {
       window.removeEventListener('food-entry-updated', handleUpdate);
+      window.removeEventListener('streak-updated', handleStreakUpdate);
       window.removeEventListener('midnight-refresh', handleMidnightRefresh);
     };
   }, []);
@@ -178,10 +196,35 @@ export const Dashboard: React.FC = () => {
               Hello {userName || 'there'}, <br />Let's Eat Well.
             </h1>
           </div>
-          <div className="w-12 h-12 bg-royal-100 dark:bg-royal-950/30 rounded-full flex items-center justify-center text-royal-600 dark:text-royal-400 shadow-sm border border-white dark:border-white/5">
-            <Utensils size={20} />
+          {/* Virtual Avatar */}
+          <div
+            className="relative"
+            onMouseEnter={() => setShowAvatarTooltip(true)}
+            onMouseLeave={() => setShowAvatarTooltip(false)}
+          >
+            <Avatar size="md" showStatus={showAvatarTooltip} />
           </div>
         </header>
+
+        {/* Streak Counter Badge */}
+        {currentStreak > 0 && (
+          <div className="flex items-center gap-2 bg-gradient-to-r from-orange-500 to-amber-500 text-white px-4 py-2.5 rounded-2xl shadow-lg shadow-orange-200 dark:shadow-orange-900/30 animate-in slide-in-from-left duration-500">
+            <Flame size={20} className="animate-pulse" />
+            <div>
+              <span className="text-xl font-extrabold">{currentStreak}</span>
+              <span className="ml-1.5 text-sm font-bold text-white/90">day streak!</span>
+            </div>
+            {currentStreak >= 7 && currentStreak < 14 && (
+              <span className="ml-2 text-xs bg-white/20 px-2 py-0.5 rounded-full">🔥 Keep it up!</span>
+            )}
+            {currentStreak >= 14 && currentStreak < 30 && (
+              <span className="ml-2 text-xs bg-white/20 px-2 py-0.5 rounded-full">🚀 On fire!</span>
+            )}
+            {currentStreak >= 30 && (
+              <span className="ml-2 text-xs bg-white/20 px-2 py-0.5 rounded-full">👑 Legend!</span>
+            )}
+          </div>
+        )}
 
         {/* Hero Stats Card - Royal Purple */}
         <div className={`relative rounded-[32px] p-6 text-white overflow-hidden shadow-xl transition-all duration-500 ${todayCalories > dailyGoal ? 'bg-red-500 shadow-red-200 dark:shadow-red-900/40' : 'bg-royal-600 shadow-royal-200 dark:shadow-royal-900/40'}`}>
@@ -270,6 +313,34 @@ export const Dashboard: React.FC = () => {
                 </div>
               </div>
             </div>
+
+            {/* Weight Goal Progress */}
+            {weightPrediction && weightPrediction.daysRemaining > 0 && (
+              <div className="mt-5 pt-4 border-t border-white/10">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2">
+                    <Target size={14} className="text-white/70" />
+                    <span className="text-xs font-bold text-white/70 uppercase tracking-wider">Weight Goal</span>
+                  </div>
+                  <span className="text-xs font-bold text-white/90">
+                    {weightPrediction.currentWeight}kg → {weightPrediction.targetWeight}kg
+                  </span>
+                </div>
+
+                {/* Progress bar */}
+                <div className="w-full bg-white/10 rounded-full h-2 mb-2 overflow-hidden">
+                  <div
+                    className="h-full rounded-full bg-gradient-to-r from-emerald-400 to-green-500 transition-all duration-1000"
+                    style={{ width: `${weightPrediction.progressPercentage}%` }}
+                  />
+                </div>
+
+                {/* Prediction message */}
+                <p className="text-xs text-white/80 font-medium leading-relaxed">
+                  {formatPredictionMessage(weightPrediction)}
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </div>

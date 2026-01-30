@@ -595,7 +595,7 @@ export const getUserProfile = async (): Promise<UserProfile | null> => {
 
     const { data, error } = await supabase
       .from('user_profiles')
-      .select('name, height, weight, age, gender, activity_level, goal, equipment_access')
+      .select('name, height, weight, age, gender, activity_level, goal, equipment_access, target_weight')
       .eq('user_id', user.id)
       .single();
 
@@ -609,7 +609,8 @@ export const getUserProfile = async (): Promise<UserProfile | null> => {
       gender: data.gender,
       activityLevel: data.activity_level,
       goal: data.goal,
-      equipmentAccess: data.equipment_access
+      equipmentAccess: data.equipment_access,
+      targetWeight: data.target_weight
     };
   }, 10 * 60 * 1000); // Cache for 10 minutes
 };
@@ -638,7 +639,8 @@ export const saveUserProfile = async (profile: UserProfile): Promise<void> => {
       gender: profile.gender,
       activity_level: profile.activityLevel,
       goal: profile.goal,
-      equipment_access: profile.equipmentAccess
+      equipment_access: profile.equipmentAccess,
+      target_weight: profile.targetWeight
     }, { onConflict: 'user_id' });
 
   if (error) handleStorageError(error, "Save Profile");
@@ -1000,7 +1002,8 @@ export const saveWorkoutPlan = async (
   date: string,
   title: string,
   exercises: WorkoutExercise[],
-  workoutId?: string // Optional: provide existing ID for updates
+  workoutId?: string, // Optional: provide existing ID for updates
+  workoutTypeId?: string // Optional: reference to workout type for icon/color
 ): Promise<string> => {
   const user = await getCurrentUser();
   if (!user) {
@@ -1016,6 +1019,7 @@ export const saveWorkoutPlan = async (
     user_id: user.id,
     date,
     title,
+    workout_type_id: workoutTypeId,
     exercises
   };
 
@@ -1042,6 +1046,7 @@ export const saveWorkoutPlan = async (
           user_id: user.id,
           date,
           title,
+          workout_type_id: workoutTypeId,
           exercises
         });
 

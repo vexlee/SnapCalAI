@@ -113,6 +113,10 @@ export const CACHE_KEYS = {
     DAILY_SUMMARIES_LITE: 'food:summaries:lite',
     DAILY_GOAL: 'user:goal',
     USER_PROFILE: 'user:profile',
+    // Engagement system keys
+    STREAK_DATA: 'user:streak',
+    AVATAR_STATE: 'user:avatar',
+    WEIGHT_GOAL: 'user:weight-goal',
     // Dynamic keys
     entriesForDate: (date: string) => `food:entries:${date}`,
     entryImage: (id: string) => `food:image:${id}`,

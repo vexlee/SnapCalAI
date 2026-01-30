@@ -7,6 +7,8 @@ import { saveEntry } from '../services/storage';
 import { FoodEntry } from '../types';
 import { v4 as uuidv4 } from 'uuid';
 import { ScanningAnimation } from './ScanningAnimation';
+import { updateStreak } from '../services/streak';
+import { triggerFeedAnimation } from '../services/avatar';
 
 interface AddFoodModalProps {
   onClose: () => void;
@@ -242,6 +244,11 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ onClose, onSuccess, 
       setIsSaving(true);
       setError(null);
       await saveEntry(newEntry);
+
+      // Trigger engagement system updates
+      await updateStreak();
+      triggerFeedAnimation();
+
       onSuccess();
     } catch (err: any) {
       console.error("Save failed:", err);

@@ -1,12 +1,15 @@
 import React, { useEffect, useState, useCallback, useMemo, useRef } from 'react';
 import { getDailySummariesLite, getEntriesForDateLite, getEntryImage, deleteEntry, getDailyGoal } from '../services/storage';
-import { DailySummary, FoodEntry } from '../types';
+import { DailySummary, FoodEntry, CoachReport } from '../types';
 import { Card } from '../components/ui/Card';
 import { BarChart, Bar, XAxis, Tooltip, ResponsiveContainer, Cell, ReferenceLine, ComposedChart, Area } from 'recharts';
 import { MealDetailModal } from '../components/MealDetailModal';
 import { DailySummaryModal } from '../components/DailySummaryModal';
 import { AddFoodModal } from '../components/AddFoodModal';
-import { Calendar as CalendarIcon, Filter, ChevronDown, ChevronRight, Loader2, Info, ChevronLeft } from 'lucide-react';
+import { WeightCheckModal } from '../components/WeightCheckModal';
+import { CoachTipsModal } from '../components/CoachTipsModal';
+import { getOrGenerateReport, calculatePeriodDates } from '../services/reports';
+import { Calendar as CalendarIcon, Filter, ChevronDown, ChevronRight, Loader2, Info, ChevronLeft, Sparkles } from 'lucide-react';
 import { getCurrentDateString } from '../utils/midnight';
 
 type ViewMode = 'day' | 'week' | 'month';
@@ -29,6 +32,13 @@ export const History: React.FC = () => {
   const [selectedDaySummary, setSelectedDaySummary] = useState<DailySummary | null>(null);
   const [showEditModal, setShowEditModal] = useState(false);
   const [entryToEdit, setEntryToEdit] = useState<FoodEntry | null>(null);
+
+  // Coach Tips States
+  const [showWeightCheck, setShowWeightCheck] = useState(false);
+  const [showCoachTips, setShowCoachTips] = useState(false);
+  const [currentReport, setCurrentReport] = useState<CoachReport | null>(null);
+  const [isLoadingReport, setIsLoadingReport] = useState(false);
+  const [isRegeneratingReport, setIsRegeneratingReport] = useState(false);
 
   // New Layout States
   const [selectedDate, setSelectedDate] = useState<string>(getCurrentDateString());
@@ -147,6 +157,48 @@ export const History: React.FC = () => {
     setSelectedEntry(null);
     setEntryToEdit(entry);
     setShowEditModal(true);
+  };
+
+  // Coach Tips Handlers
+  const handleWeightConfirm = async (weight: number) => {
+    setShowWeightCheck(false);
+    setIsLoadingReport(true);
+
+    try {
+      // Determine period based on view mode
+      const reportType = viewMode === 'day' ? 'daily' : viewMode === 'week' ? 'weekly' : 'monthly';
+      const reference = viewMode === 'day' ? selectedDate : viewMode === 'week' ? selectedWeek : selectedMonth;
+      const { start, end } = calculatePeriodDates(reportType, reference);
+
+      const report = await getOrGenerateReport(reportType, start, end, false, weight);
+      setCurrentReport(report);
+      setShowCoachTips(true);
+    } catch (error) {
+      console.error('Failed to generate report:', error);
+      alert('Failed to generate AI report. Please try again.');
+    } finally {
+      setIsLoadingReport(false);
+    }
+  };
+
+  const handleRegenerateReport = async () => {
+    if (!currentReport) return;
+
+    setIsRegeneratingReport(true);
+    try {
+      const report = await getOrGenerateReport(
+        currentReport.reportType,
+        currentReport.periodStart,
+        currentReport.periodEnd,
+        true // Force regenerate
+      );
+      setCurrentReport(report);
+    } catch (error) {
+      console.error('Failed to regenerate report:', error);
+      alert('Failed to regenerate report. Please try again.');
+    } finally {
+      setIsRegeneratingReport(false);
+    }
   };
 
   const getEntryWithImage = (entry: FoodEntry): FoodEntry => {
@@ -652,16 +704,28 @@ export const History: React.FC = () => {
 
         {/* Improved Grid with History Card */}
         <div className="grid grid-cols-2 gap-4 mb-8">
-          <Card className="p-5 flex flex-col justify-between h-36 bg-gradient-to-br from-royal-500 to-royal-700 text-white border-none shadow-royal-200/50">
+          <Card
+            onClick={() => setShowWeightCheck(true)}
+            className="p-5 flex flex-col justify-between h-36 bg-gradient-to-br from-royal-500 to-royal-700 text-white border-none shadow-royal-200/50 cursor-pointer active:scale-[0.98] transition-transform"
+          >
             <div>
-              <p className="text-[10px] font-bold text-white/70 uppercase mb-1">{viewMode === 'day' ? 'Coach Tips' : 'Report'}</p>
+              <div className="flex items-center gap-1.5 mb-1">
+                <Sparkles size={12} className="text-white/70" />
+                <p className="text-[10px] font-bold text-white/70 uppercase">{viewMode === 'day' ? 'Coach Tips' : 'Report'}</p>
+              </div>
               <h3 className="text-lg font-black leading-tight">
                 {viewMode === 'day' ? 'Daily Review' : viewMode === 'week' ? 'Weekly Summary' : <>Your Health<br />Summary</>}
               </h3>
             </div>
             <div className="mt-2 py-2 bg-white/20 rounded-xl text-[10px] font-bold backdrop-blur-sm flex items-center justify-center gap-2">
-              {viewMode === 'day' ? 'COMING SOON' : 'VIEW DETAILS'}
-              <ChevronRight size={12} />
+              {isLoadingReport ? (
+                <Loader2 size={12} className="animate-spin" />
+              ) : (
+                <>
+                  VIEW INSIGHTS
+                  <ChevronRight size={12} />
+                </>
+              )}
             </div>
           </Card>
 
@@ -734,6 +798,28 @@ export const History: React.FC = () => {
             // No-op or redirect to SharedMeal handled elsewhere if needed
             setShowEditModal(false);
           }}
+        />
+      )}
+
+      {/* Weight Check Modal */}
+      {showWeightCheck && (
+        <WeightCheckModal
+          onClose={() => setShowWeightCheck(false)}
+          onConfirm={handleWeightConfirm}
+        />
+      )}
+
+      {/* Coach Tips Modal */}
+      {showCoachTips && currentReport && (
+        <CoachTipsModal
+          report={currentReport}
+          reportType={currentReport.reportType}
+          onClose={() => {
+            setShowCoachTips(false);
+            setCurrentReport(null);
+          }}
+          onRegenerate={handleRegenerateReport}
+          isRegenerating={isRegeneratingReport}
         />
       )}
     </div>

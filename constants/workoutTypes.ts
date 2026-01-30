@@ -1,0 +1,242 @@
+import { WorkoutExercise } from '../types';
+
+export interface WorkoutType {
+    id: string;
+    name: string;
+    icon: string;      // Lucide icon name
+    color: string;     // Primary color class
+    bgColor: string;   // Background color class
+    category: 'strength' | 'cardio' | 'flexibility' | 'sports';
+    defaultExercises: Omit<WorkoutExercise, 'id' | 'completed'>[];
+}
+
+export const WORKOUT_TYPES: WorkoutType[] = [
+    // === STRENGTH ===
+    {
+        id: 'upper-body',
+        name: 'Upper Body',
+        icon: 'Dumbbell',
+        color: 'text-orange-600 dark:text-orange-400',
+        bgColor: 'bg-orange-500',
+        category: 'strength',
+        defaultExercises: [
+            { name: 'Bench Press', sets: 4, reps: '8-10', rest: '90s' },
+            { name: 'Shoulder Press', sets: 3, reps: '10-12', rest: '60s' },
+            { name: 'Bent Over Row', sets: 4, reps: '8-10', rest: '90s' },
+            { name: 'Bicep Curls', sets: 3, reps: '12-15', rest: '45s' },
+            { name: 'Tricep Dips', sets: 3, reps: '10-12', rest: '45s' },
+        ]
+    },
+    {
+        id: 'lower-body',
+        name: 'Lower Body',
+        icon: 'Footprints',
+        color: 'text-red-600 dark:text-red-400',
+        bgColor: 'bg-red-500',
+        category: 'strength',
+        defaultExercises: [
+            { name: 'Squats', sets: 4, reps: '8-10', rest: '90s' },
+            { name: 'Romanian Deadlift', sets: 3, reps: '10-12', rest: '90s' },
+            { name: 'Leg Press', sets: 3, reps: '12-15', rest: '60s' },
+            { name: 'Lunges', sets: 3, reps: '10 each leg', rest: '60s' },
+            { name: 'Calf Raises', sets: 4, reps: '15-20', rest: '45s' },
+        ]
+    },
+    {
+        id: 'core',
+        name: 'Core',
+        icon: 'Target',
+        color: 'text-purple-600 dark:text-purple-400',
+        bgColor: 'bg-purple-500',
+        category: 'strength',
+        defaultExercises: [
+            { name: 'Plank', sets: 3, reps: '60s hold', rest: '30s' },
+            { name: 'Russian Twists', sets: 3, reps: '20 total', rest: '30s' },
+            { name: 'Bicycle Crunches', sets: 3, reps: '20 total', rest: '30s' },
+            { name: 'Leg Raises', sets: 3, reps: '12-15', rest: '30s' },
+            { name: 'Dead Bug', sets: 3, reps: '10 each side', rest: '30s' },
+        ]
+    },
+    {
+        id: 'full-body',
+        name: 'Full Body',
+        icon: 'Zap',
+        color: 'text-amber-600 dark:text-amber-400',
+        bgColor: 'bg-amber-500',
+        category: 'strength',
+        defaultExercises: [
+            { name: 'Deadlift', sets: 4, reps: '6-8', rest: '120s' },
+            { name: 'Pull-ups', sets: 3, reps: '8-10', rest: '90s' },
+            { name: 'Push-ups', sets: 3, reps: '15-20', rest: '60s' },
+            { name: 'Goblet Squat', sets: 3, reps: '12-15', rest: '60s' },
+            { name: 'Plank', sets: 3, reps: '45s hold', rest: '30s' },
+        ]
+    },
+
+    // === CARDIO ===
+    {
+        id: 'running',
+        name: 'Running',
+        icon: 'PersonStanding',
+        color: 'text-green-600 dark:text-green-400',
+        bgColor: 'bg-green-500',
+        category: 'cardio',
+        defaultExercises: [
+            { name: 'Warm-up Jog', sets: 1, reps: '5 min', rest: '0s' },
+            { name: 'Interval Sprints', sets: 6, reps: '30s sprint', rest: '60s' },
+            { name: 'Steady Run', sets: 1, reps: '15 min', rest: '0s' },
+            { name: 'Cool-down Walk', sets: 1, reps: '5 min', rest: '0s' },
+        ]
+    },
+    {
+        id: 'hiit',
+        name: 'HIIT',
+        icon: 'Flame',
+        color: 'text-rose-600 dark:text-rose-400',
+        bgColor: 'bg-rose-500',
+        category: 'cardio',
+        defaultExercises: [
+            { name: 'Burpees', sets: 4, reps: '10', rest: '30s' },
+            { name: 'Mountain Climbers', sets: 4, reps: '20', rest: '30s' },
+            { name: 'Jump Squats', sets: 4, reps: '15', rest: '30s' },
+            { name: 'High Knees', sets: 4, reps: '30s', rest: '30s' },
+            { name: 'Box Jumps', sets: 3, reps: '10', rest: '45s' },
+        ]
+    },
+    {
+        id: 'cycling',
+        name: 'Cycling',
+        icon: 'Bike',
+        color: 'text-cyan-600 dark:text-cyan-400',
+        bgColor: 'bg-cyan-500',
+        category: 'cardio',
+        defaultExercises: [
+            { name: 'Warm-up Ride', sets: 1, reps: '5 min', rest: '0s' },
+            { name: 'Hill Climbs', sets: 4, reps: '3 min', rest: '2 min' },
+            { name: 'Flat Sprints', sets: 6, reps: '1 min', rest: '1 min' },
+            { name: 'Endurance Pace', sets: 1, reps: '20 min', rest: '0s' },
+            { name: 'Cool-down', sets: 1, reps: '5 min', rest: '0s' },
+        ]
+    },
+    {
+        id: 'walking',
+        name: 'Walking',
+        icon: 'Footprints',
+        color: 'text-teal-600 dark:text-teal-400',
+        bgColor: 'bg-teal-500',
+        category: 'cardio',
+        defaultExercises: [
+            { name: 'Brisk Walk', sets: 1, reps: '30 min', rest: '0s' },
+            { name: 'Incline Walk', sets: 3, reps: '5 min', rest: '2 min' },
+            { name: 'Power Walk', sets: 2, reps: '10 min', rest: '5 min' },
+        ]
+    },
+
+    // === FLEXIBILITY ===
+    {
+        id: 'yoga',
+        name: 'Yoga',
+        icon: 'Leaf',
+        color: 'text-emerald-600 dark:text-emerald-400',
+        bgColor: 'bg-emerald-500',
+        category: 'flexibility',
+        defaultExercises: [
+            { name: 'Sun Salutation', sets: 3, reps: '5 breaths each', rest: '0s' },
+            { name: 'Warrior Poses', sets: 2, reps: '5 breaths each', rest: '0s' },
+            { name: 'Downward Dog', sets: 3, reps: '30s hold', rest: '0s' },
+            { name: 'Child\'s Pose', sets: 2, reps: '1 min', rest: '0s' },
+            { name: 'Savasana', sets: 1, reps: '5 min', rest: '0s' },
+        ]
+    },
+    {
+        id: 'stretching',
+        name: 'Stretching',
+        icon: 'Sparkles',
+        color: 'text-sky-600 dark:text-sky-400',
+        bgColor: 'bg-sky-500',
+        category: 'flexibility',
+        defaultExercises: [
+            { name: 'Neck Stretches', sets: 2, reps: '30s each side', rest: '0s' },
+            { name: 'Shoulder Stretch', sets: 2, reps: '30s each', rest: '0s' },
+            { name: 'Hamstring Stretch', sets: 2, reps: '45s each leg', rest: '0s' },
+            { name: 'Hip Flexor Stretch', sets: 2, reps: '45s each', rest: '0s' },
+            { name: 'Quad Stretch', sets: 2, reps: '30s each leg', rest: '0s' },
+        ]
+    },
+    {
+        id: 'pilates',
+        name: 'Pilates',
+        icon: 'Waves',
+        color: 'text-indigo-600 dark:text-indigo-400',
+        bgColor: 'bg-indigo-500',
+        category: 'flexibility',
+        defaultExercises: [
+            { name: 'The Hundred', sets: 1, reps: '100 pumps', rest: '30s' },
+            { name: 'Roll Up', sets: 8, reps: '1 rep', rest: '0s' },
+            { name: 'Single Leg Circles', sets: 2, reps: '10 each leg', rest: '0s' },
+            { name: 'Swimming', sets: 3, reps: '30s', rest: '15s' },
+            { name: 'Spine Stretch', sets: 3, reps: '5 reps', rest: '0s' },
+        ]
+    },
+
+    // === SPORTS ===
+    {
+        id: 'swimming',
+        name: 'Swimming',
+        icon: 'Waves',
+        color: 'text-blue-600 dark:text-blue-400',
+        bgColor: 'bg-blue-500',
+        category: 'sports',
+        defaultExercises: [
+            { name: 'Freestyle', sets: 4, reps: '100m', rest: '30s' },
+            { name: 'Backstroke', sets: 3, reps: '50m', rest: '30s' },
+            { name: 'Breaststroke', sets: 3, reps: '50m', rest: '30s' },
+            { name: 'Kickboard Drills', sets: 4, reps: '50m', rest: '20s' },
+            { name: 'Cool-down Swim', sets: 1, reps: '200m easy', rest: '0s' },
+        ]
+    },
+    {
+        id: 'martial-arts',
+        name: 'Martial Arts',
+        icon: 'Sword',
+        color: 'text-slate-600 dark:text-slate-400',
+        bgColor: 'bg-slate-500',
+        category: 'sports',
+        defaultExercises: [
+            { name: 'Shadow Boxing', sets: 3, reps: '3 min', rest: '1 min' },
+            { name: 'Bag Work', sets: 4, reps: '3 min', rest: '1 min' },
+            { name: 'Kicks Practice', sets: 3, reps: '20 each leg', rest: '30s' },
+            { name: 'Footwork Drills', sets: 3, reps: '2 min', rest: '30s' },
+            { name: 'Cool-down Stretch', sets: 1, reps: '5 min', rest: '0s' },
+        ]
+    },
+    {
+        id: 'dance',
+        name: 'Dance',
+        icon: 'Music',
+        color: 'text-pink-600 dark:text-pink-400',
+        bgColor: 'bg-pink-500',
+        category: 'sports',
+        defaultExercises: [
+            { name: 'Warm-up Dance', sets: 1, reps: '5 min', rest: '0s' },
+            { name: 'Choreography Practice', sets: 3, reps: '10 min', rest: '2 min' },
+            { name: 'Freestyle', sets: 2, reps: '5 min', rest: '1 min' },
+            { name: 'Cool-down Stretch', sets: 1, reps: '5 min', rest: '0s' },
+        ]
+    },
+];
+
+export const WORKOUT_CATEGORIES = [
+    { id: 'strength', name: 'Strength', icon: 'Dumbbell' },
+    { id: 'cardio', name: 'Cardio', icon: 'Heart' },
+    { id: 'flexibility', name: 'Flexibility', icon: 'Leaf' },
+    { id: 'sports', name: 'Sports', icon: 'Trophy' },
+] as const;
+
+export const getWorkoutTypeById = (id: string): WorkoutType | undefined => {
+    return WORKOUT_TYPES.find(type => type.id === id);
+};
+
+export const getWorkoutTypesByCategory = (category: string): WorkoutType[] => {
+    return WORKOUT_TYPES.filter(type => type.category === category);
+};

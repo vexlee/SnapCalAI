@@ -289,7 +289,7 @@ export const sendCoachMessage = async (
         const fullPrompt = `${formatContextForAI(context)}${historyText ? `**Recent Conversation:**\n${historyText}\n\n` : ''}**User's Current Message:**\n${userMessage}`;
 
         const response = await ai.models.generateContent({
-            model: 'gemini-2.0-flash-exp',
+            model: 'gemini-3-flash-preview',
             contents: [{ parts: [{ text: fullPrompt }] }],
             config: {
                 systemInstruction: COACH_SYSTEM_PROMPT,

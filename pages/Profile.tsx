@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { User, Ruler, Weight, Check, RefreshCw, Activity, ArrowRight, Database, Moon, Sun, LogOut, UploadCloud, AlertCircle, HardDrive, Cloud, Code, Copy, Calendar, Users, TrendingUp, Target, Dumbbell, ChevronDown } from 'lucide-react';
+import { User, Ruler, Weight, Check, RefreshCw, Activity, ArrowRight, Database, Moon, Sun, LogOut, UploadCloud, AlertCircle, HardDrive, Cloud, Code, Copy, Calendar, Users, TrendingUp, Target, Dumbbell, ChevronDown, Scale } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { getUserProfile, saveUserProfile, saveDailyGoal, hasLocalData, syncLocalDataToSupabase, checkDatabaseSchema } from '../services/storage';
 import { isSupabaseConfigured, getAppMode, setAppMode, shouldUseCloud } from '../services/supabase';
@@ -104,6 +104,7 @@ export const Profile: React.FC = () => {
   const [dbStatus, setDbStatus] = useState<'ok' | 'missing_tables' | 'error' | 'checking'>('checking');
   const [showSql, setShowSql] = useState(false);
   const [showTrainingGoals, setShowTrainingGoals] = useState(false);
+  const [targetWeight, setTargetWeight] = useState('');
 
   useEffect(() => {
     loadProfile();
@@ -157,6 +158,7 @@ export const Profile: React.FC = () => {
       if (profile.activityLevel) setActivityLevel(profile.activityLevel);
       if (profile.goal) setGoal(profile.goal);
       if (profile.equipmentAccess) setEquipmentAccess(profile.equipmentAccess);
+      if (profile.targetWeight) setTargetWeight(profile.targetWeight.toString());
     }
   };
 
@@ -197,7 +199,8 @@ export const Profile: React.FC = () => {
         gender: gender || undefined,
         activityLevel: activityLevel || undefined,
         goal: goal || undefined,
-        equipmentAccess: equipmentAccess || undefined
+        equipmentAccess: equipmentAccess || undefined,
+        targetWeight: targetWeight ? parseFloat(targetWeight) : undefined
       });
       setSaveSuccess(true);
       setTimeout(() => setSaveSuccess(false), 2000);
@@ -539,6 +542,27 @@ export const Profile: React.FC = () => {
                   </div>
                 </div>
               </div>
+
+              {/* Target Weight - Only show for weight loss goal */}
+              {goal === 'cut' && (
+                <div className="mt-4 animate-in slide-in-from-top-2 duration-300">
+                  <label className="block text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2 ml-1">Target Weight (kg)</label>
+                  <div className="relative">
+                    <input
+                      type="number"
+                      value={targetWeight}
+                      onChange={(e) => setTargetWeight(e.target.value)}
+                      placeholder="e.g. 63"
+                      step="0.1"
+                      min="30"
+                      max="200"
+                      className="w-full p-4 pl-12 bg-gradient-to-r from-emerald-50 to-green-50 dark:from-emerald-950/30 dark:to-green-950/30 border border-emerald-200 dark:border-emerald-900/50 rounded-[20px] focus:outline-none focus:ring-2 focus:ring-emerald-200 focus:border-emerald-400 font-bold text-gray-900 dark:text-gray-50 transition-all"
+                    />
+                    <Scale className="absolute left-4 top-1/2 -translate-y-1/2 text-emerald-500" size={20} />
+                  </div>
+                  <p className="text-[10px] text-emerald-600 dark:text-emerald-400 mt-2 ml-1 font-medium">This powers your weight prediction on the Dashboard</p>
+                </div>
+              )}
             </div>
           )}
         </div>
