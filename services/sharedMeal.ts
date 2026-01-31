@@ -109,7 +109,7 @@ export const analyzeSharedMeal = async (base64Image: string): Promise<SharedMeal
         return await withRetry(async () => {
             const ai = getAIClient();
             const response = await ai.models.generateContent({
-                model: 'gemini-2.0-flash-exp',
+                model: 'gemini-3-flash-preview',
                 contents: {
                     parts: [
                         { inlineData: { mimeType: 'image/jpeg', data: base64Image } },
