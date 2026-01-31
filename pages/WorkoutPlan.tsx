@@ -108,19 +108,27 @@ export const WorkoutPlan: React.FC<WorkoutPlanProps> = ({ onNavigate }) => {
         setSelectedDate(date);
     };
 
-    const toggleExerciseComplete = (workoutId: string, exerciseId: string) => {
+    const toggleExerciseComplete = async (workoutId: string, exerciseId: string) => {
+        // Find the workout and update the exercise completion status
+        const workout = workoutPlans.find(w => w.id === workoutId);
+        if (!workout) return;
+
+        const updatedExercises = workout.exercises.map(ex =>
+            ex.id === exerciseId ? { ...ex, completed: !ex.completed } : ex
+        );
+
+        // Update local state
         setWorkoutPlans(prevPlans =>
             prevPlans.map(plan =>
                 plan.id === workoutId
-                    ? {
-                        ...plan,
-                        exercises: plan.exercises.map(ex =>
-                            ex.id === exerciseId ? { ...ex, completed: !ex.completed } : ex
-                        )
-                    }
+                    ? { ...plan, exercises: updatedExercises }
                     : plan
             )
         );
+
+        // Save to storage to persist the completion status
+        const dateStr = `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(2, '0')}`;
+        await saveWorkoutPlan(dateStr, workout.title, updatedExercises, workoutId);
     };
 
     const handleEditExercise = (workoutId: string, exercise: WorkoutExercise) => {

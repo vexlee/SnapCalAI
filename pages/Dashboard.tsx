@@ -227,125 +227,131 @@ export const Dashboard: React.FC = () => {
         )}
 
         {/* Hero Stats Card - Royal Purple */}
-        <div className={`relative rounded-[28px] sm:rounded-[32px] p-5 sm:p-6 text-white overflow-hidden shadow-xl transition-all duration-500 ${todayCalories > dailyGoal ? 'bg-red-500 shadow-red-200 dark:shadow-red-900/40' : 'bg-royal-600 shadow-royal-200 dark:shadow-royal-900/40'}`}>
-          <div className="absolute top-0 right-0 -mt-10 -mr-10 w-40 h-40 bg-white/10 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-0 left-0 -mb-10 -ml-10 w-40 h-40 bg-black/10 rounded-full blur-3xl"></div>
+        {/* Hero Stats Card - Royal Purple */}
+        {(() => {
+          const isOverLimit = todayCalories > dailyGoal;
+          return (
+            <div className={`relative rounded-[28px] sm:rounded-[32px] p-5 sm:p-6 text-white overflow-hidden shadow-xl transition-all duration-500 ${isOverLimit ? 'bg-red-500 shadow-red-200 dark:shadow-red-900/40' : 'bg-royal-600 shadow-royal-200 dark:shadow-royal-900/40'}`}>
+              <div className="absolute top-0 right-0 -mt-10 -mr-10 w-40 h-40 bg-white/10 rounded-full blur-3xl"></div>
+              <div className="absolute bottom-0 left-0 -mb-10 -ml-10 w-40 h-40 bg-black/10 rounded-full blur-3xl"></div>
 
-          <div className="relative z-10">
-            <div className="flex justify-between items-start mb-4 sm:mb-6">
-              <div>
-                <p className="text-white/70 text-xs font-bold uppercase tracking-widest mb-1">Calories Consumed</p>
-                <div className="flex items-baseline gap-1">
-                  <span className="text-4xl sm:text-5xl font-bold tracking-tighter">{isLoading ? "..." : todayCalories}</span>
-                  <span className="text-base sm:text-lg text-white/60 font-medium">kcal</span>
+              <div className="relative z-10">
+                <div className="flex justify-between items-start mb-4 sm:mb-6">
+                  <div>
+                    <p className="text-white/70 text-xs font-bold uppercase tracking-widest mb-1">Calories Consumed</p>
+                    <div className="flex items-baseline gap-1">
+                      <span className="text-4xl sm:text-5xl font-bold tracking-tighter">{isLoading ? "..." : todayCalories}</span>
+                      <span className="text-base sm:text-lg text-white/60 font-medium">kcal</span>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <div className="flex items-center justify-end gap-2 text-white/80 mb-1">
+                      <span className="text-xs font-semibold">Goal: {dailyGoal}</span>
+                      <button
+                        onClick={() => setShowGoalModal(true)}
+                        className="p-1.5 rounded-full bg-white/20 hover:bg-white/30 transition-colors backdrop-blur-sm"
+                      >
+                        <Edit2 size={10} />
+                      </button>
+                    </div>
+                  </div>
                 </div>
-              </div>
-              <div className="text-right">
-                <div className="flex items-center justify-end gap-2 text-white/80 mb-1">
-                  <span className="text-xs font-semibold">Goal: {dailyGoal}</span>
-                  <button
-                    onClick={() => setShowGoalModal(true)}
-                    className="p-1.5 rounded-full bg-white/20 hover:bg-white/30 transition-colors backdrop-blur-sm"
+
+                <div className="w-full bg-black/20 rounded-full h-4 mb-3 overflow-hidden backdrop-blur-sm relative">
+                  <div
+                    className="h-full rounded-full transition-all duration-1000 ease-out will-change-[width] flex items-center justify-center overflow-hidden"
+                    style={{
+                      width: `${progress}%`,
+                      ...getBarStyle()
+                    }}
                   >
-                    <Edit2 size={10} />
-                  </button>
+                    {(todayCalories / dailyGoal) >= 1 && (
+                      <span className="text-[10px] font-black tracking-tighter text-white drop-shadow-md animate-pulse">
+                        OVER LIMIT
+                      </span>
+                    )}
+                  </div>
                 </div>
-              </div>
-            </div>
 
-            <div className="w-full bg-black/20 rounded-full h-4 mb-3 overflow-hidden backdrop-blur-sm relative">
-              <div
-                className="h-full rounded-full transition-all duration-1000 ease-out will-change-[width] flex items-center justify-center overflow-hidden"
-                style={{
-                  width: `${progress}%`,
-                  ...getBarStyle()
-                }}
-              >
-                {(todayCalories / dailyGoal) >= 1 && (
-                  <span className="text-[10px] font-black tracking-tighter text-white drop-shadow-md animate-pulse">
-                    OVER LIMIT
-                  </span>
+                <div className="flex justify-end mb-4 sm:mb-6">
+                  {isOverLimit ? (
+                    <div className="flex items-center gap-1.5 bg-white/20 backdrop-blur-md px-3 py-1 rounded-full animate-pulse">
+                      <AlertTriangle size={14} className="text-white" fill="white" />
+                      <span className="font-bold text-xs text-white">
+                        {Math.abs(dailyGoal - todayCalories).toLocaleString()} kcal over limit
+                      </span>
+                    </div>
+                  ) : (
+                    <p className="text-xs font-medium text-white/80">
+                      {Math.max(dailyGoal - todayCalories, 0).toLocaleString()} kcal remaining
+                    </p>
+                  )}
+                </div>
+
+                {/* Macro Breakdown */}
+                <div className="grid grid-cols-3 gap-2 sm:gap-3 mt-4 sm:mt-5 pt-3 sm:pt-4 border-t border-white/10">
+                  {/* Protein - Emerald */}
+                  <div className={`flex flex-col items-center justify-center p-1.5 sm:p-2 rounded-xl sm:rounded-2xl border-t-2 border-x border-b shadow-sm relative overflow-hidden group transition-colors ${isOverLimit ? 'bg-black/30 border-t-emerald-300 border-emerald-500/20' : 'bg-emerald-500/15 border-t-emerald-400 border-emerald-500/20'}`}>
+                    <div className={`absolute inset-0 bg-gradient-to-br from-emerald-400/20 to-transparent ${isOverLimit ? 'opacity-30' : 'opacity-50'}`} />
+                    <p className={`text-[8px] sm:text-[9px] uppercase font-bold mb-0.5 relative z-10 tracking-wider ${isOverLimit ? 'text-emerald-300' : 'text-emerald-400'}`}>Protein</p>
+                    <div className="flex items-baseline gap-0.5 relative z-10">
+                      <span className="text-lg sm:text-xl font-black text-white drop-shadow-md">{todayProtein}</span>
+                      <span className={`text-[9px] sm:text-[10px] font-bold ${isOverLimit ? 'text-emerald-200' : 'text-emerald-300'}`}>g</span>
+                    </div>
+                  </div>
+
+                  {/* Carbs - Amber */}
+                  <div className={`flex flex-col items-center justify-center p-1.5 sm:p-2 rounded-xl sm:rounded-2xl border-t-2 border-x border-b shadow-sm relative overflow-hidden group transition-colors ${isOverLimit ? 'bg-black/30 border-t-amber-300 border-amber-500/20' : 'bg-amber-500/15 border-t-amber-400 border-amber-500/20'}`}>
+                    <div className={`absolute inset-0 bg-gradient-to-br from-amber-400/20 to-transparent ${isOverLimit ? 'opacity-30' : 'opacity-50'}`} />
+                    <p className={`text-[8px] sm:text-[9px] uppercase font-bold mb-0.5 relative z-10 tracking-wider ${isOverLimit ? 'text-amber-300' : 'text-amber-400'}`}>Carbs</p>
+                    <div className="flex items-baseline gap-0.5 relative z-10">
+                      <span className="text-lg sm:text-xl font-black text-white drop-shadow-md">{todayCarbs}</span>
+                      <span className={`text-[9px] sm:text-[10px] font-bold ${isOverLimit ? 'text-amber-200' : 'text-amber-300'}`}>g</span>
+                    </div>
+                  </div>
+
+                  {/* Fat - Rose */}
+                  <div className={`flex flex-col items-center justify-center p-1.5 sm:p-2 rounded-xl sm:rounded-2xl border-t-2 border-x border-b shadow-sm relative overflow-hidden group transition-colors ${isOverLimit ? 'bg-black/30 border-t-rose-300 border-rose-500/20' : 'bg-rose-500/15 border-t-rose-400 border-rose-500/20'}`}>
+                    <div className={`absolute inset-0 bg-gradient-to-br from-rose-400/20 to-transparent ${isOverLimit ? 'opacity-30' : 'opacity-50'}`} />
+                    <p className={`text-[8px] sm:text-[9px] uppercase font-bold mb-0.5 relative z-10 tracking-wider ${isOverLimit ? 'text-rose-200' : 'text-rose-400'}`}>Fat</p>
+                    <div className="flex items-baseline gap-0.5 relative z-10">
+                      <span className="text-lg sm:text-xl font-black text-white drop-shadow-md">{todayFat}</span>
+                      <span className={`text-[9px] sm:text-[10px] font-bold ${isOverLimit ? 'text-rose-100' : 'text-rose-300'}`}>g</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Weight Goal Progress */}
+                {weightPrediction && weightPrediction.daysRemaining > 0 && (
+                  <div className="mt-4 sm:mt-5 pt-3 sm:pt-4 border-t border-white/10">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <Target size={14} className="text-white/70" />
+                        <span className="text-xs font-bold text-white/70 uppercase tracking-wider">Weight Goal</span>
+                      </div>
+                      <span className="text-xs font-bold text-white/90">
+                        {weightPrediction.currentWeight}kg → {weightPrediction.targetWeight}kg
+                      </span>
+                    </div>
+
+                    {/* Progress bar */}
+                    <div className="w-full bg-white/10 rounded-full h-2 mb-2 overflow-hidden">
+                      <div
+                        className="h-full rounded-full bg-gradient-to-r from-emerald-400 to-green-500 transition-all duration-1000"
+                        style={{ width: `${weightPrediction.progressPercentage}%` }}
+                      />
+                    </div>
+
+                    {/* Prediction message */}
+                    <p className="text-xs text-white/80 font-medium leading-relaxed">
+                      {formatPredictionMessage(weightPrediction)}
+                    </p>
+                  </div>
                 )}
               </div>
             </div>
-
-            <div className="flex justify-end mb-4 sm:mb-6">
-              {todayCalories > dailyGoal ? (
-                <div className="flex items-center gap-1.5 bg-white/20 backdrop-blur-md px-3 py-1 rounded-full animate-pulse">
-                  <AlertTriangle size={14} className="text-white" fill="white" />
-                  <span className="font-bold text-xs text-white">
-                    {Math.abs(dailyGoal - todayCalories).toLocaleString()} kcal over limit
-                  </span>
-                </div>
-              ) : (
-                <p className="text-xs font-medium text-white/80">
-                  {Math.max(dailyGoal - todayCalories, 0).toLocaleString()} kcal remaining
-                </p>
-              )}
-            </div>
-
-            {/* Macro Breakdown */}
-            <div className="grid grid-cols-3 gap-2 sm:gap-3 mt-4 sm:mt-5 pt-3 sm:pt-4 border-t border-white/10">
-              {/* Protein - Emerald */}
-              <div className="flex flex-col items-center justify-center p-1.5 sm:p-2 rounded-xl sm:rounded-2xl bg-emerald-500/15 border-t-2 border-t-emerald-400 border-x border-b border-emerald-500/20 shadow-sm relative overflow-hidden group">
-                <div className="absolute inset-0 bg-gradient-to-br from-emerald-400/20 to-transparent opacity-50" />
-                <p className="text-[8px] sm:text-[9px] uppercase font-bold text-emerald-400 mb-0.5 relative z-10 tracking-wider">Protein</p>
-                <div className="flex items-baseline gap-0.5 relative z-10">
-                  <span className="text-lg sm:text-xl font-black text-white drop-shadow-md">{todayProtein}</span>
-                  <span className="text-[9px] sm:text-[10px] font-bold text-emerald-300">g</span>
-                </div>
-              </div>
-
-              {/* Carbs - Amber */}
-              <div className="flex flex-col items-center justify-center p-1.5 sm:p-2 rounded-xl sm:rounded-2xl bg-amber-500/15 border-t-2 border-t-amber-400 border-x border-b border-amber-500/20 shadow-sm relative overflow-hidden group">
-                <div className="absolute inset-0 bg-gradient-to-br from-amber-400/20 to-transparent opacity-50" />
-                <p className="text-[8px] sm:text-[9px] uppercase font-bold text-amber-400 mb-0.5 relative z-10 tracking-wider">Carbs</p>
-                <div className="flex items-baseline gap-0.5 relative z-10">
-                  <span className="text-lg sm:text-xl font-black text-white drop-shadow-md">{todayCarbs}</span>
-                  <span className="text-[9px] sm:text-[10px] font-bold text-amber-300">g</span>
-                </div>
-              </div>
-
-              {/* Fat - Rose */}
-              <div className="flex flex-col items-center justify-center p-1.5 sm:p-2 rounded-xl sm:rounded-2xl bg-rose-500/15 border-t-2 border-t-rose-400 border-x border-b border-rose-500/20 shadow-sm relative overflow-hidden group">
-                <div className="absolute inset-0 bg-gradient-to-br from-rose-400/20 to-transparent opacity-50" />
-                <p className="text-[8px] sm:text-[9px] uppercase font-bold text-rose-400 mb-0.5 relative z-10 tracking-wider">Fat</p>
-                <div className="flex items-baseline gap-0.5 relative z-10">
-                  <span className="text-lg sm:text-xl font-black text-white drop-shadow-md">{todayFat}</span>
-                  <span className="text-[9px] sm:text-[10px] font-bold text-rose-300">g</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Weight Goal Progress */}
-            {weightPrediction && weightPrediction.daysRemaining > 0 && (
-              <div className="mt-4 sm:mt-5 pt-3 sm:pt-4 border-t border-white/10">
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center gap-2">
-                    <Target size={14} className="text-white/70" />
-                    <span className="text-xs font-bold text-white/70 uppercase tracking-wider">Weight Goal</span>
-                  </div>
-                  <span className="text-xs font-bold text-white/90">
-                    {weightPrediction.currentWeight}kg → {weightPrediction.targetWeight}kg
-                  </span>
-                </div>
-
-                {/* Progress bar */}
-                <div className="w-full bg-white/10 rounded-full h-2 mb-2 overflow-hidden">
-                  <div
-                    className="h-full rounded-full bg-gradient-to-r from-emerald-400 to-green-500 transition-all duration-1000"
-                    style={{ width: `${weightPrediction.progressPercentage}%` }}
-                  />
-                </div>
-
-                {/* Prediction message */}
-                <p className="text-xs text-white/80 font-medium leading-relaxed">
-                  {formatPredictionMessage(weightPrediction)}
-                </p>
-              </div>
-            )}
-          </div>
-        </div>
+          );
+        })()}
       </div>
 
       {/* Entries List Header - Still Fixed */}
@@ -412,55 +418,63 @@ export const Dashboard: React.FC = () => {
         <Plus size={32} strokeWidth={2.5} />
       </button>
 
-      {showAddModal && (
-        <AddFoodModal
-          editEntry={entryToEdit}
-          onClose={() => { setShowAddModal(false); setEntryToEdit(null); }}
-          onSuccess={() => {
-            setShowAddModal(false);
-            setEntryToEdit(null);
-            loadData();
-          }}
-          onOpenSharedMeal={(image?: string) => {
-            setShowAddModal(false);
-            setEntryToEdit(null);
-            if (image) setInitialSharedImage(image);
-            setTimeout(() => setShowSharedMealModal(true), 100); // Small delay for smooth transition
-          }}
-        />
-      )}
+      {
+        showAddModal && (
+          <AddFoodModal
+            editEntry={entryToEdit}
+            onClose={() => { setShowAddModal(false); setEntryToEdit(null); }}
+            onSuccess={() => {
+              setShowAddModal(false);
+              setEntryToEdit(null);
+              loadData();
+            }}
+            onOpenSharedMeal={(image?: string) => {
+              setShowAddModal(false);
+              setEntryToEdit(null);
+              if (image) setInitialSharedImage(image);
+              setTimeout(() => setShowSharedMealModal(true), 100); // Small delay for smooth transition
+            }}
+          />
+        )
+      }
 
-      {showGoalModal && (
-        <EditGoalModal
-          currentGoal={dailyGoal}
-          onClose={() => setShowGoalModal(false)}
-          onSave={handleUpdateGoal}
-        />
-      )}
+      {
+        showGoalModal && (
+          <EditGoalModal
+            currentGoal={dailyGoal}
+            onClose={() => setShowGoalModal(false)}
+            onSave={handleUpdateGoal}
+          />
+        )
+      }
 
-      {selectedEntry && (
-        <MealDetailModal
-          entry={selectedEntry}
-          onClose={() => setSelectedEntry(null)}
-          onDelete={handleDeleteEntry}
-          onEdit={handleEditEntry}
-        />
-      )}
+      {
+        selectedEntry && (
+          <MealDetailModal
+            entry={selectedEntry}
+            onClose={() => setSelectedEntry(null)}
+            onDelete={handleDeleteEntry}
+            onEdit={handleEditEntry}
+          />
+        )
+      }
 
-      {showSharedMealModal && (
-        <SharedMealModal
-          initialImage={initialSharedImage}
-          onClose={() => {
-            setShowSharedMealModal(false);
-            setInitialSharedImage(null);
-          }}
-          onSuccess={() => {
-            setShowSharedMealModal(false);
-            setInitialSharedImage(null);
-            loadData();
-          }}
-        />
-      )}
-    </div>
+      {
+        showSharedMealModal && (
+          <SharedMealModal
+            initialImage={initialSharedImage}
+            onClose={() => {
+              setShowSharedMealModal(false);
+              setInitialSharedImage(null);
+            }}
+            onSuccess={() => {
+              setShowSharedMealModal(false);
+              setInitialSharedImage(null);
+              loadData();
+            }}
+          />
+        )
+      }
+    </div >
   );
 };
