@@ -188,11 +188,11 @@ export const Dashboard: React.FC = () => {
   return (
     <div className="flex-1 flex flex-col min-h-0 animate-in fade-in duration-500 overflow-hidden relative">
       {/* Fixed Top Section */}
-      <div className="flex-shrink-0 px-6 pt-10 space-y-8 pb-4">
+      <div className="flex-shrink-0 px-6 pt-6 sm:pt-10 space-y-4 sm:space-y-8 pb-4">
         <header className="flex justify-between items-end">
           <div>
             <p className="text-gray-400 dark:text-gray-500 text-xs font-semibold uppercase tracking-widest mb-2">{new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</p>
-            <h1 className="text-3xl font-extrabold text-gray-900 dark:text-gray-50 tracking-tight leading-none">
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-gray-50 tracking-tight leading-tight sm:leading-none">
               Hello {userName || 'there'}, <br />Let's Eat Well.
             </h1>
           </div>
@@ -227,17 +227,17 @@ export const Dashboard: React.FC = () => {
         )}
 
         {/* Hero Stats Card - Royal Purple */}
-        <div className={`relative rounded-[32px] p-6 text-white overflow-hidden shadow-xl transition-all duration-500 ${todayCalories > dailyGoal ? 'bg-red-500 shadow-red-200 dark:shadow-red-900/40' : 'bg-royal-600 shadow-royal-200 dark:shadow-royal-900/40'}`}>
+        <div className={`relative rounded-[28px] sm:rounded-[32px] p-5 sm:p-6 text-white overflow-hidden shadow-xl transition-all duration-500 ${todayCalories > dailyGoal ? 'bg-red-500 shadow-red-200 dark:shadow-red-900/40' : 'bg-royal-600 shadow-royal-200 dark:shadow-royal-900/40'}`}>
           <div className="absolute top-0 right-0 -mt-10 -mr-10 w-40 h-40 bg-white/10 rounded-full blur-3xl"></div>
           <div className="absolute bottom-0 left-0 -mb-10 -ml-10 w-40 h-40 bg-black/10 rounded-full blur-3xl"></div>
 
           <div className="relative z-10">
-            <div className="flex justify-between items-start mb-6">
+            <div className="flex justify-between items-start mb-4 sm:mb-6">
               <div>
                 <p className="text-white/70 text-xs font-bold uppercase tracking-widest mb-1">Calories Consumed</p>
                 <div className="flex items-baseline gap-1">
-                  <span className="text-5xl font-bold tracking-tighter">{isLoading ? "..." : todayCalories}</span>
-                  <span className="text-lg text-white/60 font-medium">kcal</span>
+                  <span className="text-4xl sm:text-5xl font-bold tracking-tighter">{isLoading ? "..." : todayCalories}</span>
+                  <span className="text-base sm:text-lg text-white/60 font-medium">kcal</span>
                 </div>
               </div>
               <div className="text-right">
@@ -269,7 +269,7 @@ export const Dashboard: React.FC = () => {
               </div>
             </div>
 
-            <div className="flex justify-end mb-6">
+            <div className="flex justify-end mb-4 sm:mb-6">
               {todayCalories > dailyGoal ? (
                 <div className="flex items-center gap-1.5 bg-white/20 backdrop-blur-md px-3 py-1 rounded-full animate-pulse">
                   <AlertTriangle size={14} className="text-white" fill="white" />
@@ -285,38 +285,41 @@ export const Dashboard: React.FC = () => {
             </div>
 
             {/* Macro Breakdown */}
-            <div className="grid grid-cols-3 gap-3 mt-5 pt-4 border-t border-white/10">
-              <div className="flex flex-col items-center justify-center p-2 rounded-2xl bg-royal-800 border border-royal-700 shadow-sm relative overflow-hidden group">
-                <div className="absolute inset-0 bg-gradient-to-br from-royal-400/10 to-transparent opacity-50" />
-                <p className="text-[9px] uppercase font-bold text-royal-200 mb-0.5 relative z-10 tracking-wider">Protein</p>
+            <div className="grid grid-cols-3 gap-2 sm:gap-3 mt-4 sm:mt-5 pt-3 sm:pt-4 border-t border-white/10">
+              {/* Protein - Emerald */}
+              <div className="flex flex-col items-center justify-center p-1.5 sm:p-2 rounded-xl sm:rounded-2xl bg-emerald-500/15 border-t-2 border-t-emerald-400 border-x border-b border-emerald-500/20 shadow-sm relative overflow-hidden group">
+                <div className="absolute inset-0 bg-gradient-to-br from-emerald-400/20 to-transparent opacity-50" />
+                <p className="text-[8px] sm:text-[9px] uppercase font-bold text-emerald-400 mb-0.5 relative z-10 tracking-wider">Protein</p>
                 <div className="flex items-baseline gap-0.5 relative z-10">
-                  <span className="text-xl font-black text-white shadow-black/10 drop-shadow-sm">{todayProtein}</span>
-                  <span className="text-[10px] font-bold text-royal-300">g</span>
+                  <span className="text-lg sm:text-xl font-black text-white drop-shadow-md">{todayProtein}</span>
+                  <span className="text-[9px] sm:text-[10px] font-bold text-emerald-300">g</span>
                 </div>
               </div>
 
-              <div className="flex flex-col items-center justify-center p-2 rounded-2xl bg-royal-800 border border-royal-700 shadow-sm relative overflow-hidden group">
-                <div className="absolute inset-0 bg-gradient-to-br from-royal-400/10 to-transparent opacity-50" />
-                <p className="text-[9px] uppercase font-bold text-royal-200 mb-0.5 relative z-10 tracking-wider">Carbs</p>
+              {/* Carbs - Amber */}
+              <div className="flex flex-col items-center justify-center p-1.5 sm:p-2 rounded-xl sm:rounded-2xl bg-amber-500/15 border-t-2 border-t-amber-400 border-x border-b border-amber-500/20 shadow-sm relative overflow-hidden group">
+                <div className="absolute inset-0 bg-gradient-to-br from-amber-400/20 to-transparent opacity-50" />
+                <p className="text-[8px] sm:text-[9px] uppercase font-bold text-amber-400 mb-0.5 relative z-10 tracking-wider">Carbs</p>
                 <div className="flex items-baseline gap-0.5 relative z-10">
-                  <span className="text-xl font-black text-white shadow-black/10 drop-shadow-sm">{todayCarbs}</span>
-                  <span className="text-[10px] font-bold text-royal-300">g</span>
+                  <span className="text-lg sm:text-xl font-black text-white drop-shadow-md">{todayCarbs}</span>
+                  <span className="text-[9px] sm:text-[10px] font-bold text-amber-300">g</span>
                 </div>
               </div>
 
-              <div className="flex flex-col items-center justify-center p-2 rounded-2xl bg-royal-800 border border-royal-700 shadow-sm relative overflow-hidden group">
-                <div className="absolute inset-0 bg-gradient-to-br from-royal-400/10 to-transparent opacity-50" />
-                <p className="text-[9px] uppercase font-bold text-royal-200 mb-0.5 relative z-10 tracking-wider">Fat</p>
+              {/* Fat - Rose */}
+              <div className="flex flex-col items-center justify-center p-1.5 sm:p-2 rounded-xl sm:rounded-2xl bg-rose-500/15 border-t-2 border-t-rose-400 border-x border-b border-rose-500/20 shadow-sm relative overflow-hidden group">
+                <div className="absolute inset-0 bg-gradient-to-br from-rose-400/20 to-transparent opacity-50" />
+                <p className="text-[8px] sm:text-[9px] uppercase font-bold text-rose-400 mb-0.5 relative z-10 tracking-wider">Fat</p>
                 <div className="flex items-baseline gap-0.5 relative z-10">
-                  <span className="text-xl font-black text-white shadow-black/10 drop-shadow-sm">{todayFat}</span>
-                  <span className="text-[10px] font-bold text-royal-300">g</span>
+                  <span className="text-lg sm:text-xl font-black text-white drop-shadow-md">{todayFat}</span>
+                  <span className="text-[9px] sm:text-[10px] font-bold text-rose-300">g</span>
                 </div>
               </div>
             </div>
 
             {/* Weight Goal Progress */}
             {weightPrediction && weightPrediction.daysRemaining > 0 && (
-              <div className="mt-5 pt-4 border-t border-white/10">
+              <div className="mt-4 sm:mt-5 pt-3 sm:pt-4 border-t border-white/10">
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-2">
                     <Target size={14} className="text-white/70" />

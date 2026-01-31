@@ -1,17 +1,26 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { Layout } from './components/Layout';
-import { Dashboard } from './pages/Dashboard';
-import { CalCoach } from './pages/CalCoach';
-import { WorkoutPlan } from './pages/WorkoutPlan';
-import { History } from './pages/History';
 import { Login } from './pages/Login';
-import { Profile } from './pages/Profile';
-import { Onboarding } from './pages/Onboarding';
 import { AppView } from './types';
 import { getCurrentUser, onAuthStateChange, User } from './services/auth';
 import { performDataCleanup, hasCompletedOnboarding } from './services/storage';
 import { scheduleAtMidnight, hasDateChanged } from './utils/midnight';
 import { cache } from './utils/cache';
+
+// Lazy load pages for code-splitting
+const Dashboard = lazy(() => import('./pages/Dashboard').then(m => ({ default: m.Dashboard })));
+const CalCoach = lazy(() => import('./pages/CalCoach').then(m => ({ default: m.CalCoach })));
+const WorkoutPlan = lazy(() => import('./pages/WorkoutPlan').then(m => ({ default: m.WorkoutPlan })));
+const History = lazy(() => import('./pages/History').then(m => ({ default: m.History })));
+const Profile = lazy(() => import('./pages/Profile').then(m => ({ default: m.Profile })));
+const Onboarding = lazy(() => import('./pages/Onboarding').then(m => ({ default: m.Onboarding })));
+
+// Loading spinner component
+const LoadingSpinner = () => (
+  <div className="min-h-screen bg-surface dark:bg-surface-dark flex items-center justify-center">
+    <div className="w-8 h-8 border-2 border-royal-200 dark:border-white/20 border-t-royal-600 dark:border-t-white rounded-full animate-spin"></div>
+  </div>
+);
 
 function App() {
   const [currentView, setCurrentView] = useState<AppView>(AppView.DASHBOARD);
@@ -108,16 +117,22 @@ function App() {
 
   // If user hasn't completed onboarding, show onboarding
   if (showOnboarding) {
-    return <Onboarding user={user} onComplete={handleOnboardingComplete} />;
+    return (
+      <Suspense fallback={<LoadingSpinner />}>
+        <Onboarding user={user} onComplete={handleOnboardingComplete} />
+      </Suspense>
+    );
   }
 
   return (
     <Layout currentView={currentView} onNavigate={setCurrentView}>
-      {currentView === AppView.DASHBOARD && <Dashboard />}
-      {currentView === AppView.CAL_COACH && <CalCoach onNavigate={setCurrentView} />}
-      {currentView === AppView.WORKOUT_PLAN && <WorkoutPlan onNavigate={setCurrentView} />}
-      {currentView === AppView.HISTORY && <History />}
-      {currentView === AppView.PROFILE && <Profile />}
+      <Suspense fallback={<LoadingSpinner />}>
+        {currentView === AppView.DASHBOARD && <Dashboard />}
+        {currentView === AppView.CAL_COACH && <CalCoach onNavigate={setCurrentView} />}
+        {currentView === AppView.WORKOUT_PLAN && <WorkoutPlan onNavigate={setCurrentView} />}
+        {currentView === AppView.HISTORY && <History />}
+        {currentView === AppView.PROFILE && <Profile />}
+      </Suspense>
     </Layout>
   );
 }
