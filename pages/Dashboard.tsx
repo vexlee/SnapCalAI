@@ -208,20 +208,20 @@ export const Dashboard: React.FC = () => {
 
         {/* Streak Counter Badge */}
         {currentStreak > 0 && (
-          <div className="flex items-center gap-2 bg-gradient-to-r from-orange-500 to-amber-500 text-white px-4 py-2.5 rounded-2xl shadow-lg shadow-orange-200 dark:shadow-orange-900/30 animate-in slide-in-from-left duration-500">
-            <Flame size={20} className="animate-pulse" />
-            <div>
-              <span className="text-xl font-extrabold">{currentStreak}</span>
-              <span className="ml-1.5 text-sm font-bold text-white/90">day streak!</span>
+          <div className="flex items-center gap-2 bg-gradient-to-r from-orange-500 to-amber-500 text-white px-3 py-1.5 rounded-xl shadow-lg shadow-orange-200 dark:shadow-orange-900/30 animate-in slide-in-from-left duration-500 w-fit">
+            <Flame size={16} className="animate-pulse" />
+            <div className="flex items-baseline gap-1">
+              <span className="text-base font-extrabold">{currentStreak}</span>
+              <span className="text-xs font-bold text-white/90">day streak!</span>
             </div>
             {currentStreak >= 7 && currentStreak < 14 && (
-              <span className="ml-2 text-xs bg-white/20 px-2 py-0.5 rounded-full">🔥 Keep it up!</span>
+              <span className="ml-2 text-[10px] bg-white/20 px-2 py-0.5 rounded-full font-medium">🔥 Keep it up!</span>
             )}
             {currentStreak >= 14 && currentStreak < 30 && (
-              <span className="ml-2 text-xs bg-white/20 px-2 py-0.5 rounded-full">🚀 On fire!</span>
+              <span className="ml-2 text-[10px] bg-white/20 px-2 py-0.5 rounded-full font-medium">🚀 On fire!</span>
             )}
             {currentStreak >= 30 && (
-              <span className="ml-2 text-xs bg-white/20 px-2 py-0.5 rounded-full">👑 Legend!</span>
+              <span className="ml-2 text-[10px] bg-white/20 px-2 py-0.5 rounded-full font-medium">👑 Legend!</span>
             )}
           </div>
         )}
