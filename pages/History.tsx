@@ -8,7 +8,7 @@ import { DailySummaryModal } from '../components/DailySummaryModal';
 import { AddFoodModal } from '../components/AddFoodModal';
 import { WeightCheckModal } from '../components/WeightCheckModal';
 import { CoachTipsModal } from '../components/CoachTipsModal';
-import { getOrGenerateReport, calculatePeriodDates } from '../services/reports';
+import { getOrGenerateReport, calculatePeriodDates, getReport } from '../services/reports';
 import { Calendar as CalendarIcon, Filter, ChevronDown, ChevronRight, Loader2, Info, ChevronLeft, Sparkles } from 'lucide-react';
 import { getCurrentDateString } from '../utils/midnight';
 
@@ -160,6 +160,35 @@ export const History: React.FC = () => {
   };
 
   // Coach Tips Handlers
+  const handleCoachTipsClick = async () => {
+    setIsLoadingReport(true);
+
+    try {
+      // Determine period based on view mode
+      const reportType = viewMode === 'day' ? 'daily' : viewMode === 'week' ? 'weekly' : 'monthly';
+      const reference = viewMode === 'day' ? selectedDate : viewMode === 'week' ? selectedWeek : selectedMonth;
+      const { start, end } = calculatePeriodDates(reportType, reference);
+
+      // Check if report already exists
+      const existingReport = await getReport(reportType, start, end);
+
+      if (existingReport) {
+        // Report exists - show it directly without asking for weight
+        setCurrentReport(existingReport);
+        setShowCoachTips(true);
+      } else {
+        // No report exists - show weight modal first
+        setShowWeightCheck(true);
+      }
+    } catch (error) {
+      console.error('Failed to check for report:', error);
+      // On error, fall back to showing weight modal
+      setShowWeightCheck(true);
+    } finally {
+      setIsLoadingReport(false);
+    }
+  };
+
   const handleWeightConfirm = async (weight: number) => {
     setShowWeightCheck(false);
     setIsLoadingReport(true);
@@ -705,7 +734,7 @@ export const History: React.FC = () => {
         {/* Improved Grid with History Card */}
         <div className="grid grid-cols-2 gap-4 mb-8">
           <Card
-            onClick={() => setShowWeightCheck(true)}
+            onClick={handleCoachTipsClick}
             className="p-5 flex flex-col justify-between h-36 bg-gradient-to-br from-royal-500 to-royal-700 text-white border-none shadow-royal-200/50 cursor-pointer active:scale-[0.98] transition-transform"
           >
             <div>
