@@ -240,13 +240,14 @@ export const History: React.FC = () => {
   // Weekly/Monthly Selector Logic
   const scrollItems = useMemo(() => {
     if (viewMode === 'day') {
-      // Daily: Show all dates from 1st of current month to today
+      // Daily: Show up to 31 days from today (going back in time)
       const days = [];
       const today = new Date();
-      const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+      const thirtyOneDaysAgo = new Date(today);
+      thirtyOneDaysAgo.setDate(today.getDate() - 30); // 30 days back + today = 31 days total
 
-      // Generate dates from 1st to today
-      for (let d = new Date(firstDayOfMonth); d <= today; d.setDate(d.getDate() + 1)) {
+      // Generate dates from 31 days ago to today
+      for (let d = new Date(thirtyOneDaysAgo); d <= today; d.setDate(d.getDate() + 1)) {
         // PERMANENT FIX: Use manual local date formatting. 
         const year = d.getFullYear();
         const month = String(d.getMonth() + 1).padStart(2, '0');

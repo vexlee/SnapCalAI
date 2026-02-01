@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Send, Sparkles, MessageSquare, Dumbbell, TrendingUp, Calendar, Zap, ChevronDown, ChevronUp, Target, Activity, Check, Clock, Loader, Loader2, Settings, ArrowRight, Save } from 'lucide-react';
+import { Send, Sparkles, MessageSquare, Dumbbell, TrendingUp, Calendar, Zap, ChevronDown, ChevronUp, Target, Activity, Check, Clock, Loader, Loader2, Settings, ArrowRight, Save, Plus } from 'lucide-react';
 import { getCurrentDateString } from '../utils/midnight';
 import { Card } from '../components/ui/Card';
 import { sendCoachMessage, ChatMessage, buildCoachContext, CoachContext } from '../services/coach';
-import { saveChatMessage, getTodayChatMessages, getChatMessagesForDate, cleanupOldChatMessages } from '../services/storage';
-import { AppView } from '../types';
-import { detectWorkoutPlan } from '../utils/workoutParser';
+import { saveChatMessage, getTodayChatMessages, getChatMessagesForDate, cleanupOldChatMessages, saveWorkoutPlan } from '../services/storage';
+import { AppView, WorkoutExercise } from '../types';
+import { detectWorkoutPlan, findWorkoutSuggestions, WorkoutSuggestion } from '../utils/workoutParser';
 import { SaveWorkoutModal } from '../components/SaveWorkoutModal';
+import { getWorkoutTypeById } from '../constants/workoutTypes';
 interface CalCoachProps {
     onNavigate: (view: AppView) => void;
 }
@@ -22,6 +23,8 @@ export const CalCoach: React.FC<CalCoachProps> = ({ onNavigate }) => {
     const [canLoadMore, setCanLoadMore] = useState(true);
     const [showSaveModal, setShowSaveModal] = useState(false);
     const [workoutToSave, setWorkoutToSave] = useState('');
+    const [quickAddLoading, setQuickAddLoading] = useState<string | null>(null);
+    const [addedWorkouts, setAddedWorkouts] = useState<Set<string>>(new Set());
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLTextAreaElement>(null);
     const messagesContainerRef = useRef<HTMLDivElement>(null);
@@ -133,6 +136,44 @@ export const CalCoach: React.FC<CalCoachProps> = ({ onNavigate }) => {
     const handleGoToProfile = () => {
         // Navigate to Profile view using the passed onNavigate function
         onNavigate(AppView.PROFILE);
+    };
+
+    // Handle quick add workout from AI suggestion
+    const handleQuickAddWorkout = async (suggestion: WorkoutSuggestion) => {
+        const suggestionKey = `${suggestion.activity}-${suggestion.durationMin}`;
+
+        if (addedWorkouts.has(suggestionKey)) return;
+
+        setQuickAddLoading(suggestionKey);
+
+        try {
+            const today = getCurrentDateString();
+            const workoutType = getWorkoutTypeById(suggestion.workoutTypeId);
+
+            // Create a simple exercise based on the suggestion
+            const exercises: WorkoutExercise[] = [{
+                id: `ex-${Date.now()}-0`,
+                name: suggestion.title,
+                sets: 1,
+                reps: `${suggestion.durationMin} min`,
+                rest: '0s',
+                completed: false
+            }];
+
+            await saveWorkoutPlan(
+                today,
+                workoutType?.name || suggestion.title,
+                exercises,
+                undefined,
+                suggestion.workoutTypeId
+            );
+
+            setAddedWorkouts(prev => new Set([...prev, suggestionKey]));
+        } catch (error) {
+            console.error('Failed to add workout:', error);
+        } finally {
+            setQuickAddLoading(null);
+        }
     };
 
     // Load previous day's messages when scrolling to top
@@ -351,7 +392,46 @@ export const CalCoach: React.FC<CalCoachProps> = ({ onNavigate }) => {
                                             />
                                         </div>
                                     </Card>
-                                    {/* Save Workout Button */}
+                                    {/* Quick Add Workout Buttons for detected suggestions */}
+                                    {(() => {
+                                        const suggestions = findWorkoutSuggestions(message.content);
+                                        if (suggestions.length > 0) {
+                                            return (
+                                                <div className="mt-3 flex flex-wrap gap-2">
+                                                    {suggestions.map((suggestion, idx) => {
+                                                        const suggestionKey = `${suggestion.activity}-${suggestion.durationMin}`;
+                                                        const isAdded = addedWorkouts.has(suggestionKey);
+                                                        const isLoading = quickAddLoading === suggestionKey;
+
+                                                        return (
+                                                            <button
+                                                                key={idx}
+                                                                onClick={() => handleQuickAddWorkout(suggestion)}
+                                                                disabled={isAdded || isLoading}
+                                                                className={`flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-xl transition-all active:scale-95 ${isAdded
+                                                                        ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 cursor-default'
+                                                                        : 'bg-royal-100 dark:bg-royal-900/30 text-royal-700 dark:text-royal-400 hover:bg-royal-200 dark:hover:bg-royal-900/50'
+                                                                    }`}
+                                                            >
+                                                                {isLoading ? (
+                                                                    <Loader2 size={16} className="animate-spin" />
+                                                                ) : isAdded ? (
+                                                                    <Check size={16} />
+                                                                ) : (
+                                                                    <Plus size={16} />
+                                                                )}
+                                                                <span>
+                                                                    {isAdded ? 'Added!' : `Add ${suggestion.title}`}
+                                                                </span>
+                                                            </button>
+                                                        );
+                                                    })}
+                                                </div>
+                                            );
+                                        }
+                                        return null;
+                                    })()}
+                                    {/* Save Workout Button for full workout plans */}
                                     {detectWorkoutPlan(message.content) && (
                                         <button
                                             onClick={() => {

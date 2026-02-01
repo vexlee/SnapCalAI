@@ -231,3 +231,139 @@ export const parseMultiDayWorkoutPlan = (message: string): {
         days
     };
 };
+
+/**
+ * Workout suggestion types and patterns
+ * Maps common activity names to workout type IDs
+ */
+const ACTIVITY_TO_WORKOUT_TYPE: Record<string, string> = {
+    // Cardio
+    'walk': 'walking',
+    'walking': 'walking',
+    'run': 'running',
+    'running': 'running',
+    'jog': 'running',
+    'jogging': 'running',
+    'sprint': 'running',
+    'cycle': 'cycling',
+    'cycling': 'cycling',
+    'bike': 'cycling',
+    'biking': 'cycling',
+    'hiit': 'hiit',
+    // Strength
+    'gym': 'full-body',
+    'lift': 'full-body',
+    'lifting': 'full-body',
+    'weights': 'full-body',
+    'strength': 'full-body',
+    'upper body': 'upper-body',
+    'lower body': 'lower-body',
+    'core': 'core',
+    'abs': 'core',
+    // Flexibility
+    'yoga': 'yoga',
+    'stretch': 'stretching',
+    'stretching': 'stretching',
+    'pilates': 'pilates',
+    // Sports
+    'swim': 'swimming',
+    'swimming': 'swimming',
+    'dance': 'dance',
+    'dancing': 'dance',
+};
+
+/**
+ * Parsed workout suggestion from AI text
+ */
+export interface WorkoutSuggestion {
+    originalText: string;
+    activity: string;
+    durationMin: number;
+    workoutTypeId: string;
+    title: string;
+}
+
+/**
+ * Detect if text contains a workout suggestion (simple activity + duration)
+ * Matches patterns like "45-minute walk", "30 min run", "1 hour cycling"
+ */
+export const detectWorkoutSuggestion = (text: string): boolean => {
+    // Pattern: duration followed by activity OR activity followed by duration
+    const patterns = [
+        /(\d+)\s*[-–]?\s*(minute|min|hour|hr)s?\s+(walk|walking|run|running|jog|jogging|cycle|cycling|bike|biking|swim|swimming|yoga|hiit|stretch|stretching|gym|lift|lifting|dance|dancing)/i,
+        /(walk|walking|run|running|jog|jogging|cycle|cycling|bike|biking|swim|swimming|yoga|hiit|stretch|stretching|gym|lift|lifting|dance|dancing)\s+(?:for\s+)?(\d+)\s*[-–]?\s*(minute|min|hour|hr)s?/i,
+    ];
+
+    return patterns.some(pattern => pattern.test(text));
+};
+
+/**
+ * Parse workout suggestion from text
+ * Returns null if no valid suggestion found
+ */
+export const parseWorkoutSuggestion = (text: string): WorkoutSuggestion | null => {
+    // Pattern 1: duration + activity (e.g., "45-minute walk")
+    const pattern1 = /(\d+)\s*[-–]?\s*(minute|min|hour|hr)s?\s+(walk|walking|run|running|jog|jogging|cycle|cycling|bike|biking|swim|swimming|yoga|hiit|stretch|stretching|gym|lift|lifting|dance|dancing)/i;
+
+    // Pattern 2: activity + duration (e.g., "walking for 30 minutes")
+    const pattern2 = /(walk|walking|run|running|jog|jogging|cycle|cycling|bike|biking|swim|swimming|yoga|hiit|stretch|stretching|gym|lift|lifting|dance|dancing)\s+(?:for\s+)?(\d+)\s*[-–]?\s*(minute|min|hour|hr)s?/i;
+
+    let duration = 0;
+    let activity = '';
+    let unit = 'min';
+
+    const match1 = text.match(pattern1);
+    const match2 = text.match(pattern2);
+
+    if (match1) {
+        duration = parseInt(match1[1]);
+        unit = match1[2].toLowerCase();
+        activity = match1[3].toLowerCase();
+    } else if (match2) {
+        activity = match2[1].toLowerCase();
+        duration = parseInt(match2[2]);
+        unit = match2[3].toLowerCase();
+    } else {
+        return null;
+    }
+
+    // Convert hours to minutes
+    if (unit.startsWith('hour') || unit === 'hr') {
+        duration = duration * 60;
+    }
+
+    // Map activity to workout type ID
+    const workoutTypeId = ACTIVITY_TO_WORKOUT_TYPE[activity] || 'full-body';
+
+    // Create a nice title
+    const activityCapitalized = activity.charAt(0).toUpperCase() + activity.slice(1);
+    const title = `${duration} min ${activityCapitalized}`;
+
+    return {
+        originalText: text,
+        activity,
+        durationMin: duration,
+        workoutTypeId,
+        title
+    };
+};
+
+/**
+ * Find all workout suggestions in a message
+ * Scans each line for workout suggestions and returns an array
+ */
+export const findWorkoutSuggestions = (message: string): WorkoutSuggestion[] => {
+    const suggestions: WorkoutSuggestion[] = [];
+    const lines = message.split('\n');
+
+    for (const line of lines) {
+        if (detectWorkoutSuggestion(line)) {
+            const suggestion = parseWorkoutSuggestion(line);
+            if (suggestion) {
+                suggestions.push(suggestion);
+            }
+        }
+    }
+
+    return suggestions;
+};
