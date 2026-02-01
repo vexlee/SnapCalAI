@@ -41,6 +41,18 @@ export default {
             fontFamily: {
                 sans: ['Inter', 'system-ui', 'sans-serif'],
             },
+            // Semantic Z-Index layers (uses CSS variables from index.css)
+            zIndex: {
+                'base': 'var(--z-base)',
+                'above': 'var(--z-above)',
+                'sticky': 'var(--z-sticky)',
+                'fixed-bg': 'var(--z-fixed-bg)',
+                'nav': 'var(--z-nav)',
+                'modal-backdrop': 'var(--z-modal-backdrop)',
+                'modal': 'var(--z-modal)',
+                'tooltip': 'var(--z-tooltip)',
+                'max': 'var(--z-max)',
+            },
         }
     },
     plugins: [],

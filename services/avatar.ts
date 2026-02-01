@@ -96,11 +96,12 @@ export const getAvatarStatus = async (): Promise<AvatarStatus> => {
     const mealsLogged = todayEntries.length;
     const calorieLimit = await getDailyGoal();
 
-    // Get last log timestamp
+    // Get last log timestamp from localStorage
     let lastLogTimestamp = getLastLogTimestamp();
 
-    // specific fix: if no local timestamp, check actual entries
-    if (!lastLogTimestamp && entries.length > 0) {
+    // Always check actual entries to find the most recent log
+    // This fixes the bug where localStorage has stale data
+    if (entries.length > 0) {
         // Sort entries by date/time to find the latest one
         const sortedEntries = [...entries].sort((a, b) => {
             const dateA = new Date(`${a.date}T${a.time || '00:00'}`);
@@ -111,11 +112,16 @@ export const getAvatarStatus = async (): Promise<AvatarStatus> => {
         if (sortedEntries.length > 0) {
             const latest = sortedEntries[0];
             // Construct a timestamp from date and time
-            lastLogTimestamp = new Date(`${latest.date}T${latest.time || '00:00'}`).toISOString();
-            // Also save it to local storage for next time
-            try {
-                localStorage.setItem(LS_LAST_LOG_KEY, lastLogTimestamp);
-            } catch (e) { }
+            const latestEntryTimestamp = new Date(`${latest.date}T${latest.time || '00:00'}`).toISOString();
+
+            // Use the entry timestamp if it's newer than localStorage value
+            if (!lastLogTimestamp || new Date(latestEntryTimestamp) > new Date(lastLogTimestamp)) {
+                lastLogTimestamp = latestEntryTimestamp;
+                // Update localStorage for next time
+                try {
+                    localStorage.setItem(LS_LAST_LOG_KEY, lastLogTimestamp);
+                } catch (e) { }
+            }
         }
     }
 

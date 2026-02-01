@@ -12,18 +12,23 @@ RUN npm install
 # Copy source code
 COPY . .
 
-# Pass environment variables as build arguments
-# Note: Vite bakes these into the client-side bundle at build time
-ARG GEMINI_API_KEY
-ARG SUPABASE_URL
-ARG SUPABASE_ANON_KEY
+# SECURITY NOTE: Environment variables for Vite must be provided at build time
+# because Vite bakes them into the static bundle. However, we should NOT use
+# Docker ARG for this, as it exposes secrets in image history.
+#
+# For production deployments:
+# 1. Use your CI/CD platform's secret management (GitHub Actions secrets, Cloud Build secrets)
+# 2. Set environment variables in the build environment, NOT via Docker ARG
+# 3. Example for Cloud Build: use _GEMINI_API_KEY substitution variable
+#
+# The .env file should be created by your CI/CD pipeline before building:
+#   echo "VITE_GEMINI_API_KEY=$GEMINI_API_KEY" > .env
+#   echo "VITE_SUPABASE_URL=$SUPABASE_URL" >> .env
+#   echo "VITE_SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY" >> .env
+#
+# This keeps secrets out of Docker layer history while still allowing Vite to bundle them.
 
-# Set them as environment variables for the build process
-ENV GEMINI_API_KEY=$GEMINI_API_KEY
-ENV SUPABASE_URL=$SUPABASE_URL
-ENV SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY
-
-# Build the application
+# Build the application (expects .env to exist with VITE_* variables)
 RUN npm run build
 
 # Production stage

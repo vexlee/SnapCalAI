@@ -120,6 +120,7 @@ export const CACHE_KEYS = {
     // Dynamic keys
     entriesForDate: (date: string) => `food:entries:${date}`,
     entryImage: (id: string) => `food:image:${id}`,
+    summariesForRange: (start: string, end: string) => `food:summaries:${start}:${end}`,
 } as const;
 
 /**

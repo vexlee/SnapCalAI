@@ -1,4 +1,5 @@
 import { GoogleGenAI, Type } from "@google/genai";
+import { safeParseAIResponse, AnalysisResultSchema, RecipeResultSchema } from '../utils/schemas';
 
 /**
  * Get the API key dynamically to ensure it's always fresh
@@ -17,7 +18,10 @@ const getApiKey = (): string => {
  */
 const getAIClient = (): GoogleGenAI => {
   const apiKey = getApiKey();
-  console.log("Gemini Key Detected:", apiKey ? "Yes" : "No", apiKey ? `(Length: ${apiKey.length})` : "");
+  // Only log in development mode, and never log key details
+  if (import.meta.env.DEV && !apiKey) {
+    console.warn("Gemini API key is not configured");
+  }
   return new GoogleGenAI({ apiKey });
 };
 
@@ -147,7 +151,7 @@ export const analyzeFoodImage = async (base64Image: string): Promise<AnalysisRes
           }
         }
       });
-      return JSON.parse(response.text || "{}");
+      return safeParseAIResponse(AnalysisResultSchema, response.text || "{}", 'Food Image Analysis');
     });
   } catch (error) {
     console.error("Gemini Analysis Error:", error);
@@ -213,7 +217,7 @@ export const calculateCaloriesFromText = async (description: string, existingIng
           }
         }
       });
-      return JSON.parse(response.text || "{}");
+      return safeParseAIResponse(AnalysisResultSchema, response.text || "{}", 'Food Text Analysis');
     });
   } catch (error) {
     console.error("Gemini Text Analysis Error:", error);
@@ -255,7 +259,7 @@ export const calculateRecipe = async (ingredients: string, servings: number): Pr
           }
         }
       });
-      return JSON.parse(response.text || "{}");
+      return safeParseAIResponse(RecipeResultSchema, response.text || "{}", 'Recipe Calculation');
     });
   } catch (error) {
     console.error("Gemini Recipe Error:", error);

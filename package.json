@@ -9,7 +9,7 @@
     "preview": "vite preview",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d dist",
-    "gcp-build": "docker build -t gcr.io/[PROJECT_ID]/snapcal-ai --build-arg GEMINI_API_KEY=$GEMINI_API_KEY --build-arg SUPABASE_URL=$SUPABASE_URL --build-arg SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY .",
+    "docker:build": "docker build -t snapcal-ai .",
     "gcp-deploy": "docker push gcr.io/[PROJECT_ID]/snapcal-ai && gcloud run deploy snapcal-ai --image gcr.io/[PROJECT_ID]/snapcal-ai --platform managed --region us-central1 --allow-unauthenticated"
   },
   "dependencies": {
@@ -20,7 +20,8 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "recharts": "^2.12.0",
-    "uuid": "^9.0.1"
+    "uuid": "^9.0.1",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@types/react": "^18.2.56",

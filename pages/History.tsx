@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useCallback, useMemo, useRef } from 'react';
+import { VirtualList } from '../components/VirtualList';
 import { getDailySummariesLite, getEntriesForDateLite, getEntryImage, deleteEntry, getDailyGoal } from '../services/storage';
 import { DailySummary, FoodEntry, CoachReport } from '../types';
 import { Card } from '../components/ui/Card';

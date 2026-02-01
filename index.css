@@ -2,6 +2,31 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ============================================
+   Z-Index Layer System
+   Organized from lowest to highest priority
+   ============================================ */
+:root {
+  --z-base: 0;
+  /* Default elements */
+  --z-above: 10;
+  /* Elements slightly above base (relative positioning) */
+  --z-sticky: 20;
+  /* Sticky headers and scroll indicators */
+  --z-fixed-bg: 30;
+  /* Fixed background overlays (blur backgrounds) */
+  --z-nav: 40;
+  /* Bottom navigation bar */
+  --z-modal-backdrop: 50;
+  /* Modal dark overlays */
+  --z-modal: 60;
+  /* Modal content windows */
+  --z-tooltip: 70;
+  /* Tooltips and popovers */
+  --z-max: 9999;
+  /* Emergency override (use sparingly) */
+}
+
 /* Base body styles */
 body {
   font-family: 'Inter', system-ui, sans-serif;

@@ -6,8 +6,9 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { supabase, shouldUseCloud } from './supabase';
 import { getCurrentUser } from './auth';
-import { getUserProfile, getDailySummariesLite, getDailyGoal } from './storage';
+import { getUserProfile, getDailySummariesForRange, getDailyGoal } from './storage';
 import { CoachReport, CoachReportTip, CoachReportMetrics, UserProfile, DailyWorkout } from '../types';
+import { safeParseAIResponse, AIReportResponseSchema } from '../utils/schemas';
 
 // --- API Key Management ---
 
@@ -109,15 +110,15 @@ const buildReportContext = async (
     periodStart: string,
     periodEnd: string
 ): Promise<ReportContext> => {
-    const [profile, dailyGoal, summaries, workouts] = await Promise.all([
+    // Optimized: Only fetch data for the specific date range
+    const [profile, dailyGoal, periodSummaries, workouts] = await Promise.all([
         getUserProfile(),
         getDailyGoal(),
-        getDailySummariesLite(),
+        getDailySummariesForRange(periodStart, periodEnd),
         getWorkoutPlansForRange(periodStart, periodEnd)
     ]);
 
-    // Filter summaries for period
-    const periodSummaries = summaries.filter(s => s.date >= periodStart && s.date <= periodEnd);
+    // periodSummaries is already filtered by date range from the optimized query
 
     // Calculate metrics
     const daysTracked = periodSummaries.length;
@@ -264,7 +265,7 @@ const generateAIReport = async (context: ReportContext): Promise<AIReportRespons
         }
     });
 
-    return JSON.parse(response.text || '{"summary": "", "tips": []}');
+    return safeParseAIResponse(AIReportResponseSchema, response.text || '{}', 'Coach Report');
 };
 
 // --- Local Storage Helpers ---

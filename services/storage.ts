@@ -308,6 +308,120 @@ export const getDailySummariesLite = async (): Promise<Omit<DailySummary, 'entri
 };
 
 /**
+ * Get daily summaries for a specific date range (optimized for reports)
+ * Only fetches data within the specified period to reduce bandwidth
+ */
+export const getDailySummariesForRange = async (
+  startDate: string,
+  endDate: string
+): Promise<Omit<DailySummary, 'entries'>[]> => {
+  return withCache(CACHE_KEYS.summariesForRange(startDate, endDate), async () => {
+    const user = await getCurrentUser();
+    if (!user) return [];
+
+    if (!shouldUseCloud) {
+      // Local storage: filter by date range
+      const entries = getLocalEntries().filter(e =>
+        e.user_id === user.id && e.date >= startDate && e.date <= endDate
+      );
+
+      const grouped: Record<string, { calories: number; protein: number; carbs: number; fat: number }> = {};
+      entries.forEach(entry => {
+        if (!grouped[entry.date]) {
+          grouped[entry.date] = { calories: 0, protein: 0, carbs: 0, fat: 0 };
+        }
+        grouped[entry.date].calories += entry.calories || 0;
+        grouped[entry.date].protein += entry.protein || 0;
+        grouped[entry.date].carbs += entry.carbs || 0;
+        grouped[entry.date].fat += entry.fat || 0;
+      });
+
+      // Also check local summaries
+      const storedSummaries = getLocalSummaries().filter(s =>
+        s.user_id === user.id && s.date >= startDate && s.date <= endDate
+      );
+      storedSummaries.forEach(s => {
+        if (!grouped[s.date]) {
+          grouped[s.date] = {
+            calories: s.total_calories || s.totalCalories,
+            protein: s.total_protein || s.totalProtein || 0,
+            carbs: s.total_carbs || s.totalCarbs || 0,
+            fat: s.total_fat || s.totalFat || 0
+          };
+        }
+      });
+
+      return Object.entries(grouped)
+        .map(([date, totals]) => ({
+          date,
+          totalCalories: totals.calories,
+          totalProtein: totals.protein,
+          totalCarbs: totals.carbs,
+          totalFat: totals.fat
+        }))
+        .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    }
+
+    // Cloud: Use date range filters to limit data transfer
+    const { data, error } = await supabase
+      .from('food_entries')
+      .select('date, calories, protein, carbs, fat')
+      .eq('user_id', user.id)
+      .gte('date', startDate)
+      .lte('date', endDate)
+      .order('date', { ascending: false });
+
+    if (error) {
+      console.error("Supabase range summary fetch error:", error);
+      return [];
+    }
+
+    // Group and aggregate client-side
+    const grouped: Record<string, { calories: number; protein: number; carbs: number; fat: number }> = {};
+    (data || []).forEach((row: any) => {
+      if (!grouped[row.date]) {
+        grouped[row.date] = { calories: 0, protein: 0, carbs: 0, fat: 0 };
+      }
+      grouped[row.date].calories += row.calories || 0;
+      grouped[row.date].protein += row.protein || 0;
+      grouped[row.date].carbs += row.carbs || 0;
+      grouped[row.date].fat += row.fat || 0;
+    });
+
+    // Also fetch stored summaries for archived days within range
+    try {
+      const { data: summaryData } = await supabase
+        .from('daily_summaries')
+        .select('date, total_calories, total_protein, total_carbs, total_fat')
+        .eq('user_id', user.id)
+        .gte('date', startDate)
+        .lte('date', endDate);
+
+      (summaryData || []).forEach((s: any) => {
+        if (!grouped[s.date]) {
+          grouped[s.date] = {
+            calories: s.total_calories,
+            protein: s.total_protein,
+            carbs: s.total_carbs,
+            fat: s.total_fat
+          };
+        }
+      });
+    } catch (e) { /* daily_summaries table may not exist */ }
+
+    return Object.entries(grouped)
+      .map(([date, totals]) => ({
+        date,
+        totalCalories: totals.calories,
+        totalProtein: totals.protein,
+        totalCarbs: totals.carbs,
+        totalFat: totals.fat
+      }))
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  }, 5 * 60 * 1000); // Cache for 5 minutes (reports are less frequently accessed)
+};
+
+/**
  * Get entries for a specific date (lazy loading for History dropdowns)
  * Without images for initial load - use getEntryImage() for individual image loading
  */
