@@ -40,10 +40,10 @@ export const MealDetailModal: React.FC<MealDetailModalProps> = ({ entry, onClose
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center bg-black/40 dark:bg-black/60 backdrop-blur-md p-4 animate-in fade-in duration-200">
-      <div className="bg-white dark:bg-[#1a1c26] w-full max-w-md rounded-[40px] overflow-hidden shadow-2xl dark:shadow-black border border-white/50 dark:border-white/5 animate-in slide-in-from-bottom duration-300 max-h-[95vh] overflow-y-auto no-scrollbar">
+    <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center bg-black/40 backdrop-blur-md p-4 animate-in fade-in duration-200">
+      <div className="bg-white[#1a1c26] w-full max-w-md rounded-[40px] overflow-hidden shadow-2xl border border-white/50 animate-in slide-in-from-bottom duration-300 max-h-[95vh] overflow-y-auto no-scrollbar">
 
-        <div className="relative h-64 bg-gray-100 dark:bg-white/5">
+        <div className="relative h-64 bg-gray-100">
           {entry.imageUrl ? (
             <>
               <img src={entry.imageUrl} className="w-full h-full object-cover" />
@@ -58,12 +58,12 @@ export const MealDetailModal: React.FC<MealDetailModalProps> = ({ entry, onClose
               </button>
             </>
           ) : (
-            <div className="w-full h-full flex flex-col items-center justify-center text-gray-300 dark:text-gray-700">
+            <div className="w-full h-full flex flex-col items-center justify-center text-gray-300">
               <ChefHat size={48} className="mb-2 opacity-50" />
               <p className="text-[10px] font-black uppercase tracking-widest opacity-40">No Photo Attached</p>
             </div>
           )}
-          <button onClick={onClose} className="absolute top-4 right-4 p-2 bg-white/80 dark:bg-black/40 text-gray-900 dark:text-white rounded-full backdrop-blur-md hover:bg-white dark:hover:bg-black/60 shadow-lg transition-colors z-10">
+          <button onClick={onClose} className="absolute top-4 right-4 p-2 bg-white/80 text-gray-900 rounded-full backdrop-blur-md hover:bg-white:bg-black/60 shadow-lg transition-colors z-10">
             <X size={20} />
           </button>
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none"></div>
@@ -78,33 +78,33 @@ export const MealDetailModal: React.FC<MealDetailModalProps> = ({ entry, onClose
 
         <div className="p-8 space-y-6">
           <div className="grid grid-cols-4 gap-2">
-            <div className="bg-primary-50 dark:bg-primary-950/20 p-3 rounded-2xl flex flex-col items-center border border-primary-100/50">
+            <div className="bg-primary-50 p-3 rounded-2xl flex flex-col items-center border border-primary-100/50">
               <span className="text-lg font-black text-primary-600">{entry.calories}</span>
               <span className="text-[8px] font-black uppercase text-primary-400">kcal</span>
             </div>
-            <div className="bg-emerald-50 dark:bg-emerald-950/20 p-3 rounded-2xl flex flex-col items-center border border-emerald-100/50">
+            <div className="bg-emerald-50 p-3 rounded-2xl flex flex-col items-center border border-emerald-100/50">
               <span className="text-lg font-black text-emerald-600">{entry.protein}g</span>
               <span className="text-[8px] font-black uppercase text-emerald-400">Prot</span>
             </div>
-            <div className="bg-blue-50 dark:bg-blue-950/20 p-3 rounded-2xl flex flex-col items-center border border-blue-100/50">
+            <div className="bg-blue-50 p-3 rounded-2xl flex flex-col items-center border border-blue-100/50">
               <span className="text-lg font-black text-blue-600">{entry.carbs}g</span>
               <span className="text-[8px] font-black uppercase text-blue-400">Carb</span>
             </div>
-            <div className="bg-orange-50 dark:bg-orange-950/20 p-3 rounded-2xl flex flex-col items-center border border-orange-100/50">
+            <div className="bg-orange-50 p-3 rounded-2xl flex flex-col items-center border border-orange-100/50">
               <span className="text-lg font-black text-orange-600">{entry.fat}g</span>
               <span className="text-[8px] font-black uppercase text-orange-400">Fat</span>
             </div>
           </div>
 
           {entry.ingredients && entry.ingredients.length > 0 && (
-            <div className="bg-gray-50 dark:bg-white/5 rounded-3xl p-6 border border-gray-100 dark:border-white/5">
+            <div className="bg-gray-50 rounded-3xl p-6 border border-gray-100">
               <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-2 mb-4">
                 <List size={14} /> Ingredient Receipt
               </h3>
               <div className="space-y-3">
                 {entry.ingredients.map((ing, i) => (
-                  <div key={i} className="flex justify-between items-center text-sm font-bold border-b border-gray-100 dark:border-white/5 pb-2 last:border-0 last:pb-0">
-                    <span className="text-gray-700 dark:text-gray-300">{ing.name}</span>
+                  <div key={i} className="flex justify-between items-center text-sm font-bold border-b border-gray-100 pb-2 last:border-0 last:pb-0">
+                    <span className="text-gray-700">{ing.name}</span>
                     <div className="flex items-center gap-3">
                       <span className="text-slate-400">{ing.grams}g</span>
                       <span className="text-secondary-500 text-xs w-12 text-right">{ing.calories}cal</span>
@@ -119,7 +119,7 @@ export const MealDetailModal: React.FC<MealDetailModalProps> = ({ entry, onClose
             <Button variant="ghost" className="flex-1 text-red-500 py-4 font-black" onClick={handleDelete} isLoading={isDeleting}>
               <Trash2 size={18} className="mr-2" /> Delete
             </Button>
-            <Button className="flex-[2] py-4 font-black shadow-lg shadow-primary-200 dark:shadow-none" onClick={() => onEdit(entry)}>
+            <Button className="flex-[2] py-4 font-black shadow-lg shadow-primary-200" onClick={() => onEdit(entry)}>
               <Edit2 size={18} className="mr-2" /> Edit Meal
             </Button>
           </div>

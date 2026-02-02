@@ -42,7 +42,7 @@ export const EditGoalModal: React.FC<EditGoalModalProps> = ({ currentGoal, onClo
           </div>
         </div>
 
-        <Button className="w-full py-4 shadow-lg shadow-primary-200 dark:shadow-none" onClick={handleSave}>
+        <Button className="w-full py-4 shadow-lg shadow-primary-200" onClick={handleSave}>
           Update Goal
         </Button>
       </div>

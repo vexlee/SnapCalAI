@@ -459,19 +459,19 @@ export const History: React.FC = () => {
 
   if (isFullLogView) {
     return (
-      <div className="flex-1 flex flex-col min-h-0 animate-in slide-in-from-right duration-500 bg-background dark:bg-surface-dark">
+      <div className="flex-1 flex flex-col min-h-0 animate-in slide-in-from-right duration-500 bg-background">
         <div className="px-6 pt-10 pb-32 overflow-y-auto no-scrollbar">
           <button
             onClick={() => setIsFullLogView(false)}
-            className="flex items-center gap-2 text-secondary-400 dark:text-gray-500 mb-6 hover:text-primary-600 transition-colors"
+            className="flex items-center gap-2 text-secondary-400 mb-6 hover:text-primary-600 transition-colors"
           >
             <ChevronLeft size={20} />
             <span className="text-sm font-bold uppercase tracking-widest">Back to Report</span>
           </button>
 
           <div className="flex items-center justify-between mb-8">
-            <h1 className="text-2xl font-black text-primary-900 dark:text-primary-50 tracking-tight font-display">History Log</h1>
-            <div className="text-xs font-bold text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20 px-3 py-1.5 rounded-xl border border-primary-100 dark:border-primary-800/50">
+            <h1 className="text-2xl font-black text-primary-900 tracking-tight font-display">History Log</h1>
+            <div className="text-xs font-bold text-primary-600 bg-primary-50 px-3 py-1.5 rounded-xl border border-primary-100">
               {viewMode === 'week'
                 ? new Date(selectedDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })
                 : new Date(selectedMonth + '-01').toLocaleDateString(undefined, { month: 'long', year: 'numeric' })
@@ -484,7 +484,7 @@ export const History: React.FC = () => {
               loadingDays[selectedDate] ? (
                 <div className="space-y-4">
                   {[1, 2, 3, 4, 5].map(i => (
-                    <div key={i} className="h-20 bg-surface dark:bg-surface-dark rounded-4xl animate-pulse border border-white/40 dark:border-white/5"></div>
+                    <div key={i} className="h-20 bg-surface rounded-4xl animate-pulse border border-white/40"></div>
                   ))}
                 </div>
               ) : (dayEntries[selectedDate] || []).length > 0 ? (
@@ -494,34 +494,34 @@ export const History: React.FC = () => {
                     <div
                       key={entry.id}
                       onClick={() => setSelectedEntry(entryWithImage)}
-                      className="bg-surface dark:bg-surface-dark p-4 flex justify-between items-center rounded-4xl shadow-soft border border-white/40 dark:border-white/5 hover:bg-white dark:hover:bg-white/5 transition-all cursor-pointer active:scale-[0.98]"
+                      className="bg-surface p-4 flex justify-between items-center rounded-4xl shadow-soft border border-white/40 hover:bg-white:bg-white/5 transition-all cursor-pointer active:scale-[0.98]"
                     >
                       <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-3xl bg-secondary-50 dark:bg-white/5 overflow-hidden shadow-inner border border-white/40 dark:border-white/5">
+                        <div className="w-12 h-12 rounded-3xl bg-secondary-50 overflow-hidden shadow-inner border border-white/40">
                           {entryWithImage.imageUrl ? (
                             <img src={entryWithImage.imageUrl} className="w-full h-full object-cover" />
                           ) : (
-                            <div className="w-full h-full flex items-center justify-center bg-secondary-50 dark:bg-white/10 text-secondary-300 dark:text-secondary-700">
-                              <div className="w-2 h-2 rounded-full bg-secondary-300 dark:bg-secondary-700"></div>
+                            <div className="w-full h-full flex items-center justify-center bg-secondary-50 text-secondary-300">
+                              <div className="w-2 h-2 rounded-full bg-secondary-300"></div>
                             </div>
                           )}
                         </div>
                         <div className="flex flex-col">
-                          <span className="text-sm text-primary-900 dark:text-primary-50 font-bold">{entry.food_item}</span>
-                          <span className="text-[10px] text-secondary-400 dark:text-secondary-500 font-medium">{entry.time}</span>
+                          <span className="text-sm text-primary-900 font-bold">{entry.food_item}</span>
+                          <span className="text-[10px] text-secondary-400 font-medium">{entry.time}</span>
                         </div>
                       </div>
                       <div className="flex flex-col items-end">
-                        <span className="text-sm text-primary-600 dark:text-primary-400 font-black">{entry.calories}</span>
+                        <span className="text-sm text-primary-600 font-black">{entry.calories}</span>
                         <span className="text-[8px] font-bold text-secondary-400 uppercase">kcal</span>
                       </div>
                     </div>
                   );
                 })
               ) : (
-                <div className="bg-surface dark:bg-surface-dark rounded-4xl p-12 text-center border border-dashed border-secondary-200 dark:border-white/10">
-                  <CalendarIcon size={32} className="mx-auto text-secondary-200 dark:text-white/5 mb-4" />
-                  <p className="text-secondary-400 dark:text-secondary-500 text-sm font-medium">No meals logged for this day.</p>
+                <div className="bg-surface rounded-4xl p-12 text-center border border-dashed border-secondary-200">
+                  <CalendarIcon size={32} className="mx-auto text-secondary-200 mb-4" />
+                  <p className="text-secondary-400 text-sm font-medium">No meals logged for this day.</p>
                 </div>
               )
             ) : (
@@ -533,18 +533,18 @@ export const History: React.FC = () => {
                     const dayTotal = dayEntries.reduce((sum, entry) => sum + entry.calories, 0);
 
                     return (
-                      <div key={date} className="bg-surface dark:bg-surface-dark rounded-4xl border border-white/40 dark:border-white/5 overflow-hidden shadow-soft">
+                      <div key={date} className="bg-surface rounded-4xl border border-white/40 overflow-hidden shadow-soft">
                         {/* Day Header - Clickable to expand/collapse */}
                         <button
                           onClick={() => toggleDayExpansion(date)}
-                          className="w-full p-4 flex justify-between items-center hover:bg-white dark:hover:bg-white/5 transition-all"
+                          className="w-full p-4 flex justify-between items-center hover:bg-white:bg-white/5 transition-all"
                         >
                           <div className="flex items-center gap-3">
                             <div className={`transition-transform duration-200 ${isExpanded ? 'rotate-90' : ''}`}>
                               <ChevronRight size={16} className="text-secondary-400" />
                             </div>
                             <div className="flex flex-col items-start">
-                              <span className="text-sm font-bold text-primary-900 dark:text-primary-50">
+                              <span className="text-sm font-bold text-primary-900">
                                 {new Date(date).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })}
                               </span>
                               <span className="text-[9px] font-medium text-secondary-400">
@@ -553,39 +553,39 @@ export const History: React.FC = () => {
                             </div>
                           </div>
                           <div className="flex flex-col items-end">
-                            <span className="text-sm text-primary-600 dark:text-primary-400 font-black">{dayTotal}</span>
+                            <span className="text-sm text-primary-600 font-black">{dayTotal}</span>
                             <span className="text-[8px] font-bold text-secondary-400 uppercase">kcal</span>
                           </div>
                         </button>
 
                         {/* Expandable Meal List */}
                         {isExpanded && (
-                          <div className="border-t border-secondary-100 dark:border-white/5">
+                          <div className="border-t border-secondary-100">
                             {dayEntries.map(entry => {
                               const entryWithImage = getEntryWithImage(entry);
                               return (
                                 <div
                                   key={entry.id}
                                   onClick={() => setSelectedEntry(entryWithImage)}
-                                  className="p-4 flex justify-between items-center hover:bg-white dark:hover:bg-white/5 transition-all cursor-pointer border-b border-secondary-50 dark:border-white/5 last:border-b-0"
+                                  className="p-4 flex justify-between items-center hover:bg-white:bg-white/5 transition-all cursor-pointer border-b border-secondary-50 last:border-b-0"
                                 >
                                   <div className="flex items-center gap-4">
-                                    <div className="w-12 h-12 rounded-3xl bg-secondary-50 dark:bg-white/5 overflow-hidden shadow-inner border border-white/40 dark:border-white/5">
+                                    <div className="w-12 h-12 rounded-3xl bg-secondary-50 overflow-hidden shadow-inner border border-white/40">
                                       {entryWithImage.imageUrl ? (
                                         <img src={entryWithImage.imageUrl} className="w-full h-full object-cover" />
                                       ) : (
-                                        <div className="w-full h-full flex items-center justify-center bg-secondary-50 dark:bg-white/10 text-secondary-300 dark:text-secondary-700">
-                                          <div className="w-2 h-2 rounded-full bg-secondary-300 dark:bg-secondary-700"></div>
+                                        <div className="w-full h-full flex items-center justify-center bg-secondary-50 text-secondary-300">
+                                          <div className="w-2 h-2 rounded-full bg-secondary-300"></div>
                                         </div>
                                       )}
                                     </div>
                                     <div className="flex flex-col">
-                                      <span className="text-sm text-primary-900 dark:text-primary-50 font-bold leading-tight">{entry.food_item}</span>
-                                      <span className="text-[9px] text-secondary-400 dark:text-secondary-500">{entry.time}</span>
+                                      <span className="text-sm text-primary-900 font-bold leading-tight">{entry.food_item}</span>
+                                      <span className="text-[9px] text-secondary-400">{entry.time}</span>
                                     </div>
                                   </div>
                                   <div className="flex flex-col items-end">
-                                    <span className="text-sm text-primary-600 dark:text-primary-400 font-black">{entry.calories}</span>
+                                    <span className="text-sm text-primary-600 font-black">{entry.calories}</span>
                                     <span className="text-[8px] font-bold text-secondary-400 uppercase">kcal</span>
                                   </div>
                                 </div>
@@ -597,9 +597,9 @@ export const History: React.FC = () => {
                     );
                   })
               ) : (
-                <div className="bg-surface dark:bg-surface-dark rounded-4xl p-12 text-center border border-dashed border-secondary-200 dark:border-white/10">
-                  <CalendarIcon size={32} className="mx-auto text-secondary-200 dark:text-white/5 mb-4" />
-                  <p className="text-secondary-400 dark:text-secondary-500 text-sm font-medium">No data for this {viewMode === 'month' ? 'month' : 'week'}.</p>
+                <div className="bg-surface rounded-4xl p-12 text-center border border-dashed border-secondary-200">
+                  <CalendarIcon size={32} className="mx-auto text-secondary-200 mb-4" />
+                  <p className="text-secondary-400 text-sm font-medium">No data for this {viewMode === 'month' ? 'month' : 'week'}.</p>
                 </div>
               )
             )}
@@ -619,27 +619,27 @@ export const History: React.FC = () => {
   }
 
   return (
-    <div className="flex-1 flex flex-col min-h-0 animate-in fade-in duration-500 overflow-y-auto no-scrollbar relative bg-background dark:bg-surface-dark">
+    <div className="flex-1 flex flex-col min-h-0 animate-in fade-in duration-500 overflow-y-auto no-scrollbar relative bg-background">
       <div className="px-6 pt-10 pb-4">
         {/* Header with Switcher */}
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-black text-primary-900 dark:text-primary-50 tracking-tight font-display">Report</h1>
-          <div className="flex p-1 bg-surface dark:bg-surface-dark rounded-xl border border-white/40 dark:border-white/5 shadow-sm">
+          <h1 className="text-2xl font-black text-primary-900 tracking-tight font-display">Report</h1>
+          <div className="flex p-1 bg-surface rounded-xl border border-white/40 shadow-sm">
             <button
               onClick={() => setViewMode('day')}
-              className={`px-3 py-1.5 rounded-lg text-[10px] font-bold transition-all ${viewMode === 'day' ? 'bg-[#3D745B] text-white shadow-soft' : 'text-secondary-400 dark:text-secondary-500 hover:text-[#3D745B]'}`}
+              className={`px-3 py-1.5 rounded-lg text-[10px] font-bold transition-all ${viewMode === 'day' ? 'bg-[#3D745B] text-white shadow-soft' : 'text-secondary-400 hover:text-[#3D745B]'}`}
             >
               Daily
             </button>
             <button
               onClick={() => setViewMode('week')}
-              className={`px-3 py-1.5 rounded-lg text-[10px] font-bold transition-all ${viewMode === 'week' ? 'bg-[#3D745B] text-white shadow-soft' : 'text-secondary-400 dark:text-secondary-500 hover:text-[#3D745B]'}`}
+              className={`px-3 py-1.5 rounded-lg text-[10px] font-bold transition-all ${viewMode === 'week' ? 'bg-[#3D745B] text-white shadow-soft' : 'text-secondary-400 hover:text-[#3D745B]'}`}
             >
               Weekly
             </button>
             <button
               onClick={() => setViewMode('month')}
-              className={`px-3 py-1.5 rounded-lg text-[10px] font-bold transition-all ${viewMode === 'month' ? 'bg-[#3D745B] text-white shadow-soft' : 'text-secondary-400 dark:text-secondary-500 hover:text-[#3D745B]'}`}
+              className={`px-3 py-1.5 rounded-lg text-[10px] font-bold transition-all ${viewMode === 'month' ? 'bg-[#3D745B] text-white shadow-soft' : 'text-secondary-400 hover:text-[#3D745B]'}`}
             >
               Monthly
             </button>
@@ -680,8 +680,8 @@ export const History: React.FC = () => {
                     else setSelectedMonth(item.id);
                   }}
                   className={`flex-shrink-0 flex flex-col items-center justify-center ${viewMode === 'week' ? 'w-24' : 'w-12'} py-3 rounded-3xl transition-all duration-300 snap-center ${isSelected
-                    ? 'bg-[#3D745B] text-white shadow-lg shadow-primary-200/50 dark:shadow-primary-900/40 transform scale-110'
-                    : 'bg-surface dark:bg-surface-dark text-secondary-400 dark:text-secondary-500 border border-white/40 dark:border-white/5'
+                    ? 'bg-[#3D745B] text-white shadow-lg shadow-primary-200/50 transform scale-110'
+                    : 'bg-surface text-secondary-400 border border-white/40'
                     }`}
                 >
                   <span className={`text-[9px] font-bold uppercase mb-1 ${isSelected ? 'text-white/70' : 'text-secondary-400'}`}>
@@ -696,37 +696,37 @@ export const History: React.FC = () => {
             })}
           </div>
           {/* Fades for scrolling */}
-          <div className="absolute top-0 left-0 bottom-2 w-8 bg-gradient-to-r from-background dark:from-surface-dark to-transparent pointer-events-none z-10"></div>
-          <div className="absolute top-0 right-0 bottom-2 w-8 bg-gradient-to-l from-background dark:from-surface-dark to-transparent pointer-events-none z-10"></div>
+          <div className="absolute top-0 left-0 bottom-2 w-8 bg-gradient-to-r from-background to-transparent pointer-events-none z-10"></div>
+          <div className="absolute top-0 right-0 bottom-2 w-8 bg-gradient-to-l from-background to-transparent pointer-events-none z-10"></div>
         </div>
 
         {/* Total Macros Section - Redesigned Card (Refined) */}
         <div className="mb-8">
-          <div className="bg-surface dark:bg-surface-dark rounded-4xl p-6 shadow-soft border border-white/40 dark:border-white/5 flex flex-col items-center">
-            <span className="text-[9px] font-bold text-secondary-400 dark:text-secondary-500 uppercase tracking-widest mb-1">
+          <div className="bg-surface rounded-4xl p-6 shadow-soft border border-white/40 flex flex-col items-center">
+            <span className="text-[9px] font-bold text-secondary-400 uppercase tracking-widest mb-1">
               {viewMode === 'day' ? 'Daily Total' : viewMode === 'week' ? 'Weekly Total' : 'Monthly Total'}
             </span>
             <div className="flex flex-col items-center mb-6">
-              <span className="text-5xl font-black text-primary-900 dark:text-primary-50 tracking-tighter">
+              <span className="text-5xl font-black text-primary-900 tracking-tighter">
                 {Math.round(activeSummary.totalCalories)}
               </span>
-              <span className="text-[10px] font-black text-primary-600 dark:text-primary-400 uppercase tracking-widest mt-0.5">
+              <span className="text-[10px] font-black text-primary-600 uppercase tracking-widest mt-0.5">
                 KCAL
               </span>
             </div>
 
             <div className="grid grid-cols-3 gap-2.5 w-full">
-              <div className="flex flex-col items-center py-2.5 bg-emerald-50/50 dark:bg-emerald-500/5 rounded-3xl border border-emerald-100/50 dark:border-emerald-500/10 transition-colors">
-                <span className="text-[8px] font-bold text-emerald-600/60 dark:text-emerald-400/60 uppercase mb-0.5">Protein</span>
-                <span className="text-sm font-black text-emerald-600 dark:text-emerald-400">{Math.round(activeSummary.totalProtein)}g</span>
+              <div className="flex flex-col items-center py-2.5 bg-emerald-50/50 rounded-3xl border border-emerald-100/50 transition-colors">
+                <span className="text-[8px] font-bold text-emerald-600/60 uppercase mb-0.5">Protein</span>
+                <span className="text-sm font-black text-emerald-600">{Math.round(activeSummary.totalProtein)}g</span>
               </div>
-              <div className="flex flex-col items-center py-2.5 bg-amber-50/50 dark:bg-amber-500/5 rounded-3xl border border-amber-100/50 dark:border-amber-500/10 transition-colors">
-                <span className="text-[8px] font-bold text-amber-600/60 dark:text-amber-400/60 uppercase mb-0.5">Carbs</span>
-                <span className="text-sm font-black text-amber-600 dark:text-amber-400">{Math.round(activeSummary.totalCarbs)}g</span>
+              <div className="flex flex-col items-center py-2.5 bg-amber-50/50 rounded-3xl border border-amber-100/50 transition-colors">
+                <span className="text-[8px] font-bold text-amber-600/60 uppercase mb-0.5">Carbs</span>
+                <span className="text-sm font-black text-amber-600">{Math.round(activeSummary.totalCarbs)}g</span>
               </div>
-              <div className="flex flex-col items-center py-2.5 bg-rose-50/50 dark:bg-rose-500/5 rounded-3xl border border-rose-100/50 dark:border-rose-500/10 transition-colors">
-                <span className="text-[8px] font-bold text-rose-600/60 dark:text-rose-400/60 uppercase mb-0.5">Fat</span>
-                <span className="text-sm font-black text-rose-600 dark:text-rose-400">{Math.round(activeSummary.totalFat)}g</span>
+              <div className="flex flex-col items-center py-2.5 bg-rose-50/50 rounded-3xl border border-rose-100/50 transition-colors">
+                <span className="text-[8px] font-bold text-rose-600/60 uppercase mb-0.5">Fat</span>
+                <span className="text-sm font-black text-rose-600">{Math.round(activeSummary.totalFat)}g</span>
               </div>
             </div>
           </div>
@@ -762,30 +762,30 @@ export const History: React.FC = () => {
           <div className="grid grid-rows-2 gap-4 h-36">
             <Card
               onClick={() => setIsFullLogView(true)}
-              className="p-4 flex flex-col justify-center bg-surface dark:bg-surface-dark border-white/40 dark:border-white/5 active:scale-95 transition-transform cursor-pointer rounded-4xl shadow-soft"
+              className="p-4 flex flex-col justify-center bg-surface border-white/40 active:scale-95 transition-transform cursor-pointer rounded-4xl shadow-soft"
             >
               <div className="flex justify-between items-center mb-1">
                 <p className="text-[9px] font-bold text-secondary-400 uppercase">History Log</p>
                 <ChevronRight size={10} className="text-secondary-300" />
               </div>
-              <p className="text-xs font-black text-primary-900 dark:text-primary-50">
+              <p className="text-xs font-black text-primary-900">
                 {viewMode === 'day' ? (dayEntries[selectedDate] || []).length : monthEntriesList.length} Meals
               </p>
             </Card>
 
-            <Card className="p-4 flex flex-col justify-center bg-surface dark:bg-surface-dark border-white/40 dark:border-white/5 rounded-4xl shadow-soft">
+            <Card className="p-4 flex flex-col justify-center bg-surface border-white/40 rounded-4xl shadow-soft">
               <div className="flex justify-between items-center mb-1">
                 <p className="text-[9px] font-bold text-secondary-400 uppercase">Goal Status</p>
                 <Info size={10} className="text-secondary-300" />
               </div>
               <div className="flex items-center gap-2">
-                <div className="flex-1 h-1 bg-secondary-100 dark:bg-white/5 rounded-full overflow-hidden">
+                <div className="flex-1 h-1 bg-secondary-100 rounded-full overflow-hidden">
                   <div
                     className="h-full bg-[#3D745B] rounded-full"
                     style={{ width: `${Math.min((activeSummary.totalCalories / (viewMode === 'day' ? dailyGoal : viewMode === 'week' ? dailyGoal * 7 : dailyGoal * 30)) * 100, 100)}%` }}
                   />
                 </div>
-                <span className="text-[10px] font-black text-primary-900 dark:text-primary-50">
+                <span className="text-[10px] font-black text-primary-900">
                   {Math.round((activeSummary.totalCalories / (viewMode === 'day' ? dailyGoal : viewMode === 'week' ? dailyGoal * 7 : dailyGoal * 30)) * 100)}%
                 </span>
               </div>

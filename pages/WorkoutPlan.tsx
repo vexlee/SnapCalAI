@@ -209,10 +209,10 @@ export const WorkoutPlan: React.FC<WorkoutPlanProps> = ({ onNavigate }) => {
             {/* Header */}
             <header className="flex justify-between items-end mb-6 flex-shrink-0">
                 <div>
-                    <p className="text-gray-400 dark:text-gray-500 text-xs font-semibold uppercase tracking-widest mb-2">
+                    <p className="text-gray-400 text-xs font-semibold uppercase tracking-widest mb-2">
                         Your Training Schedule
                     </p>
-                    <h1 className="text-3xl font-extrabold text-gray-900 dark:text-gray-50 tracking-tight leading-none">
+                    <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight leading-none">
                         Workout Plan
                     </h1>
                 </div>
@@ -226,23 +226,23 @@ export const WorkoutPlan: React.FC<WorkoutPlanProps> = ({ onNavigate }) => {
                 <Card className="p-6">
                     <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center gap-2">
-                            <Calendar size={16} className="text-primary-600 dark:text-primary-400" />
-                            <h2 className="text-sm font-bold text-gray-900 dark:text-gray-50 uppercase tracking-wide">
+                            <Calendar size={16} className="text-primary-600" />
+                            <h2 className="text-sm font-bold text-gray-900 uppercase tracking-wide">
                                 {monthNames[currentMonth.getMonth()]} {currentMonth.getFullYear()}
                             </h2>
                         </div>
                         <div className="flex items-center gap-1">
                             <button
                                 onClick={handlePreviousMonth}
-                                className="p-1.5 hover:bg-gray-100 dark:hover:bg-white/5 rounded-lg transition-colors"
+                                className="p-1.5 hover:bg-gray-100:bg-white/5 rounded-lg transition-colors"
                             >
-                                <ChevronLeft size={18} className="text-gray-600 dark:text-gray-400" />
+                                <ChevronLeft size={18} className="text-gray-600" />
                             </button>
                             <button
                                 onClick={handleNextMonth}
-                                className="p-1.5 hover:bg-gray-100 dark:hover:bg-white/5 rounded-lg transition-colors"
+                                className="p-1.5 hover:bg-gray-100:bg-white/5 rounded-lg transition-colors"
                             >
-                                <ChevronRight size={18} className="text-gray-600 dark:text-gray-400" />
+                                <ChevronRight size={18} className="text-gray-600" />
                             </button>
                         </div>
                     </div>
@@ -250,7 +250,7 @@ export const WorkoutPlan: React.FC<WorkoutPlanProps> = ({ onNavigate }) => {
                     {/* Day names */}
                     <div className="grid grid-cols-7 gap-1 mb-2">
                         {dayNames.map((day, idx) => (
-                            <div key={idx} className="text-center text-xs font-bold text-gray-400 dark:text-gray-500 py-1">
+                            <div key={idx} className="text-center text-xs font-bold text-gray-400 py-1">
                                 {day}
                             </div>
                         ))}
@@ -276,17 +276,17 @@ export const WorkoutPlan: React.FC<WorkoutPlanProps> = ({ onNavigate }) => {
                                     className={`
                                         aspect-square flex flex-col items-center justify-center p-1 rounded-xl transition-all relative text-sm
                                         ${isSelected
-                                            ? 'bg-[#3D745B] text-white shadow-lg shadow-primary-200 dark:shadow-primary-900/40 scale-105 font-bold'
-                                            : 'bg-gray-50 dark:bg-white/5 text-gray-700 dark:text-gray-300 hover:bg-primary-50 dark:hover:bg-primary-900/20 hover:scale-105'
+                                            ? 'bg-[#3D745B] text-white shadow-lg shadow-primary-200 scale-105 font-bold'
+                                            : 'bg-gray-50 text-gray-700 hover:bg-primary-50:bg-primary-900/20 hover:scale-105'
                                         }
                                     `}
                                 >
                                     <span>{date.getDate()}</span>
                                     {isToday && !isSelected && (
-                                        <div className="absolute bottom-1 w-1 h-1 bg-[#3D745B] dark:bg-primary-400 rounded-full" />
+                                        <div className="absolute bottom-1 w-1 h-1 bg-[#3D745B] rounded-full" />
                                     )}
                                     {hasPlan && (
-                                        <div className={`absolute top-1 right-1 w-1.5 h-1.5 rounded-full ${isSelected ? 'bg-white' : 'bg-[#3D745B] dark:bg-primary-400'}`} />
+                                        <div className={`absolute top-1 right-1 w-1.5 h-1.5 rounded-full ${isSelected ? 'bg-white' : 'bg-[#3D745B]'}`} />
                                     )}
                                 </button>
                             );
@@ -307,25 +307,25 @@ export const WorkoutPlan: React.FC<WorkoutPlanProps> = ({ onNavigate }) => {
                         {/* Overall Progress Header */}
                         <div className="flex items-center justify-between">
                             <div>
-                                <h2 className="text-lg font-extrabold text-gray-900 dark:text-gray-50">
+                                <h2 className="text-lg font-extrabold text-gray-900">
                                     {isSameDay(selectedDate, today) ? "Today's Workouts" : "Workout Plans"}
                                 </h2>
-                                <p className="text-xs text-gray-500 dark:text-gray-400 font-semibold mt-0.5">
+                                <p className="text-xs text-gray-500 font-semibold mt-0.5">
                                     {workoutPlans.length} {workoutPlans.length === 1 ? 'workout' : 'workouts'} scheduled
                                 </p>
                             </div>
                             <div className="text-right">
-                                <p className="text-2xl font-extrabold text-primary-600 dark:text-primary-400">
+                                <p className="text-2xl font-extrabold text-primary-600">
                                     {completedCount}/{totalCount}
                                 </p>
-                                <p className="text-xs text-gray-500 dark:text-gray-400 font-semibold">
+                                <p className="text-xs text-gray-500 font-semibold">
                                     Overall Progress
                                 </p>
                             </div>
                         </div>
 
                         {/* Overall Progress Bar */}
-                        <div className="bg-gray-100 dark:bg-white/5 rounded-full h-2 overflow-hidden">
+                        <div className="bg-gray-100 rounded-full h-2 overflow-hidden">
                             <div
                                 className="h-full bg-gradient-to-r from-primary-500 to-primary-600 transition-all duration-500 ease-out rounded-full"
                                 style={{ width: `${progressPercent}%` }}
@@ -339,19 +339,19 @@ export const WorkoutPlan: React.FC<WorkoutPlanProps> = ({ onNavigate }) => {
                             const workoutProgressPercent = workoutTotalCount > 0 ? (workoutCompletedCount / workoutTotalCount) * 100 : 0;
 
                             return (
-                                <Card key={workout.id} className="p-6 border-2 border-gray-200 dark:border-white/10">
+                                <Card key={workout.id} className="p-6 border-2 border-gray-200">
                                     {/* Workout Header */}
                                     <div className="flex items-start justify-between mb-4">
                                         <div className="flex-1">
-                                            <h3 className="text-base font-extrabold text-gray-900 dark:text-gray-50 mb-1">
+                                            <h3 className="text-base font-extrabold text-gray-900 mb-1">
                                                 {workout.title}
                                             </h3>
                                             <div className="flex items-center gap-2">
-                                                <span className="text-xs font-bold text-primary-600 dark:text-primary-400">
+                                                <span className="text-xs font-bold text-primary-600">
                                                     {workoutCompletedCount}/{workoutTotalCount} completed
                                                 </span>
                                                 <span className="text-xs text-gray-400">•</span>
-                                                <span className="text-xs text-gray-500 dark:text-gray-400">
+                                                <span className="text-xs text-gray-500">
                                                     {Math.round(workoutProgressPercent)}%
                                                 </span>
                                             </div>
@@ -359,15 +359,15 @@ export const WorkoutPlan: React.FC<WorkoutPlanProps> = ({ onNavigate }) => {
                                         {/* Delete Workout Button */}
                                         <button
                                             onClick={() => handleDeleteWorkout(workout.id!)}
-                                            className="p-2 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                                            className="p-2 hover:bg-red-50:bg-red-900/20 rounded-lg transition-colors"
                                             title="Delete entire workout"
                                         >
-                                            <Trash2 size={16} className="text-red-600 dark:text-red-400" />
+                                            <Trash2 size={16} className="text-red-600" />
                                         </button>
                                     </div>
 
                                     {/* Workout Progress Bar */}
-                                    <div className="mb-4 bg-gray-100 dark:bg-white/5 rounded-full h-1.5 overflow-hidden">
+                                    <div className="mb-4 bg-gray-100 rounded-full h-1.5 overflow-hidden">
                                         <div
                                             className="h-full bg-gradient-to-r from-primary-500 to-primary-600 transition-all duration-500 ease-out rounded-full"
                                             style={{ width: `${workoutProgressPercent}%` }}
@@ -385,19 +385,19 @@ export const WorkoutPlan: React.FC<WorkoutPlanProps> = ({ onNavigate }) => {
                                                     ${exercise.completed ? 'opacity-60' : ''}
                                                 `}
                                             >
-                                                <Card className={`p-4 ${exercise.completed ? 'bg-primary-50/50 dark:bg-primary-900/10' : ''}`}>
+                                                <Card className={`p-4 ${exercise.completed ? 'bg-primary-50/50' : ''}`}>
                                                     <div className="flex items-start gap-3">
                                                         <div className="flex-shrink-0 mt-0.5">
                                                             {exercise.completed ? (
                                                                 <CheckCircle2
                                                                     size={20}
-                                                                    className="text-primary-600 dark:text-primary-400"
+                                                                    className="text-primary-600"
                                                                     strokeWidth={2.5}
                                                                 />
                                                             ) : (
                                                                 <Circle
                                                                     size={20}
-                                                                    className="text-gray-300 dark:text-gray-600"
+                                                                    className="text-gray-300"
                                                                     strokeWidth={2}
                                                                 />
                                                             )}
@@ -406,34 +406,34 @@ export const WorkoutPlan: React.FC<WorkoutPlanProps> = ({ onNavigate }) => {
                                                             <h4 className={`
                                                                 font-bold text-sm mb-1.5
                                                                 ${exercise.completed
-                                                                    ? 'text-gray-500 dark:text-gray-400 line-through'
-                                                                    : 'text-gray-900 dark:text-gray-50'
+                                                                    ? 'text-gray-500 line-through'
+                                                                    : 'text-gray-900'
                                                                 }
                                                             `}>
                                                                 {exercise.name}
                                                             </h4>
                                                             <div className="flex items-center gap-3 text-xs">
                                                                 <div className="flex items-center gap-1">
-                                                                    <span className="font-semibold text-gray-500 dark:text-gray-400">
+                                                                    <span className="font-semibold text-gray-500">
                                                                         Sets:
                                                                     </span>
-                                                                    <span className="font-bold text-gray-700 dark:text-gray-300">
+                                                                    <span className="font-bold text-gray-700">
                                                                         {exercise.sets}
                                                                     </span>
                                                                 </div>
                                                                 <div className="flex items-center gap-1">
-                                                                    <span className="font-semibold text-gray-500 dark:text-gray-400">
+                                                                    <span className="font-semibold text-gray-500">
                                                                         Reps:
                                                                     </span>
-                                                                    <span className="font-bold text-gray-700 dark:text-gray-300">
+                                                                    <span className="font-bold text-gray-700">
                                                                         {exercise.reps}
                                                                     </span>
                                                                 </div>
                                                                 <div className="flex items-center gap-1">
-                                                                    <span className="font-semibold text-gray-500 dark:text-gray-400">
+                                                                    <span className="font-semibold text-gray-500">
                                                                         Rest:
                                                                     </span>
-                                                                    <span className="font-bold text-gray-700 dark:text-gray-300">
+                                                                    <span className="font-bold text-gray-700">
                                                                         {exercise.rest}
                                                                     </span>
                                                                 </div>
@@ -446,20 +446,20 @@ export const WorkoutPlan: React.FC<WorkoutPlanProps> = ({ onNavigate }) => {
                                                                     e.stopPropagation();
                                                                     handleEditExercise(workout.id!, exercise);
                                                                 }}
-                                                                className="p-1.5 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
+                                                                className="p-1.5 hover:bg-blue-50:bg-blue-900/20 rounded-lg transition-colors"
                                                                 title="Edit exercise"
                                                             >
-                                                                <Pencil size={14} className="text-blue-600 dark:text-blue-400" />
+                                                                <Pencil size={14} className="text-blue-600" />
                                                             </button>
                                                             <button
                                                                 onClick={(e) => {
                                                                     e.stopPropagation();
                                                                     handleDeleteExercise(workout.id!, exercise.id);
                                                                 }}
-                                                                className="p-1.5 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                                                                className="p-1.5 hover:bg-red-50:bg-red-900/20 rounded-lg transition-colors"
                                                                 title="Delete exercise"
                                                             >
-                                                                <Trash2 size={14} className="text-red-600 dark:text-red-400" />
+                                                                <Trash2 size={14} className="text-red-600" />
                                                             </button>
                                                         </div>
                                                     </div>
@@ -470,10 +470,10 @@ export const WorkoutPlan: React.FC<WorkoutPlanProps> = ({ onNavigate }) => {
 
                                     {/* Workout Completion Message */}
                                     {workoutCompletedCount === workoutTotalCount && workoutTotalCount > 0 && (
-                                        <div className="mt-4 p-4 bg-gradient-to-br from-primary-50 to-primary-100 dark:from-primary-950/30 dark:to-primary-900/20 border-2 border-primary-200 dark:border-primary-800/50 rounded-xl">
+                                        <div className="mt-4 p-4 bg-gradient-to-br from-primary-50 to-primary-100 border-2 border-primary-200 rounded-xl">
                                             <div className="flex items-center gap-3">
-                                                <CheckCircle2 size={20} className="text-primary-600 dark:text-primary-400" strokeWidth={2.5} />
-                                                <p className="text-sm font-bold text-primary-900 dark:text-primary-100">
+                                                <CheckCircle2 size={20} className="text-primary-600" strokeWidth={2.5} />
+                                                <p className="text-sm font-bold text-primary-900">
                                                     Workout Complete! 🎉
                                                 </p>
                                             </div>
@@ -486,7 +486,7 @@ export const WorkoutPlan: React.FC<WorkoutPlanProps> = ({ onNavigate }) => {
                         {/* Add Another Workout Button */}
                         <button
                             onClick={() => setShowAddModal(true)}
-                            className="w-full flex items-center justify-center gap-2 py-4 bg-white dark:bg-white/5 hover:bg-primary-50 dark:hover:bg-primary-900/20 text-gray-900 dark:text-gray-50 rounded-[20px] font-bold transition-all border-2 border-dashed border-gray-300 dark:border-white/20 hover:border-primary-400 dark:hover:border-primary-600 active:scale-95"
+                            className="w-full flex items-center justify-center gap-2 py-4 bg-white hover:bg-primary-50:bg-primary-900/20 text-gray-900 rounded-[20px] font-bold transition-all border-2 border-dashed border-gray-300 hover:border-primary-400:border-primary-600 active:scale-95"
                         >
                             <Plus size={20} />
                             <span>Add Another Workout</span>
@@ -494,15 +494,15 @@ export const WorkoutPlan: React.FC<WorkoutPlanProps> = ({ onNavigate }) => {
 
                         {/* Overall Completion Message */}
                         {completedCount === totalCount && totalCount > 0 && (
-                            <Card className="p-6 bg-gradient-to-br from-primary-50 to-primary-100 dark:from-primary-950/30 dark:to-primary-900/20 border-2 border-primary-200 dark:border-primary-800/50 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                            <Card className="p-6 bg-gradient-to-br from-primary-50 to-primary-100 border-2 border-primary-200 animate-in fade-in slide-in-from-bottom-4 duration-500">
                                 <div className="text-center">
                                     <div className="w-16 h-16 bg-primary-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
                                         <CheckCircle2 size={32} className="text-white" strokeWidth={2.5} />
                                     </div>
-                                    <h3 className="text-xl font-extrabold text-primary-900 dark:text-primary-100 mb-2">
+                                    <h3 className="text-xl font-extrabold text-primary-900 mb-2">
                                         All Workouts Complete! 🎉
                                     </h3>
-                                    <p className="text-sm text-primary-700 dark:text-primary-300 font-semibold">
+                                    <p className="text-sm text-primary-700 font-semibold">
                                         Amazing work! You've completed all exercises for {isSameDay(selectedDate, today) ? 'today' : 'this day'}.
                                     </p>
                                 </div>
@@ -513,13 +513,13 @@ export const WorkoutPlan: React.FC<WorkoutPlanProps> = ({ onNavigate }) => {
                     /* Empty State */
                     <Card className="p-8">
                         <div className="text-center max-w-sm mx-auto">
-                            <div className="w-20 h-20 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-white/10 dark:to-white/5 rounded-full flex items-center justify-center mx-auto mb-6">
-                                <Dumbbell size={32} className="text-gray-400 dark:text-gray-500" />
+                            <div className="w-20 h-20 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center mx-auto mb-6">
+                                <Dumbbell size={32} className="text-gray-400" />
                             </div>
-                            <h3 className="text-xl font-extrabold text-gray-900 dark:text-gray-50 mb-2">
+                            <h3 className="text-xl font-extrabold text-gray-900 mb-2">
                                 No Workout Plan Yet
                             </h3>
-                            <p className="text-sm text-gray-600 dark:text-gray-400 mb-6 leading-relaxed">
+                            <p className="text-sm text-gray-600 mb-6 leading-relaxed">
                                 {isSameDay(selectedDate, today)
                                     ? "Ready to crush today's workout? Get a personalized plan from your AI coach or create your own!"
                                     : "No workout plan for this date. Add one to stay on track!"
@@ -529,7 +529,7 @@ export const WorkoutPlan: React.FC<WorkoutPlanProps> = ({ onNavigate }) => {
                             <div className="space-y-3">
                                 <button
                                     onClick={() => onNavigate?.(AppView.CAL_COACH)}
-                                    className="w-full flex items-center justify-center gap-2 py-4 bg-[#3D745B] hover:bg-primary-700 text-white rounded-[20px] font-bold transition-all shadow-lg shadow-primary-200 dark:shadow-primary-900/40 active:scale-95"
+                                    className="w-full flex items-center justify-center gap-2 py-4 bg-[#3D745B] hover:bg-primary-700 text-white rounded-[20px] font-bold transition-all shadow-lg shadow-primary-200 active:scale-95"
                                 >
                                     <Sparkles size={20} />
                                     <span>Get AI Plan from Coach</span>
@@ -537,7 +537,7 @@ export const WorkoutPlan: React.FC<WorkoutPlanProps> = ({ onNavigate }) => {
 
                                 <button
                                     onClick={() => setShowAddModal(true)}
-                                    className="w-full flex items-center justify-center gap-2 py-4 bg-white dark:bg-white/5 hover:bg-gray-50 dark:hover:bg-white/10 text-gray-900 dark:text-gray-50 rounded-[20px] font-bold transition-all border-2 border-gray-200 dark:border-white/10 active:scale-95"
+                                    className="w-full flex items-center justify-center gap-2 py-4 bg-white hover:bg-gray-50:bg-white/10 text-gray-900 rounded-[20px] font-bold transition-all border-2 border-gray-200 active:scale-95"
                                 >
                                     <Plus size={20} />
                                     <span>Create Custom Plan</span>

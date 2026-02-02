@@ -262,18 +262,18 @@ export const CalCoach: React.FC<CalCoachProps> = ({ onNavigate }) => {
     const showCompactSuggestions = messages.length > 1 && !isLoading;
 
     return (
-        <div className="flex-1 flex flex-col min-h-0 px-6 pt-10 pb-32 animate-in fade-in duration-500 bg-background dark:bg-surface-dark">
+        <div className="flex-1 flex flex-col min-h-0 px-6 pt-10 pb-32 animate-in fade-in duration-500 bg-background">
             {/* Header */}
             <header className="flex justify-between items-end mb-6 flex-shrink-0">
                 <div>
-                    <p className="text-secondary-400 dark:text-secondary-500 text-xs font-bold uppercase tracking-widest mb-2">
+                    <p className="text-secondary-400 text-xs font-bold uppercase tracking-widest mb-2">
                         Your Personal Coach
                     </p>
-                    <h1 className="text-3xl font-black text-primary-900 dark:text-primary-50 tracking-tight leading-none font-display">
+                    <h1 className="text-3xl font-black text-primary-900 tracking-tight leading-none font-display">
                         Cal Coach
                     </h1>
                 </div>
-                <div className="w-12 h-12 bg-[#3D745B] rounded-full flex items-center justify-center text-white shadow-lg shadow-primary-200/50 dark:shadow-primary-900/40">
+                <div className="w-12 h-12 bg-[#3D745B] rounded-full flex items-center justify-center text-white shadow-lg shadow-primary-200/50">
                     <Sparkles size={20} />
                 </div>
             </header>
@@ -287,7 +287,7 @@ export const CalCoach: React.FC<CalCoachProps> = ({ onNavigate }) => {
                 {/* Load More Indicator at top */}
                 {isLoadingHistory && (
                     <div className="flex justify-center py-3 animate-in fade-in duration-300">
-                        <div className="flex items-center gap-2 text-secondary-400 dark:text-secondary-500 text-sm">
+                        <div className="flex items-center gap-2 text-secondary-400 text-sm">
                             <Loader2 size={14} className="animate-spin" />
                             <span>Loading previous messages...</span>
                         </div>
@@ -297,7 +297,7 @@ export const CalCoach: React.FC<CalCoachProps> = ({ onNavigate }) => {
                 {/* Show hint when can load more */}
                 {!isLoadingHistory && canLoadMore && messages.length > 1 && (
                     <div className="flex justify-center py-2">
-                        <div className="text-xs text-secondary-400 dark:text-secondary-500">
+                        <div className="text-xs text-secondary-400">
                             ↑ Scroll up to load older messages
                         </div>
                     </div>
@@ -327,8 +327,8 @@ export const CalCoach: React.FC<CalCoachProps> = ({ onNavigate }) => {
                 {/* Loading indicator */}
                 {isLoading && (
                     <div className="flex justify-start animate-in fade-in duration-300">
-                        <Card className="p-5 bg-white dark:bg-surface-dark rounded-br-3xl rounded-tr-3xl rounded-bl-3xl shadow-soft">
-                            <div className="flex items-center gap-2 text-secondary-500 dark:text-secondary-400">
+                        <Card className="p-5 bg-white rounded-br-3xl rounded-tr-3xl rounded-bl-3xl shadow-soft">
+                            <div className="flex items-center gap-2 text-secondary-500">
                                 <Loader2 size={16} className="animate-spin text-primary-500" />
                                 <span className="text-sm font-medium">Coach is thinking...</span>
                             </div>
@@ -349,7 +349,7 @@ export const CalCoach: React.FC<CalCoachProps> = ({ onNavigate }) => {
             )}
 
             {/* Input Area */}
-            <div className="flex-shrink-0 bg-white dark:bg-surface-dark rounded-4xl p-3 shadow-soft border border-white/50 dark:border-white/5">
+            <div className="flex-shrink-0 bg-white rounded-4xl p-3 shadow-soft border border-white/50">
                 <div className="flex gap-2 items-end">
                     <textarea
                         ref={inputRef}
@@ -357,14 +357,14 @@ export const CalCoach: React.FC<CalCoachProps> = ({ onNavigate }) => {
                         onChange={(e) => setInputValue(e.target.value)}
                         onKeyDown={handleKeyDown}
                         placeholder="Ask your coach anything..."
-                        className="flex-1 bg-transparent text-primary-900 dark:text-primary-50 placeholder-secondary-300 dark:placeholder-secondary-600 resize-none outline-none text-sm min-h-[40px] max-h-[120px] py-2 px-3 font-medium"
+                        className="flex-1 bg-transparent text-primary-900 placeholder-secondary-300 resize-none outline-none text-sm min-h-[40px] max-h-[120px] py-2 px-3 font-medium"
                         rows={1}
                         disabled={isLoading}
                     />
                     <button
                         onClick={() => handleSendMessage()}
                         disabled={!inputValue.trim() || isLoading}
-                        className="flex-shrink-0 w-10 h-10 bg-primary-600 text-white rounded-full flex items-center justify-center hover:bg-primary-700 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-primary-200/50 dark:shadow-primary-900/40"
+                        className="flex-shrink-0 w-10 h-10 bg-primary-600 text-white rounded-full flex items-center justify-center hover:bg-primary-700 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-primary-200/50"
                     >
                         {isLoading ? (
                             <Loader2 size={18} className="animate-spin" />

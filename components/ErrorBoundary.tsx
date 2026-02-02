@@ -45,30 +45,30 @@ class ErrorBoundary extends Component<Props, State> {
     render() {
         if (this.state.hasError) {
             return (
-                <div className="min-h-screen bg-surface dark:bg-surface-dark flex items-center justify-center p-6">
-                    <div className="max-w-md w-full bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 text-center">
+                <div className="min-h-screen bg-surface flex items-center justify-center p-6">
+                    <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 text-center">
                         {/* Icon */}
-                        <div className="w-16 h-16 mx-auto mb-6 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center">
+                        <div className="w-16 h-16 mx-auto mb-6 bg-red-100 rounded-full flex items-center justify-center">
                             <AlertTriangle className="w-8 h-8 text-red-500" />
                         </div>
 
                         {/* Title */}
-                        <h1 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                        <h1 className="text-xl font-bold text-gray-900 mb-2">
                             Something went wrong
                         </h1>
 
                         {/* Description */}
-                        <p className="text-gray-600 dark:text-gray-400 mb-6">
+                        <p className="text-gray-600 mb-6">
                             An unexpected error occurred. Please try again or reload the page.
                         </p>
 
                         {/* Error details (collapsed by default) */}
                         {this.state.error && (
                             <details className="mb-6 text-left">
-                                <summary className="text-sm text-gray-500 dark:text-gray-400 cursor-pointer hover:text-gray-700 dark:hover:text-gray-300">
+                                <summary className="text-sm text-gray-500 cursor-pointer hover:text-gray-700:text-gray-300">
                                     Show error details
                                 </summary>
-                                <pre className="mt-2 p-3 bg-gray-100 dark:bg-gray-900 rounded-lg text-xs text-red-600 dark:text-red-400 overflow-auto max-h-32">
+                                <pre className="mt-2 p-3 bg-gray-100 rounded-lg text-xs text-red-600 overflow-auto max-h-32">
                                     {this.state.error.message}
                                 </pre>
                             </details>
@@ -78,7 +78,7 @@ class ErrorBoundary extends Component<Props, State> {
                         <div className="flex gap-3 justify-center">
                             <button
                                 onClick={this.handleRetry}
-                                className="px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg font-medium hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200:bg-gray-600 transition-colors"
                             >
                                 Try Again
                             </button>

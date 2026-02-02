@@ -88,15 +88,15 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete }) => {
     const recommendedCalories = bmi ? calculateRecommendedCalories(bmi) : null;
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-surface via-primary-50/30 to-primary-100/40 dark:from-surface-dark dark:via-primary-950/20 dark:to-black flex items-center justify-center p-4 relative overflow-hidden">
+        <div className="min-h-screen bg-gradient-to-br from-surface via-primary-50/30 to-primary-100/40 flex items-center justify-center p-4 relative overflow-hidden">
             {/* Decorative Background Elements */}
-            <div className="absolute top-0 right-0 w-96 h-96 bg-primary-200/20 dark:bg-primary-800/10 rounded-full blur-3xl animate-pulse"></div>
-            <div className="absolute bottom-0 left-0 w-96 h-96 bg-primary-800/20 dark:bg-primary-900/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+            <div className="absolute top-0 right-0 w-96 h-96 bg-primary-200/20 rounded-full blur-3xl animate-pulse"></div>
+            <div className="absolute bottom-0 left-0 w-96 h-96 bg-primary-800/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
 
             {/* Skip Button */}
             <button
                 onClick={handleSkip}
-                className="absolute top-6 right-6 z-50 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors text-sm font-medium flex items-center gap-1"
+                className="absolute top-6 right-6 z-50 text-gray-400 hover:text-gray-600:text-gray-300 transition-colors text-sm font-medium flex items-center gap-1"
             >
                 Skip <X size={16} />
             </button>
@@ -109,55 +109,55 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete }) => {
                         <div
                             key={idx}
                             className={`h-1.5 rounded-full transition-all duration-500 ${idx === currentStep
-                                ? 'w-12 bg-primary-600 dark:bg-primary-500'
+                                ? 'w-12 bg-primary-600'
                                 : idx < currentStep
-                                    ? 'w-8 bg-primary-400 dark:bg-primary-600'
-                                    : 'w-8 bg-gray-200 dark:bg-gray-700'
+                                    ? 'w-8 bg-primary-400'
+                                    : 'w-8 bg-gray-200'
                                 }`}
                         />
                     ))}
                 </div>
 
                 {/* Step Content */}
-                <div className="bg-white dark:bg-[#1a1c26] rounded-[40px] shadow-diffused-lg dark:shadow-diffused-dark p-8 md:p-12 min-h-[500px] flex flex-col">
+                <div className="bg-white[#1a1c26] rounded-[40px] shadow-diffused-lg p-8 md:p-12 min-h-[500px] flex flex-col">
                     {/* Step 0: Welcome */}
                     {currentStep === 0 && (
                         <div className="flex-1 flex flex-col items-center justify-center text-center animate-in fade-in slide-in-from-bottom-4 duration-500">
                             <div className="relative mb-8">
-                                <div className="w-24 h-24 bg-gradient-to-br from-primary-500 to-[#3D745B] rounded-[32px] flex items-center justify-center shadow-xl shadow-primary-200 dark:shadow-primary-900/40 animate-in zoom-in duration-700">
+                                <div className="w-24 h-24 bg-gradient-to-br from-primary-500 to-[#3D745B] rounded-[32px] flex items-center justify-center shadow-xl shadow-primary-200 animate-in zoom-in duration-700">
                                     <Sparkles size={48} className="text-white" strokeWidth={2} />
                                 </div>
                                 <div className="absolute -top-2 -right-2 w-8 h-8 bg-yellow-400 rounded-full animate-bounce"></div>
                             </div>
 
-                            <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-gray-50 mb-4 tracking-tight">
+                            <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 mb-4 tracking-tight">
                                 Welcome to SnapCal AI
                             </h1>
-                            <p className="text-xl text-gray-600 dark:text-gray-400 font-medium mb-2">
+                            <p className="text-xl text-gray-600 font-medium mb-2">
                                 Your AI-Powered Nutrition Companion
                             </p>
-                            <p className="text-sm text-gray-500 dark:text-gray-500 max-w-md leading-relaxed">
+                            <p className="text-sm text-gray-500 max-w-md leading-relaxed">
                                 Track calories effortlessly with the power of artificial intelligence. Just snap a photo of your meal and let AI do the rest.
                             </p>
 
                             <div className="mt-12 grid grid-cols-3 gap-6 w-full max-w-md">
                                 <div className="flex flex-col items-center gap-2">
-                                    <div className="w-14 h-14 bg-primary-50 dark:bg-primary-950/30 rounded-2xl flex items-center justify-center">
-                                        <Camera size={28} className="text-primary-600 dark:text-primary-400" />
+                                    <div className="w-14 h-14 bg-primary-50 rounded-2xl flex items-center justify-center">
+                                        <Camera size={28} className="text-primary-600" />
                                     </div>
-                                    <span className="text-xs font-bold text-gray-700 dark:text-gray-300">Snap</span>
+                                    <span className="text-xs font-bold text-gray-700">Snap</span>
                                 </div>
                                 <div className="flex flex-col items-center gap-2">
-                                    <div className="w-14 h-14 bg-primary-100 dark:bg-primary-900/30 rounded-2xl flex items-center justify-center">
-                                        <Zap size={28} className="text-primary-600 dark:text-primary-400" />
+                                    <div className="w-14 h-14 bg-primary-100 rounded-2xl flex items-center justify-center">
+                                        <Zap size={28} className="text-primary-600" />
                                     </div>
-                                    <span className="text-xs font-bold text-gray-700 dark:text-gray-300">Analyze</span>
+                                    <span className="text-xs font-bold text-gray-700">Analyze</span>
                                 </div>
                                 <div className="flex flex-col items-center gap-2">
-                                    <div className="w-14 h-14 bg-emerald-50 dark:bg-emerald-950/30 rounded-2xl flex items-center justify-center">
-                                        <TrendingUp size={28} className="text-emerald-600 dark:text-emerald-400" />
+                                    <div className="w-14 h-14 bg-emerald-50 rounded-2xl flex items-center justify-center">
+                                        <TrendingUp size={28} className="text-emerald-600" />
                                     </div>
-                                    <span className="text-xs font-bold text-gray-700 dark:text-gray-300">Track</span>
+                                    <span className="text-xs font-bold text-gray-700">Track</span>
                                 </div>
                             </div>
                         </div>
@@ -167,46 +167,46 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete }) => {
                     {currentStep === 1 && (
                         <div className="flex-1 flex flex-col justify-center animate-in fade-in slide-in-from-right-4 duration-500">
                             <div className="mb-8 text-center">
-                                <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary-50 dark:bg-primary-950/30 rounded-full mb-4">
-                                    <Camera size={16} className="text-primary-600 dark:text-primary-400" />
-                                    <span className="text-xs font-bold text-primary-600 dark:text-primary-400 uppercase tracking-wider">How It Works</span>
+                                <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary-50 rounded-full mb-4">
+                                    <Camera size={16} className="text-primary-600" />
+                                    <span className="text-xs font-bold text-primary-600 uppercase tracking-wider">How It Works</span>
                                 </div>
-                                <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-gray-50 mb-3">
+                                <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-3">
                                     Instant Nutrition Insights
                                 </h2>
-                                <p className="text-gray-600 dark:text-gray-400 text-sm max-w-lg mx-auto">
+                                <p className="text-gray-600 text-sm max-w-lg mx-auto">
                                     Our AI analyzes your food photos to provide accurate calorie counts and nutritional breakdowns in seconds.
                                 </p>
                             </div>
 
                             <div className="space-y-4">
-                                <div className="flex items-start gap-4 p-5 bg-gray-50 dark:bg-white/5 rounded-[24px] border border-gray-100 dark:border-white/5">
-                                    <div className="w-12 h-12 bg-primary-100 dark:bg-primary-900/30 rounded-2xl flex items-center justify-center flex-shrink-0">
-                                        <Camera size={24} className="text-primary-600 dark:text-primary-400" />
+                                <div className="flex items-start gap-4 p-5 bg-gray-50 rounded-[24px] border border-gray-100">
+                                    <div className="w-12 h-12 bg-primary-100 rounded-2xl flex items-center justify-center flex-shrink-0">
+                                        <Camera size={24} className="text-primary-600" />
                                     </div>
                                     <div>
-                                        <h3 className="font-bold text-gray-900 dark:text-gray-50 mb-1">1. Capture Your Meal</h3>
-                                        <p className="text-sm text-gray-600 dark:text-gray-400">Take a photo of any dish, snack, or beverage</p>
+                                        <h3 className="font-bold text-gray-900 mb-1">1. Capture Your Meal</h3>
+                                        <p className="text-sm text-gray-600">Take a photo of any dish, snack, or beverage</p>
                                     </div>
                                 </div>
 
-                                <div className="flex items-start gap-4 p-5 bg-gray-50 dark:bg-white/5 rounded-[24px] border border-gray-100 dark:border-white/5">
-                                    <div className="w-12 h-12 bg-primary-100 dark:bg-primary-900/30 rounded-2xl flex items-center justify-center flex-shrink-0">
-                                        <Sparkles size={24} className="text-primary-600 dark:text-primary-400" />
+                                <div className="flex items-start gap-4 p-5 bg-gray-50 rounded-[24px] border border-gray-100">
+                                    <div className="w-12 h-12 bg-primary-100 rounded-2xl flex items-center justify-center flex-shrink-0">
+                                        <Sparkles size={24} className="text-primary-600" />
                                     </div>
                                     <div>
-                                        <h3 className="font-bold text-gray-900 dark:text-gray-50 mb-1">2. AI Recognition</h3>
-                                        <p className="text-sm text-gray-600 dark:text-gray-400">Advanced AI identifies ingredients and portions instantly</p>
+                                        <h3 className="font-bold text-gray-900 mb-1">2. AI Recognition</h3>
+                                        <p className="text-sm text-gray-600">Advanced AI identifies ingredients and portions instantly</p>
                                     </div>
                                 </div>
 
-                                <div className="flex items-start gap-4 p-5 bg-gray-50 dark:bg-white/5 rounded-[24px] border border-gray-100 dark:border-white/5">
-                                    <div className="w-12 h-12 bg-emerald-100 dark:bg-emerald-900/30 rounded-2xl flex items-center justify-center flex-shrink-0">
-                                        <TrendingUp size={24} className="text-emerald-600 dark:text-emerald-400" />
+                                <div className="flex items-start gap-4 p-5 bg-gray-50 rounded-[24px] border border-gray-100">
+                                    <div className="w-12 h-12 bg-emerald-100 rounded-2xl flex items-center justify-center flex-shrink-0">
+                                        <TrendingUp size={24} className="text-emerald-600" />
                                     </div>
                                     <div>
-                                        <h3 className="font-bold text-gray-900 dark:text-gray-50 mb-1">3. Get Detailed Breakdown</h3>
-                                        <p className="text-sm text-gray-600 dark:text-gray-400">Calories, protein, carbs, and fats—all automatically calculated</p>
+                                        <h3 className="font-bold text-gray-900 mb-1">3. Get Detailed Breakdown</h3>
+                                        <p className="text-sm text-gray-600">Calories, protein, carbs, and fats—all automatically calculated</p>
                                     </div>
                                 </div>
                             </div>
@@ -217,55 +217,55 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete }) => {
                     {currentStep === 2 && (
                         <div className="flex-1 flex flex-col justify-center animate-in fade-in slide-in-from-right-4 duration-500">
                             <div className="mb-8 text-center">
-                                <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary-50 dark:bg-primary-950/30 rounded-full mb-4">
-                                    <Heart size={16} className="text-primary-600 dark:text-primary-400" />
-                                    <span className="text-xs font-bold text-primary-600 dark:text-primary-400 uppercase tracking-wider">Personalization</span>
+                                <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary-50 rounded-full mb-4">
+                                    <Heart size={16} className="text-primary-600" />
+                                    <span className="text-xs font-bold text-primary-600 uppercase tracking-wider">Personalization</span>
                                 </div>
-                                <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-gray-50 mb-3">
+                                <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-3">
                                     Why Your Profile Matters
                                 </h2>
-                                <p className="text-gray-600 dark:text-gray-400 text-sm max-w-lg mx-auto">
+                                <p className="text-gray-600 text-sm max-w-lg mx-auto">
                                     Share a few details to unlock truly personalized nutrition recommendations tailored just for you.
                                 </p>
                             </div>
 
                             <div className="grid md:grid-cols-2 gap-6">
-                                <div className="p-6 bg-gradient-to-br from-primary-50 to-primary-100/50 dark:from-primary-950/20 dark:to-primary-900/20 rounded-[28px] border border-primary-100 dark:border-primary-900/30">
-                                    <div className="w-12 h-12 bg-white dark:bg-white/10 rounded-2xl flex items-center justify-center mb-4 shadow-sm">
-                                        <Target size={24} className="text-primary-600 dark:text-primary-400" />
+                                <div className="p-6 bg-gradient-to-br from-primary-50 to-primary-100/50 rounded-[28px] border border-primary-100">
+                                    <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center mb-4 shadow-sm">
+                                        <Target size={24} className="text-primary-600" />
                                     </div>
-                                    <h3 className="font-extrabold text-gray-900 dark:text-gray-50 mb-2">Accurate Goals</h3>
-                                    <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+                                    <h3 className="font-extrabold text-gray-900 mb-2">Accurate Goals</h3>
+                                    <p className="text-sm text-gray-700 leading-relaxed">
                                         Get a science-backed daily calorie target based on your unique body metrics and health objectives.
                                     </p>
                                 </div>
 
-                                <div className="p-6 bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-950/20 dark:to-teal-950/20 rounded-[28px] border border-emerald-100 dark:border-emerald-900/30">
-                                    <div className="w-12 h-12 bg-white dark:bg-white/10 rounded-2xl flex items-center justify-center mb-4 shadow-sm">
-                                        <TrendingUp size={24} className="text-emerald-600 dark:text-emerald-400" />
+                                <div className="p-6 bg-gradient-to-br from-emerald-50 to-teal-50 rounded-[28px] border border-emerald-100">
+                                    <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center mb-4 shadow-sm">
+                                        <TrendingUp size={24} className="text-emerald-600" />
                                     </div>
-                                    <h3 className="font-extrabold text-gray-900 dark:text-gray-50 mb-2">Smart Insights</h3>
-                                    <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+                                    <h3 className="font-extrabold text-gray-900 mb-2">Smart Insights</h3>
+                                    <p className="text-sm text-gray-700 leading-relaxed">
                                         Receive personalized BMI analysis and recommendations to help you reach your ideal weight.
                                     </p>
                                 </div>
 
-                                <div className="p-6 bg-gradient-to-br from-orange-50 to-amber-50 dark:from-orange-950/20 dark:to-amber-950/20 rounded-[28px] border border-orange-100 dark:border-orange-900/30">
-                                    <div className="w-12 h-12 bg-white dark:bg-white/10 rounded-2xl flex items-center justify-center mb-4 shadow-sm">
-                                        <Sparkles size={24} className="text-orange-600 dark:text-orange-400" />
+                                <div className="p-6 bg-gradient-to-br from-orange-50 to-amber-50 rounded-[28px] border border-orange-100">
+                                    <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center mb-4 shadow-sm">
+                                        <Sparkles size={24} className="text-orange-600" />
                                     </div>
-                                    <h3 className="font-extrabold text-gray-900 dark:text-gray-50 mb-2">Better Tracking</h3>
-                                    <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+                                    <h3 className="font-extrabold text-gray-900 mb-2">Better Tracking</h3>
+                                    <p className="text-sm text-gray-700 leading-relaxed">
                                         See how your intake compares to your goals and adjust your habits for optimal results.
                                     </p>
                                 </div>
 
-                                <div className="p-6 bg-gradient-to-br from-pink-50 to-rose-50 dark:from-pink-950/20 dark:to-rose-950/20 rounded-[28px] border border-pink-100 dark:border-pink-900/30">
-                                    <div className="w-12 h-12 bg-white dark:bg-white/10 rounded-2xl flex items-center justify-center mb-4 shadow-sm">
-                                        <Heart size={24} className="text-pink-600 dark:text-pink-400" />
+                                <div className="p-6 bg-gradient-to-br from-pink-50 to-rose-50 rounded-[28px] border border-pink-100">
+                                    <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center mb-4 shadow-sm">
+                                        <Heart size={24} className="text-pink-600" />
                                     </div>
-                                    <h3 className="font-extrabold text-gray-900 dark:text-gray-50 mb-2">Long-term Success</h3>
-                                    <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+                                    <h3 className="font-extrabold text-gray-900 mb-2">Long-term Success</h3>
+                                    <p className="text-sm text-gray-700 leading-relaxed">
                                         Build sustainable habits with data-driven feedback tailored to your wellness journey.
                                     </p>
                                 </div>
@@ -277,21 +277,21 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete }) => {
                     {currentStep === 3 && (
                         <div className="flex-1 flex flex-col justify-center animate-in fade-in slide-in-from-right-4 duration-500">
                             <div className="mb-6 text-center">
-                                <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary-50 dark:bg-primary-950/30 rounded-full mb-4">
-                                    <User size={16} className="text-primary-600 dark:text-primary-400" />
-                                    <span className="text-xs font-bold text-primary-600 dark:text-primary-400 uppercase tracking-wider">Your Details</span>
+                                <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary-50 rounded-full mb-4">
+                                    <User size={16} className="text-primary-600" />
+                                    <span className="text-xs font-bold text-primary-600 uppercase tracking-wider">Your Details</span>
                                 </div>
-                                <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-gray-50 mb-3">
+                                <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-3">
                                     Set Up Your Profile
                                 </h2>
-                                <p className="text-gray-600 dark:text-gray-400 text-sm max-w-lg mx-auto">
+                                <p className="text-gray-600 text-sm max-w-lg mx-auto">
                                     Just a few quick details to personalize your experience
                                 </p>
                             </div>
 
                             <div className="space-y-4">
                                 <div>
-                                    <label className="block text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2 ml-1">
+                                    <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 ml-1">
                                         Display Name
                                     </label>
                                     <div className="relative">
@@ -300,15 +300,15 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete }) => {
                                             value={name}
                                             onChange={(e) => setName(e.target.value)}
                                             placeholder="Enter your name"
-                                            className="w-full p-4 pl-12 bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5 rounded-[20px] focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 font-bold text-gray-900 dark:text-gray-50 transition-all placeholder:text-gray-300 dark:placeholder:text-gray-600"
+                                            className="w-full p-4 pl-12 bg-gray-50 border border-gray-100 rounded-[20px] focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 font-bold text-gray-900 transition-all placeholder:text-gray-300:text-gray-600"
                                         />
-                                        <User className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500" size={20} />
+                                        <User className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
                                     </div>
                                 </div>
 
                                 <div className="grid grid-cols-2 gap-4">
                                     <div>
-                                        <label className="block text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2 ml-1">
+                                        <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 ml-1">
                                             Height (cm)
                                         </label>
                                         <div className="relative">
@@ -317,13 +317,13 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete }) => {
                                                 value={height}
                                                 onChange={(e) => setHeight(e.target.value)}
                                                 placeholder="175"
-                                                className="w-full p-4 pl-12 bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5 rounded-[20px] focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 font-bold text-gray-900 dark:text-gray-50 transition-all placeholder:text-gray-300 dark:placeholder:text-gray-600"
+                                                className="w-full p-4 pl-12 bg-gray-50 border border-gray-100 rounded-[20px] focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 font-bold text-gray-900 transition-all placeholder:text-gray-300:text-gray-600"
                                             />
-                                            <Ruler className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500" size={20} />
+                                            <Ruler className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
                                         </div>
                                     </div>
                                     <div>
-                                        <label className="block text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2 ml-1">
+                                        <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 ml-1">
                                             Weight (kg)
                                         </label>
                                         <div className="relative">
@@ -332,21 +332,21 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete }) => {
                                                 value={weight}
                                                 onChange={(e) => setWeight(e.target.value)}
                                                 placeholder="70"
-                                                className="w-full p-4 pl-12 bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5 rounded-[20px] focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 font-bold text-gray-900 dark:text-gray-50 transition-all placeholder:text-gray-300 dark:placeholder:text-gray-600"
+                                                className="w-full p-4 pl-12 bg-gray-50 border border-gray-100 rounded-[20px] focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 font-bold text-gray-900 transition-all placeholder:text-gray-300:text-gray-600"
                                             />
-                                            <Weight className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500" size={20} />
+                                            <Weight className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
                                         </div>
                                     </div>
                                 </div>
 
                                 {bmi && (
-                                    <div className="p-5 bg-gradient-to-r from-primary-50 to-emerald-50 dark:from-primary-950/20 dark:to-emerald-950/20 rounded-[24px] border border-primary-100 dark:border-primary-900/30 animate-in slide-in-from-bottom-2">
+                                    <div className="p-5 bg-gradient-to-r from-primary-50 to-emerald-50 rounded-[24px] border border-primary-100 animate-in slide-in-from-bottom-2">
                                         <div className="flex items-center justify-between mb-2">
-                                            <span className="text-xs font-bold text-primary-700 dark:text-primary-300 uppercase tracking-wider">Your BMI</span>
-                                            <span className="text-2xl font-extrabold text-primary-900 dark:text-primary-100">{bmi.toFixed(1)}</span>
+                                            <span className="text-xs font-bold text-primary-700 uppercase tracking-wider">Your BMI</span>
+                                            <span className="text-2xl font-extrabold text-primary-900">{bmi.toFixed(1)}</span>
                                         </div>
                                         {recommendedCalories && (
-                                            <p className="text-xs text-primary-600 dark:text-primary-400">
+                                            <p className="text-xs text-primary-600">
                                                 Recommended daily goal: <span className="font-bold">{recommendedCalories} kcal</span>
                                             </p>
                                         )}
@@ -360,46 +360,46 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete }) => {
                     {currentStep === 4 && (
                         <div className="flex-1 flex flex-col items-center justify-center text-center animate-in fade-in zoom-in duration-500">
                             <div className="relative mb-8">
-                                <div className="w-28 h-28 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-full flex items-center justify-center shadow-2xl shadow-emerald-200 dark:shadow-emerald-900/40 animate-in zoom-in duration-700">
+                                <div className="w-28 h-28 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-full flex items-center justify-center shadow-2xl shadow-emerald-200 animate-in zoom-in duration-700">
                                     <Check size={56} className="text-white" strokeWidth={3} />
                                 </div>
                                 <div className="absolute inset-0 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-full animate-ping opacity-20"></div>
                             </div>
 
-                            <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-gray-50 mb-4 tracking-tight">
+                            <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 mb-4 tracking-tight">
                                 You're All Set!
                             </h1>
-                            <p className="text-lg text-gray-600 dark:text-gray-400 font-medium mb-2">
+                            <p className="text-lg text-gray-600 font-medium mb-2">
                                 Your personalized nutrition journey begins now
                             </p>
 
                             {name && recommendedCalories && (
-                                <div className="mt-8 p-6 bg-gradient-to-br from-primary-50 to-emerald-50 dark:from-primary-950/20 dark:to-emerald-950/20 rounded-[28px] border border-primary-100 dark:border-primary-900/30 max-w-md w-full">
-                                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
-                                        Welcome, <span className="font-bold text-primary-600 dark:text-primary-400">{name}</span>!
+                                <div className="mt-8 p-6 bg-gradient-to-br from-primary-50 to-emerald-50 rounded-[28px] border border-primary-100 max-w-md w-full">
+                                    <p className="text-sm text-gray-600 mb-3">
+                                        Welcome, <span className="font-bold text-primary-600">{name}</span>!
                                     </p>
                                     <div className="flex items-baseline gap-2 justify-center">
-                                        <span className="text-xs text-gray-500 dark:text-gray-500 font-medium">Daily Goal:</span>
-                                        <span className="text-3xl font-extrabold text-primary-900 dark:text-primary-100">{recommendedCalories}</span>
-                                        <span className="text-sm font-bold text-gray-500 dark:text-gray-500">kcal</span>
+                                        <span className="text-xs text-gray-500 font-medium">Daily Goal:</span>
+                                        <span className="text-3xl font-extrabold text-primary-900">{recommendedCalories}</span>
+                                        <span className="text-sm font-bold text-gray-500">kcal</span>
                                     </div>
                                 </div>
                             )}
 
-                            <p className="text-sm text-gray-500 dark:text-gray-500 mt-6 max-w-md leading-relaxed">
+                            <p className="text-sm text-gray-500 mt-6 max-w-md leading-relaxed">
                                 Start snapping photos of your meals to track your nutrition effortlessly. We'll help you stay on track!
                             </p>
                         </div>
                     )}
 
                     {/* Navigation Buttons */}
-                    <div className="flex items-center justify-between mt-8 pt-6 border-t border-gray-100 dark:border-white/5">
+                    <div className="flex items-center justify-between mt-8 pt-6 border-t border-gray-100">
                         <button
                             onClick={handleBack}
                             disabled={currentStep === 0}
                             className={`flex items-center gap-2 px-5 py-3 rounded-[16px] font-bold text-sm transition-all ${currentStep === 0
                                 ? 'opacity-0 pointer-events-none'
-                                : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5'
+                                : 'text-gray-600 hover:bg-gray-100:bg-white/5'
                                 }`}
                         >
                             <ChevronLeft size={20} />
@@ -410,7 +410,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete }) => {
                             <Button
                                 onClick={handleComplete}
                                 isLoading={isSaving}
-                                className="px-8 py-4 text-base shadow-xl shadow-primary-200 dark:shadow-primary-900/40"
+                                className="px-8 py-4 text-base shadow-xl shadow-primary-200"
                             >
                                 Start Tracking
                                 <ChevronRight size={20} className="ml-1" />
@@ -419,7 +419,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete }) => {
                             <Button
                                 onClick={handleNext}
                                 disabled={!canProceedFromProfile}
-                                className="px-8 py-4 text-base shadow-xl shadow-primary-200 dark:shadow-primary-900/40"
+                                className="px-8 py-4 text-base shadow-xl shadow-primary-200"
                             >
                                 Continue
                                 <ChevronRight size={20} className="ml-1" />
@@ -427,7 +427,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete }) => {
                         ) : (
                             <Button
                                 onClick={handleNext}
-                                className="px-8 py-4 text-base shadow-xl shadow-primary-200 dark:shadow-primary-900/40"
+                                className="px-8 py-4 text-base shadow-xl shadow-primary-200"
                             >
                                 Next
                                 <ChevronRight size={20} className="ml-1" />

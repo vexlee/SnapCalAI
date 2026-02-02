@@ -36,7 +36,7 @@ export const CoachChatMessage: React.FC<CoachChatMessageProps> = ({
     if (isUser) {
         return (
             <div className="flex justify-end animate-in fade-in slide-in-from-bottom-2 duration-300">
-                <div className="max-w-[85%] bg-[#3D745B] text-white rounded-3xl rounded-tr-sm px-5 py-3 shadow-lg shadow-primary-200/50 dark:shadow-primary-900/40">
+                <div className="max-w-[85%] bg-[#3D745B] text-white rounded-3xl rounded-tr-sm px-5 py-3 shadow-lg shadow-primary-200/50">
                     <p className="text-sm font-medium leading-relaxed">{message.content}</p>
                 </div>
             </div>
@@ -50,10 +50,10 @@ export const CoachChatMessage: React.FC<CoachChatMessageProps> = ({
     return (
         <div className="flex justify-start animate-in fade-in slide-in-from-bottom-2 duration-300">
             <div className="max-w-[85%]">
-                <Card className="p-5 bg-white dark:bg-surface-dark rounded-3xl rounded-tl-sm shadow-soft">
-                    <div className="prose prose-sm dark:prose-invert max-w-none">
+                <Card className="p-5 bg-white rounded-3xl rounded-tl-sm shadow-soft">
+                    <div className="prose prose-sm max-w-none">
                         <div
-                            className="text-secondary-800 dark:text-gray-200 leading-relaxed whitespace-pre-wrap font-medium"
+                            className="text-secondary-800 leading-relaxed whitespace-pre-wrap font-medium"
                             dangerouslySetInnerHTML={{ __html: formatContent(message.content) }}
                         />
                     </div>
@@ -73,8 +73,8 @@ export const CoachChatMessage: React.FC<CoachChatMessageProps> = ({
                                     onClick={() => onQuickAddWorkout(suggestion)}
                                     disabled={isAdded || isLoading}
                                     className={`flex items-center gap-2 px-4 py-2 text-sm font-bold rounded-2xl transition-all active:scale-95 ${isAdded
-                                        ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 cursor-default shadow-none'
-                                        : 'bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400 hover:bg-primary-200 dark:hover:bg-primary-900/50 shadow-sm'
+                                        ? 'bg-green-100 text-green-700 cursor-default shadow-none'
+                                        : 'bg-primary-100 text-primary-700 hover:bg-primary-200:bg-primary-900/50 shadow-sm'
                                         }`}
                                 >
                                     {isLoading ? (
@@ -95,7 +95,7 @@ export const CoachChatMessage: React.FC<CoachChatMessageProps> = ({
                 {hasWorkoutPlan && (
                     <button
                         onClick={() => onSaveWorkout(message.content)}
-                        className="mt-3 flex items-center gap-2 px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white text-sm font-bold rounded-full transition-all shadow-lg shadow-primary-200/50 dark:shadow-primary-900/40 active:scale-95"
+                        className="mt-3 flex items-center gap-2 px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white text-sm font-bold rounded-full transition-all shadow-lg shadow-primary-200/50 active:scale-95"
                     >
                         <Save size={16} />
                         <span>Save as Workout Plan</span>

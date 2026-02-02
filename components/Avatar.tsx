@@ -23,19 +23,19 @@ const SIZES = {
 const STATE_STYLES = {
     [AvatarState.OPTIMAL]: {
         bgGradient: 'from-emerald-400 to-green-500',
-        shadow: 'shadow-emerald-200 dark:shadow-emerald-900/40',
+        shadow: 'shadow-emerald-200',
         ring: 'ring-emerald-300',
         pulse: false,
     },
     [AvatarState.WARNING]: {
         bgGradient: 'from-amber-400 to-orange-500',
-        shadow: 'shadow-amber-200 dark:shadow-amber-900/40',
+        shadow: 'shadow-amber-200',
         ring: 'ring-amber-300',
         pulse: true,
     },
     [AvatarState.CRITICAL]: {
         bgGradient: 'from-red-400 to-rose-600',
-        shadow: 'shadow-red-200 dark:shadow-red-900/40',
+        shadow: 'shadow-red-200',
         ring: 'ring-red-300',
         pulse: true,
     },
@@ -88,7 +88,7 @@ export const Avatar: React.FC<AvatarProps> = ({
 
     if (isLoading) {
         return (
-            <div className={`${sizeConfig.container} rounded-full bg-gray-200 dark:bg-white/10 animate-pulse`} />
+            <div className={`${sizeConfig.container} rounded-full bg-gray-200 animate-pulse`} />
         );
     }
 
@@ -128,7 +128,7 @@ export const Avatar: React.FC<AvatarProps> = ({
             <div className={`
         absolute -bottom-0.5 -right-0.5
         w-3 h-3 rounded-full
-        border-2 border-white dark:border-[#0c0e17]
+        border-2 border-white[#0c0e17]
         ${state === AvatarState.OPTIMAL ? 'bg-emerald-500' :
                     state === AvatarState.WARNING ? 'bg-amber-500' : 'bg-red-500'}
         ${stateStyle.pulse ? 'animate-ping' : ''}
@@ -137,12 +137,12 @@ export const Avatar: React.FC<AvatarProps> = ({
             {/* Optional status tooltip */}
             {showStatus && status && (
                 <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 
-          bg-white dark:bg-[#1a1c26] rounded-xl px-3 py-2 
-          shadow-lg border border-gray-100 dark:border-white/10
+          bg-white[#1a1c26] rounded-xl px-3 py-2 
+          shadow-lg border border-gray-100
           whitespace-nowrap z-50
           animate-in fade-in slide-in-from-top-2 duration-300
         ">
-                    <p className="text-xs font-medium text-gray-600 dark:text-gray-400">
+                    <p className="text-xs font-medium text-gray-600">
                         {status.stateReason}
                     </p>
                 </div>

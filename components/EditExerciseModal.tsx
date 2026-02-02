@@ -52,15 +52,15 @@ export const EditExerciseModal: React.FC<EditExerciseModalProps> = ({ isOpen, on
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm animate-in fade-in duration-300 px-6">
             <Card className="w-full max-w-md animate-in zoom-in-95 duration-300">
                 {/* Header */}
-                <div className="flex items-center justify-between p-6 border-b border-gray-100 dark:border-white/10">
-                    <h2 className="text-xl font-extrabold text-gray-900 dark:text-gray-50">
+                <div className="flex items-center justify-between p-6 border-b border-gray-100">
+                    <h2 className="text-xl font-extrabold text-gray-900">
                         Edit Exercise
                     </h2>
                     <button
                         onClick={onClose}
-                        className="p-2 hover:bg-gray-100 dark:hover:bg-white/5 rounded-full transition-colors"
+                        className="p-2 hover:bg-gray-100:bg-white/5 rounded-full transition-colors"
                     >
-                        <X size={20} className="text-gray-500 dark:text-gray-400" />
+                        <X size={20} className="text-gray-500" />
                     </button>
                 </div>
 
@@ -68,7 +68,7 @@ export const EditExerciseModal: React.FC<EditExerciseModalProps> = ({ isOpen, on
                 <div className="p-6 space-y-4">
                     {/* Exercise Name */}
                     <div>
-                        <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
+                        <label className="block text-sm font-bold text-gray-700 mb-2">
                             Exercise Name
                         </label>
                         <input
@@ -76,14 +76,14 @@ export const EditExerciseModal: React.FC<EditExerciseModalProps> = ({ isOpen, on
                             value={name}
                             onChange={(e) => setName(e.target.value)}
                             placeholder="e.g., Bench Press"
-                            className="w-full px-4 py-3 bg-gray-50 dark:bg-white/5 border-2 border-gray-200 dark:border-white/10 rounded-xl text-gray-900 dark:text-gray-50 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-primary-500 dark:focus:border-primary-400 transition-colors"
+                            className="w-full px-4 py-3 bg-gray-50 border-2 border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:border-primary-500:border-primary-400 transition-colors"
                         />
                     </div>
 
                     {/* Sets, Reps, Rest */}
                     <div className="grid grid-cols-3 gap-3">
                         <div>
-                            <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-2">
+                            <label className="block text-xs font-bold text-gray-700 mb-2">
                                 Sets
                             </label>
                             <input
@@ -91,11 +91,11 @@ export const EditExerciseModal: React.FC<EditExerciseModalProps> = ({ isOpen, on
                                 value={sets}
                                 onChange={(e) => setSets(parseInt(e.target.value) || 0)}
                                 min="1"
-                                className="w-full px-3 py-2 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg text-sm text-gray-900 dark:text-gray-50 focus:outline-none focus:border-primary-500 dark:focus:border-primary-400"
+                                className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm text-gray-900 focus:outline-none focus:border-primary-500:border-primary-400"
                             />
                         </div>
                         <div>
-                            <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-2">
+                            <label className="block text-xs font-bold text-gray-700 mb-2">
                                 Reps
                             </label>
                             <input
@@ -103,11 +103,11 @@ export const EditExerciseModal: React.FC<EditExerciseModalProps> = ({ isOpen, on
                                 value={reps}
                                 onChange={(e) => setReps(e.target.value)}
                                 placeholder="8-10"
-                                className="w-full px-3 py-2 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg text-sm text-gray-900 dark:text-gray-50 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-primary-500 dark:focus:border-primary-400"
+                                className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-primary-500:border-primary-400"
                             />
                         </div>
                         <div>
-                            <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-2">
+                            <label className="block text-xs font-bold text-gray-700 mb-2">
                                 Rest
                             </label>
                             <input
@@ -115,25 +115,25 @@ export const EditExerciseModal: React.FC<EditExerciseModalProps> = ({ isOpen, on
                                 value={rest}
                                 onChange={(e) => setRest(e.target.value)}
                                 placeholder="60s"
-                                className="w-full px-3 py-2 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg text-sm text-gray-900 dark:text-gray-50 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-primary-500 dark:focus:border-primary-400"
+                                className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-primary-500:border-primary-400"
                             />
                         </div>
                     </div>
                 </div>
 
                 {/* Footer */}
-                <div className="flex items-center justify-end gap-3 p-6 border-t border-gray-100 dark:border-white/10">
+                <div className="flex items-center justify-end gap-3 p-6 border-t border-gray-100">
                     <button
                         onClick={onClose}
                         disabled={saving}
-                        className="px-6 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/5 rounded-xl font-semibold transition-colors disabled:opacity-50"
+                        className="px-6 py-3 text-gray-700 hover:bg-gray-100:bg-white/5 rounded-xl font-semibold transition-colors disabled:opacity-50"
                     >
                         Cancel
                     </button>
                     <button
                         onClick={handleSave}
                         disabled={saving}
-                        className="flex items-center gap-2 px-6 py-3 bg-primary-600 hover:bg-primary-700 text-white rounded-xl font-semibold transition-colors disabled:opacity-50 shadow-lg shadow-primary-200 dark:shadow-primary-900/40"
+                        className="flex items-center gap-2 px-6 py-3 bg-primary-600 hover:bg-primary-700 text-white rounded-xl font-semibold transition-colors disabled:opacity-50 shadow-lg shadow-primary-200"
                     >
                         <Save size={18} />
                         <span>{saving ? 'Saving...' : 'Save Changes'}</span>

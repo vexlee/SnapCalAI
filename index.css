@@ -38,11 +38,7 @@ body {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-.dark body {
-  background-color: #0c120f;
-  /* Deep Dark Green */
-  color: #f1f5f3;
-}
+
 
 /* Hide scrollbars */
 .no-scrollbar::-webkit-scrollbar {

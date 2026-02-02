@@ -158,14 +158,14 @@ export const Dashboard: React.FC = () => {
     if (entry.isManual) {
       if (entry.imageUrl) {
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-50 dark:bg-amber-950/20 text-amber-600 dark:text-amber-400 text-[10px] font-bold tracking-wide">
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-50 text-amber-600 text-[10px] font-bold tracking-wide">
             <PenTool size={10} />
             EDITED
           </span>
         );
       }
       return (
-        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-gray-100 dark:bg-white/5 text-gray-500 dark:text-gray-400 text-[10px] font-bold tracking-wide">
+        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-gray-100 text-gray-500 text-[10px] font-bold tracking-wide">
           <User size={10} />
           MANUAL
         </span>
@@ -173,9 +173,9 @@ export const Dashboard: React.FC = () => {
     }
 
     const score = Math.round(entry.confidence * 100);
-    const colorClass = score > 80 ? "bg-emerald-50 dark:bg-emerald-950/20 text-emerald-600 dark:text-emerald-400" :
-      score > 50 ? "bg-orange-50 dark:bg-orange-950/20 text-orange-600 dark:text-orange-400" :
-        "bg-rose-50 dark:bg-rose-950/20 text-rose-600 dark:text-rose-400";
+    const colorClass = score > 80 ? "bg-emerald-50 text-emerald-600" :
+      score > 50 ? "bg-orange-50 text-orange-600" :
+        "bg-rose-50 text-rose-600";
 
     return (
       <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold tracking-wide ${colorClass}`}>
@@ -192,7 +192,7 @@ export const Dashboard: React.FC = () => {
         <header className="flex justify-between items-end">
           <div>
             <p className="text-secondary-500 font-bold text-xs uppercase tracking-widest mb-2">{new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</p>
-            <h1 className="text-3xl sm:text-4xl font-extrabold text-primary-900 dark:text-primary-50 tracking-tight leading-tight sm:leading-none font-display">
+            <h1 className="text-3xl sm:text-4xl font-extrabold text-primary-900 tracking-tight leading-tight sm:leading-none font-display">
               Hello {userName || 'there'}, <br />Let's Eat Well.
             </h1>
           </div>
@@ -208,7 +208,7 @@ export const Dashboard: React.FC = () => {
 
         {/* Streak Counter Badge */}
         {currentStreak > 0 && (
-          <div className="flex items-center gap-2 bg-gradient-to-r from-orange-500 to-amber-500 text-white px-3 py-1.5 rounded-full shadow-lg shadow-orange-200 dark:shadow-orange-900/30 animate-in slide-in-from-left duration-500 w-fit">
+          <div className="flex items-center gap-2 bg-gradient-to-r from-orange-500 to-amber-500 text-white px-3 py-1.5 rounded-full shadow-lg shadow-orange-200 animate-in slide-in-from-left duration-500 w-fit">
             <Flame size={16} className="animate-pulse" />
             <div className="flex items-baseline gap-1">
               <span className="text-base font-extrabold">{currentStreak}</span>
@@ -230,7 +230,7 @@ export const Dashboard: React.FC = () => {
         {(() => {
           const isOverLimit = todayCalories > dailyGoal;
           return (
-            <div className={`relative rounded-[32px] p-6 sm:p-7 text-white overflow-hidden shadow-soft-lg transition-all duration-500 ${isOverLimit ? 'bg-red-500 shadow-red-200 dark:shadow-red-900/40' : 'bg-[#3D745B] shadow-sm shadow-primary-200/50 dark:shadow-primary-900/40'}`}>
+            <div className={`relative rounded-[32px] p-6 sm:p-7 text-white overflow-hidden shadow-soft-lg transition-all duration-500 ${isOverLimit ? 'bg-red-500 shadow-red-200' : 'bg-[#3D745B] shadow-sm shadow-primary-200/50'}`}>
               <div className="absolute top-0 right-0 -mt-10 -mr-10 w-48 h-48 bg-white/5 rounded-full blur-3xl"></div>
               <div className="absolute bottom-0 left-0 -mb-10 -ml-10 w-48 h-48 bg-black/10 rounded-full blur-3xl"></div>
 
@@ -325,8 +325,8 @@ export const Dashboard: React.FC = () => {
       {/* Entries List Header */}
       <div className="flex-shrink-0 px-6 mb-3">
         <div className="flex items-center justify-between px-1">
-          <h2 className="text-xl font-bold text-primary-900 dark:text-primary-50 font-display">Recent Meals</h2>
-          <span className="text-xs font-bold text-secondary-500 bg-secondary-100 dark:bg-white/5 px-2.5 py-1 rounded-full">{entries.length} items</span>
+          <h2 className="text-xl font-bold text-primary-900 font-display">Recent Meals</h2>
+          <span className="text-xs font-bold text-secondary-500 bg-secondary-100 px-2.5 py-1 rounded-full">{entries.length} items</span>
         </div>
       </div>
 
@@ -339,8 +339,8 @@ export const Dashboard: React.FC = () => {
             ))}
           </div>
         ) : entries.length === 0 ? (
-          <div className="text-center py-16 bg-surface dark:bg-surface-dark rounded-4xl border border-white/40 dark:border-white/5 shadow-soft">
-            <div className="w-16 h-16 bg-secondary-50 dark:bg-white/5 rounded-full flex items-center justify-center mx-auto mb-4 text-secondary-300">
+          <div className="text-center py-16 bg-surface rounded-4xl border border-white/40 shadow-soft">
+            <div className="w-16 h-16 bg-secondary-50 rounded-full flex items-center justify-center mx-auto mb-4 text-secondary-300">
               <Utensils size={24} />
             </div>
             <p className="text-secondary-500 font-medium mb-1">No meals tracked today.</p>
@@ -350,18 +350,18 @@ export const Dashboard: React.FC = () => {
           <div className="space-y-4">
             {entries.map(entry => (
               <Card key={entry.id} className="flex gap-4 items-center p-4 group" onClick={() => setSelectedEntry(entry)}>
-                <div className="w-16 h-16 bg-secondary-50 dark:bg-white/5 rounded-3xl overflow-hidden flex-shrink-0 shadow-inner">
+                <div className="w-16 h-16 bg-secondary-50 rounded-3xl overflow-hidden flex-shrink-0 shadow-inner">
                   {entry.imageUrl ? (
                     <img src={entry.imageUrl} alt={entry.food_item} className="w-full h-full object-cover" />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-secondary-300 dark:text-secondary-700">
+                    <div className="w-full h-full flex items-center justify-center text-secondary-300">
                       <User size={20} />
                     </div>
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
-                    <h3 className="font-bold text-primary-900 dark:text-primary-50 truncate text-base">{entry.food_item}</h3>
+                    <h3 className="font-bold text-primary-900 truncate text-base">{entry.food_item}</h3>
                   </div>
                   <div className="flex items-center gap-2">
                     <p className="text-xs font-semibold text-secondary-400">{entry.time}</p>
@@ -369,7 +369,7 @@ export const Dashboard: React.FC = () => {
                   </div>
                 </div>
                 <div className="text-right pl-2">
-                  <span className="block font-black text-primary-900 dark:text-primary-50 text-xl">{entry.calories}</span>
+                  <span className="block font-black text-primary-900 text-xl">{entry.calories}</span>
                   <span className="text-[10px] font-bold text-secondary-400 uppercase tracking-wider">kcal</span>
                 </div>
               </Card>

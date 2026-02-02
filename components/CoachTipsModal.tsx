@@ -43,14 +43,14 @@ export const CoachTipsModal: React.FC<CoachTipsModalProps> = ({
     };
 
     return (
-        <div className="fixed inset-0 bg-[#F3F0E7] dark:bg-[#0F111A] z-[100] animate-in slide-in-from-right duration-300 overflow-y-auto">
+        <div className="fixed inset-0 bg-[#F3F0E7][#0F111A] z-[100] animate-in slide-in-from-right duration-300 overflow-y-auto">
             <div className="min-h-screen pb-20">
                 {/* Header */}
-                <div className="sticky top-0 bg-[#F3F0E7]/80 dark:bg-[#0F111A]/80 backdrop-blur-xl z-10 px-6 pt-10 pb-4 border-b border-gray-100 dark:border-white/5">
+                <div className="sticky top-0 bg-[#F3F0E7]/80[#0F111A]/80 backdrop-blur-xl z-10 px-6 pt-10 pb-4 border-b border-gray-100">
                     <div className="flex items-center justify-between">
                         <button
                             onClick={onClose}
-                            className="flex items-center gap-2 text-gray-400 dark:text-gray-500 hover:text-primary-600 transition-colors"
+                            className="flex items-center gap-2 text-gray-400 hover:text-primary-600 transition-colors"
                         >
                             <ChevronLeft size={20} />
                             <span className="text-sm font-bold uppercase tracking-widest">Back</span>
@@ -58,7 +58,7 @@ export const CoachTipsModal: React.FC<CoachTipsModalProps> = ({
                         <button
                             onClick={onRegenerate}
                             disabled={isRegenerating}
-                            className="flex items-center gap-2 text-xs font-bold text-[#3D745B] dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20 px-3 py-1.5 rounded-xl hover:bg-primary-100 dark:hover:bg-primary-900/30 transition-colors disabled:opacity-50"
+                            className="flex items-center gap-2 text-xs font-bold text-[#3D745B] bg-primary-50 px-3 py-1.5 rounded-xl hover:bg-primary-100:bg-primary-900/30 transition-colors disabled:opacity-50"
                         >
                             <RefreshCw size={12} className={isRegenerating ? 'animate-spin' : ''} />
                             {isRegenerating ? 'Generating...' : 'Regenerate'}
@@ -70,22 +70,22 @@ export const CoachTipsModal: React.FC<CoachTipsModalProps> = ({
                     {/* Title Section */}
                     <div className="mb-8">
                         <div className="flex items-center gap-2 mb-2">
-                            <Sparkles size={20} className="text-primary-600 dark:text-primary-400" />
-                            <span className="text-[10px] font-bold text-primary-600 dark:text-primary-400 uppercase tracking-widest">
+                            <Sparkles size={20} className="text-primary-600" />
+                            <span className="text-[10px] font-bold text-primary-600 uppercase tracking-widest">
                                 Coach Tips
                             </span>
                         </div>
-                        <h1 className="text-2xl font-black text-gray-900 dark:text-gray-50 tracking-tight mb-1">
+                        <h1 className="text-2xl font-black text-gray-900 tracking-tight mb-1">
                             {getReportTitle()}
                         </h1>
-                        <div className="flex items-center gap-2 text-gray-400 dark:text-gray-500">
+                        <div className="flex items-center gap-2 text-gray-400">
                             <Calendar size={14} />
                             <span className="text-sm font-medium">{formatDateRange()}</span>
                         </div>
                     </div>
 
                     {/* Summary Card */}
-                    <div className="bg-[#3D745B] rounded-4xl p-6 mb-6 shadow-lg shadow-primary-200/30 dark:shadow-primary-900/40">
+                    <div className="bg-[#3D745B] rounded-4xl p-6 mb-6 shadow-lg shadow-primary-200/30">
                         <div className="flex items-start gap-3 mb-4">
                             <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center flex-shrink-0">
                                 <TrendingUp size={20} className="text-white" />
@@ -99,61 +99,61 @@ export const CoachTipsModal: React.FC<CoachTipsModalProps> = ({
 
                     {/* Metrics Grid */}
                     <div className="mb-6">
-                        <h3 className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-3">
+                        <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">
                             Period Metrics
                         </h3>
                         <div className="grid grid-cols-2 gap-3">
                             {/* Avg Calories */}
-                            <div className="bg-[#FFF4E6] dark:bg-orange-950/20 rounded-2xl p-4 border-2 border-orange-200 dark:border-white/5 shadow-sm">
+                            <div className="bg-[#FFF4E6] rounded-2xl p-4 border-2 border-orange-200 shadow-sm">
                                 <div className="flex items-center gap-2 mb-2">
-                                    <div className="w-6 h-6 rounded-lg bg-orange-100 dark:bg-orange-500/10 flex items-center justify-center">
-                                        <Utensils size={12} className="text-orange-600 dark:text-orange-400" />
+                                    <div className="w-6 h-6 rounded-lg bg-orange-100 flex items-center justify-center">
+                                        <Utensils size={12} className="text-orange-600" />
                                     </div>
-                                    <span className="text-[9px] font-bold text-orange-800/60 dark:text-gray-400 uppercase">Avg Calories</span>
+                                    <span className="text-[9px] font-bold text-orange-800/60 uppercase">Avg Calories</span>
                                 </div>
-                                <span className="text-xl font-black text-orange-900 dark:text-gray-50">
+                                <span className="text-xl font-black text-orange-900">
                                     {report.metrics.avgCalories}
                                     <span className="text-xs font-bold text-orange-800/40 ml-1">kcal</span>
                                 </span>
                             </div>
 
                             {/* Avg Protein */}
-                            <div className="bg-[#F0F7F4] dark:bg-emerald-950/20 rounded-2xl p-4 border-2 border-emerald-200 dark:border-white/5 shadow-sm">
+                            <div className="bg-[#F0F7F4] rounded-2xl p-4 border-2 border-emerald-200 shadow-sm">
                                 <div className="flex items-center gap-2 mb-2">
-                                    <div className="w-6 h-6 rounded-lg bg-emerald-100 dark:bg-emerald-500/10 flex items-center justify-center">
-                                        <span className="text-[10px] font-black text-emerald-600 dark:text-emerald-400">P</span>
+                                    <div className="w-6 h-6 rounded-lg bg-emerald-100 flex items-center justify-center">
+                                        <span className="text-[10px] font-black text-emerald-600">P</span>
                                     </div>
-                                    <span className="text-[9px] font-bold text-emerald-800/60 dark:text-gray-400 uppercase">Avg Protein</span>
+                                    <span className="text-[9px] font-bold text-emerald-800/60 uppercase">Avg Protein</span>
                                 </div>
-                                <span className="text-xl font-black text-emerald-900 dark:text-gray-50">
+                                <span className="text-xl font-black text-emerald-900">
                                     {report.metrics.avgProtein}
                                     <span className="text-xs font-bold text-emerald-800/40 ml-1">g</span>
                                 </span>
                             </div>
 
                             {/* Workouts */}
-                            <div className="bg-[#E7ECE9] dark:bg-primary-950/20 rounded-2xl p-4 border-2 border-[#C1D6CB] dark:border-white/5 shadow-sm">
+                            <div className="bg-[#E7ECE9] rounded-2xl p-4 border-2 border-[#C1D6CB] shadow-sm">
                                 <div className="flex items-center gap-2 mb-2">
-                                    <div className="w-6 h-6 rounded-lg bg-primary-100 dark:bg-primary-500/10 flex items-center justify-center">
-                                        <Dumbbell size={12} className="text-[#3D745B] dark:text-primary-400" />
+                                    <div className="w-6 h-6 rounded-lg bg-primary-100 flex items-center justify-center">
+                                        <Dumbbell size={12} className="text-[#3D745B]" />
                                     </div>
-                                    <span className="text-[9px] font-bold text-[#3D745B]/60 dark:text-gray-400 uppercase">Workouts</span>
+                                    <span className="text-[9px] font-bold text-[#3D745B]/60 uppercase">Workouts</span>
                                 </div>
-                                <span className="text-xl font-black text-[#3D745B] dark:text-gray-50">
+                                <span className="text-xl font-black text-[#3D745B]">
                                     {report.metrics.workoutsCompleted}
                                     <span className="text-xs font-bold text-[#3D745B]/40 ml-1">done</span>
                                 </span>
                             </div>
 
                             {/* Goal Hit Rate */}
-                            <div className="bg-[#EFF6FF] dark:bg-blue-950/20 rounded-2xl p-4 border-2 border-blue-200 dark:border-white/5 shadow-sm">
+                            <div className="bg-[#EFF6FF] rounded-2xl p-4 border-2 border-blue-200 shadow-sm">
                                 <div className="flex items-center gap-2 mb-2">
-                                    <div className="w-6 h-6 rounded-lg bg-blue-100 dark:bg-blue-500/10 flex items-center justify-center">
-                                        <Target size={12} className="text-blue-600 dark:text-blue-400" />
+                                    <div className="w-6 h-6 rounded-lg bg-blue-100 flex items-center justify-center">
+                                        <Target size={12} className="text-blue-600" />
                                     </div>
-                                    <span className="text-[9px] font-bold text-blue-800/60 dark:text-gray-400 uppercase">Goal Rate</span>
+                                    <span className="text-[9px] font-bold text-blue-800/60 uppercase">Goal Rate</span>
                                 </div>
-                                <span className="text-xl font-black text-blue-900 dark:text-gray-50">
+                                <span className="text-xl font-black text-blue-900">
                                     {report.metrics.calorieGoalHitRate}
                                     <span className="text-xs font-bold text-blue-800/40 ml-1">%</span>
                                 </span>
@@ -163,7 +163,7 @@ export const CoachTipsModal: React.FC<CoachTipsModalProps> = ({
 
                     {/* Tips Section */}
                     <div className="mb-8">
-                        <h3 className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-3">
+                        <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">
                             Improvement Tips
                         </h3>
                         <div className="space-y-3">
@@ -179,7 +179,7 @@ export const CoachTipsModal: React.FC<CoachTipsModalProps> = ({
                                 return (
                                     <div
                                         key={index}
-                                        className={`${styleClass} dark:bg-[#1A1C26] rounded-2xl p-4 border-2 flex items-start gap-3 shadow-sm`}
+                                        className={`${styleClass}[#1A1C26] rounded-2xl p-4 border-2 flex items-start gap-3 shadow-sm`}
                                     >
                                         <div className="w-10 h-10 rounded-xl bg-white/50 backdrop-blur-sm flex items-center justify-center flex-shrink-0 text-xl shadow-sm">
                                             {tip.emoji}
@@ -200,7 +200,7 @@ export const CoachTipsModal: React.FC<CoachTipsModalProps> = ({
 
                     {/* Weight at Report */}
                     {report.weightAtReport && (
-                        <div className="text-center text-xs text-gray-400 dark:text-gray-500">
+                        <div className="text-center text-xs text-gray-400">
                             Weight at report: <span className="font-bold">{report.weightAtReport} kg</span>
                         </div>
                     )}

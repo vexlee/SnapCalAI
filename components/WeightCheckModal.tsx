@@ -49,9 +49,9 @@ export const WeightCheckModal: React.FC<WeightCheckModalProps> = ({ onClose, onC
     if (isLoading) {
         return (
             <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center animate-in fade-in duration-300">
-                <div className="bg-white dark:bg-[#1A1C26] rounded-[28px] p-8 w-[90%] max-w-sm shadow-2xl">
+                <div className="bg-white[#1A1C26] rounded-[28px] p-8 w-[90%] max-w-sm shadow-2xl">
                     <div className="flex justify-center">
-                        <div className="w-8 h-8 border-2 border-primary-200 dark:border-primary-800 border-t-primary-600 rounded-full animate-spin" />
+                        <div className="w-8 h-8 border-2 border-primary-200 border-t-primary-600 rounded-full animate-spin" />
                     </div>
                 </div>
             </div>
@@ -64,43 +64,43 @@ export const WeightCheckModal: React.FC<WeightCheckModalProps> = ({ onClose, onC
             onClick={onClose}
         >
             <div
-                className="bg-white dark:bg-[#1A1C26] rounded-t-[28px] sm:rounded-[28px] p-6 w-full sm:w-[90%] sm:max-w-sm shadow-2xl animate-in slide-in-from-bottom duration-500"
+                className="bg-white[#1A1C26] rounded-t-[28px] sm:rounded-[28px] p-6 w-full sm:w-[90%] sm:max-w-sm shadow-2xl animate-in slide-in-from-bottom duration-500"
                 onClick={e => e.stopPropagation()}
             >
                 {/* Header */}
                 <div className="flex items-center justify-between mb-6">
                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center">
-                            <Scale size={20} className="text-primary-600 dark:text-primary-400" />
+                        <div className="w-10 h-10 rounded-xl bg-primary-100 flex items-center justify-center">
+                            <Scale size={20} className="text-primary-600" />
                         </div>
                         <div>
-                            <h2 className="text-lg font-black text-gray-900 dark:text-gray-50">Weight Check</h2>
+                            <h2 className="text-lg font-black text-gray-900">Weight Check</h2>
                             <p className="text-[10px] text-gray-400 font-medium">Before viewing your report</p>
                         </div>
                     </div>
                     <button
                         onClick={onClose}
-                        className="w-8 h-8 rounded-xl bg-gray-100 dark:bg-white/5 flex items-center justify-center hover:bg-gray-200 dark:hover:bg-white/10 transition-colors"
+                        className="w-8 h-8 rounded-xl bg-gray-100 flex items-center justify-center hover:bg-gray-200:bg-white/10 transition-colors"
                     >
                         <X size={16} className="text-gray-400" />
                     </button>
                 </div>
 
                 {/* Content */}
-                <div className="bg-gray-50 dark:bg-white/5 rounded-2xl p-5 mb-6">
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-4 text-center">
+                <div className="bg-gray-50 rounded-2xl p-5 mb-6">
+                    <p className="text-xs text-gray-500 mb-4 text-center">
                         Is your current weight still accurate?
                     </p>
 
                     {!isEditing ? (
                         <div className="text-center">
-                            <div className="text-4xl font-black text-gray-900 dark:text-gray-50 mb-1">
+                            <div className="text-4xl font-black text-gray-900 mb-1">
                                 {currentWeight}
                                 <span className="text-lg font-bold text-gray-400 ml-1">kg</span>
                             </div>
                             <button
                                 onClick={() => setIsEditing(true)}
-                                className="text-xs text-primary-600 dark:text-primary-400 font-bold flex items-center gap-1 mx-auto hover:underline"
+                                className="text-xs text-primary-600 font-bold flex items-center gap-1 mx-auto hover:underline"
                             >
                                 <RefreshCw size={12} />
                                 Update weight
@@ -113,7 +113,7 @@ export const WeightCheckModal: React.FC<WeightCheckModalProps> = ({ onClose, onC
                                     type="number"
                                     value={newWeight}
                                     onChange={(e) => setNewWeight(e.target.value)}
-                                    className="w-28 text-center text-3xl font-black text-gray-900 dark:text-gray-50 bg-white dark:bg-[#0F111A] border-2 border-primary-200 dark:border-primary-800 rounded-xl py-2 focus:outline-none focus:border-primary-500"
+                                    className="w-28 text-center text-3xl font-black text-gray-900 bg-white[#0F111A] border-2 border-primary-200 rounded-xl py-2 focus:outline-none focus:border-primary-500"
                                     step="0.1"
                                     min="20"
                                     max="300"
@@ -138,7 +138,7 @@ export const WeightCheckModal: React.FC<WeightCheckModalProps> = ({ onClose, onC
                 <div className="flex gap-3">
                     <button
                         onClick={onClose}
-                        className="flex-1 py-3.5 rounded-xl bg-gray-100 dark:bg-white/5 text-gray-600 dark:text-gray-400 font-bold text-sm hover:bg-gray-200 dark:hover:bg-white/10 transition-colors"
+                        className="flex-1 py-3.5 rounded-xl bg-gray-100 text-gray-600 font-bold text-sm hover:bg-gray-200:bg-white/10 transition-colors"
                     >
                         Cancel
                     </button>

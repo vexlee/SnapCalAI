@@ -268,19 +268,19 @@ export const SharedMealModal: React.FC<SharedMealModalProps> = ({ onClose, onSuc
 
     return (
         <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center bg-black/40 backdrop-blur-md p-4 animate-in fade-in duration-200">
-            <div className="bg-white dark:bg-[#1a1c26] w-full max-w-md rounded-[40px] p-6 shadow-2xl border border-white/50 dark:border-white/5 animate-in slide-in-from-bottom duration-300 max-h-[95vh] overflow-y-auto no-scrollbar">
+            <div className="bg-white[#1a1c26] w-full max-w-md rounded-[40px] p-6 shadow-2xl border border-white/50 animate-in slide-in-from-bottom duration-300 max-h-[95vh] overflow-y-auto no-scrollbar">
 
                 <div className="flex justify-between items-center mb-4">
-                    <h2 className="text-2xl font-black text-gray-900 dark:text-gray-50 tracking-tight">
+                    <h2 className="text-2xl font-black text-gray-900 tracking-tight">
                         {step === 'upload' ? 'Shared Meal' : step === 'analyzing' ? 'Analyzing...' : step === 'selection' ? 'Select Portions' : 'Confirm'}
                     </h2>
-                    <button onClick={onClose} className="p-2 bg-gray-100 dark:bg-white/5 rounded-full hover:bg-gray-200 dark:hover:bg-white/10 transition-colors">
-                        <X size={20} className="text-gray-600 dark:text-gray-400" />
+                    <button onClick={onClose} className="p-2 bg-gray-100 rounded-full hover:bg-gray-200:bg-white/10 transition-colors">
+                        <X size={20} className="text-gray-600" />
                     </button>
                 </div>
 
                 {error && (
-                    <div className="mb-4 p-4 rounded-3xl flex items-start gap-3 bg-red-50 dark:bg-red-950/20 border border-red-100 dark:border-red-900/30 text-red-600 dark:text-red-400 animate-in shake-1 duration-300">
+                    <div className="mb-4 p-4 rounded-3xl flex items-start gap-3 bg-red-50 border border-red-100 text-red-600 animate-in shake-1 duration-300">
                         <AlertCircle className="shrink-0 mt-0.5" size={18} />
                         <p className="text-xs font-semibold leading-relaxed">{error}</p>
                     </div>
@@ -288,17 +288,17 @@ export const SharedMealModal: React.FC<SharedMealModalProps> = ({ onClose, onSuc
 
                 {step === 'upload' && (
                     <div className="space-y-6">
-                        <div className="bg-primary-50 dark:bg-primary-950/40 p-5 rounded-4xl border border-primary-100 dark:border-primary-900/30">
-                            <p className="text-xs font-bold text-primary-600 dark:text-primary-400 mb-2">📸 Shared Meal Mode</p>
-                            <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                        <div className="bg-primary-50 p-5 rounded-4xl border border-primary-100">
+                            <p className="text-xs font-bold text-primary-600 mb-2">📸 Shared Meal Mode</p>
+                            <p className="text-xs text-slate-600 leading-relaxed">
                                 Take a photo of a table with multiple dishes. The AI will identify each dish and let you specify what percentage you ate.
                             </p>
                         </div>
 
                         {!preview ? (
-                            <div onClick={() => fileInputRef.current?.click()} className="border-2 border-dashed border-slate-200 dark:border-white/10 rounded-4xl h-64 flex flex-col items-center justify-center cursor-pointer hover:border-primary-400 hover:bg-primary-50 dark:hover:bg-white/5 transition-all group">
+                            <div onClick={() => fileInputRef.current?.click()} className="border-2 border-dashed border-slate-200 rounded-4xl h-64 flex flex-col items-center justify-center cursor-pointer hover:border-primary-400 hover:bg-primary-50:bg-white/5 transition-all group">
                                 <Camera size={48} className="text-slate-300 group-hover:text-primary-600 mb-4 transition-colors" />
-                                <p className="text-primary-900 dark:text-primary-50 font-bold">Snap or Upload Photo</p>
+                                <p className="text-primary-900 font-bold">Snap or Upload Photo</p>
                                 <p className="text-slate-400 text-xs mt-1 italic">Capture the whole table</p>
                             </div>
                         ) : (
@@ -367,7 +367,7 @@ export const SharedMealModal: React.FC<SharedMealModalProps> = ({ onClose, onSuc
                             })}
                         </div>
 
-                        <div className="bg-slate-50 dark:bg-white/5 rounded-4xl p-5 border border-slate-100 dark:border-white/5">
+                        <div className="bg-slate-50 rounded-4xl p-5 border border-slate-100">
                             <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Detected Dishes ({detectedDishes.length})</p>
                             <div className="space-y-2 max-h-40 overflow-y-auto no-scrollbar">
                                 {detectedDishes.map((dish, index) => (
@@ -375,18 +375,18 @@ export const SharedMealModal: React.FC<SharedMealModalProps> = ({ onClose, onSuc
                                         key={index}
                                         onClick={() => handleDishClick(index)}
                                         className={`w-full flex items-center justify-between p-3 rounded-xl transition-all ${selectedPortions.has(index)
-                                            ? 'bg-primary-50 dark:bg-primary-950/30 border border-primary-200 dark:border-primary-900/30'
-                                            : 'bg-white dark:bg-white/5 border border-slate-100 dark:border-white/10 hover:border-primary-300'
+                                            ? 'bg-primary-50 border border-primary-200'
+                                            : 'bg-white border border-slate-100 hover:border-primary-300'
                                             }`}
                                     >
                                         <div className="flex items-center gap-2">
                                             <span className="w-6 h-6 rounded-full bg-primary-600 text-white text-xs font-black flex items-center justify-center">
                                                 {index + 1}
                                             </span>
-                                            <span className="text-sm font-bold text-primary-900 dark:text-primary-50 truncate">{dish.dish_name}</span>
+                                            <span className="text-sm font-bold text-primary-900 truncate">{dish.dish_name}</span>
                                         </div>
                                         {selectedPortions.has(index) && (
-                                            <span className="text-xs font-black text-primary-600 dark:text-primary-400">
+                                            <span className="text-xs font-black text-primary-600">
                                                 {selectedPortions.get(index)}%
                                             </span>
                                         )}
@@ -420,14 +420,14 @@ export const SharedMealModal: React.FC<SharedMealModalProps> = ({ onClose, onSuc
                                 const calories = Math.round((dish.estimated_total_calories * percentage) / 100);
 
                                 return (
-                                    <div key={dishIndex} className="bg-slate-50 dark:bg-white/5 rounded-2xl p-4 border border-slate-100 dark:border-white/5">
+                                    <div key={dishIndex} className="bg-slate-50 rounded-2xl p-4 border border-slate-100">
                                         <div className="flex justify-between items-start mb-2">
-                                            <h3 className="font-bold text-primary-900 dark:text-primary-50 text-sm">{dish.dish_name}</h3>
-                                            <span className="text-xs font-black text-primary-600 dark:text-primary-400">{percentage}%</span>
+                                            <h3 className="font-bold text-primary-900 text-sm">{dish.dish_name}</h3>
+                                            <span className="text-xs font-black text-primary-600">{percentage}%</span>
                                         </div>
                                         <div className="flex justify-between items-center">
                                             <span className="text-xs text-slate-400">Portion of {dish.estimated_total_calories} kcal</span>
-                                            <span className="font-extrabold text-primary-900 dark:text-primary-50">{calories} kcal</span>
+                                            <span className="font-extrabold text-primary-900">{calories} kcal</span>
                                         </div>
                                     </div>
                                 );
@@ -447,21 +447,21 @@ export const SharedMealModal: React.FC<SharedMealModalProps> = ({ onClose, onSuc
 
                 {/* Bottom sheet for percentage selection */}
                 {activeDish !== null && step === 'selection' && (
-                    <div className="fixed inset-x-0 bottom-0 z-[110] bg-white dark:bg-[#1a1c26] rounded-t-[40px] p-6 shadow-2xl border-t border-white/50 dark:border-white/5 animate-in slide-in-from-bottom duration-300">
+                    <div className="fixed inset-x-0 bottom-0 z-[110] bg-white[#1a1c26] rounded-t-[40px] p-6 shadow-2xl border-t border-white/50 animate-in slide-in-from-bottom duration-300">
                         <div className="max-w-md mx-auto">
                             <div className="flex justify-between items-center mb-4">
-                                <h3 className="text-lg font-black text-gray-900 dark:text-gray-50">{detectedDishes[activeDish].dish_name}</h3>
-                                <button onClick={() => setActiveDish(null)} className="p-2 bg-gray-100 dark:bg-white/5 rounded-full">
-                                    <ChevronDown size={20} className="text-gray-600 dark:text-gray-400" />
+                                <h3 className="text-lg font-black text-gray-900">{detectedDishes[activeDish].dish_name}</h3>
+                                <button onClick={() => setActiveDish(null)} className="p-2 bg-gray-100 rounded-full">
+                                    <ChevronDown size={20} className="text-gray-600" />
                                 </button>
                             </div>
 
-                            <div className="bg-primary-50 dark:bg-primary-950/40 rounded-2xl p-4 mb-4">
+                            <div className="bg-primary-50 rounded-2xl p-4 mb-4">
                                 <div className="flex items-center justify-between mb-2">
-                                    <span className="text-xs font-bold text-primary-600 dark:text-primary-400 uppercase flex items-center gap-1">
+                                    <span className="text-xs font-bold text-primary-600 uppercase flex items-center gap-1">
                                         <Percent size={14} /> Your Portion
                                     </span>
-                                    <span className="text-2xl font-black text-primary-600 dark:text-primary-400">{tempPercentage}%</span>
+                                    <span className="text-2xl font-black text-primary-600">{tempPercentage}%</span>
                                 </div>
                                 <input
                                     type="range"
@@ -470,14 +470,14 @@ export const SharedMealModal: React.FC<SharedMealModalProps> = ({ onClose, onSuc
                                     step="5"
                                     value={tempPercentage}
                                     onChange={(e) => setTempPercentage(Number(e.target.value))}
-                                    className="w-full h-2 bg-primary-200 dark:bg-primary-900/30 rounded-full appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:bg-primary-600 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:cursor-pointer"
+                                    className="w-full h-2 bg-primary-200 rounded-full appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:bg-primary-600 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:cursor-pointer"
                                 />
                             </div>
 
-                            <div className="bg-slate-50 dark:bg-white/5 rounded-2xl p-4 mb-4">
+                            <div className="bg-slate-50 rounded-2xl p-4 mb-4">
                                 <div className="flex justify-between items-center">
                                     <span className="text-xs text-slate-400">Your Calories</span>
-                                    <span className="text-xl font-black text-primary-900 dark:text-primary-50">
+                                    <span className="text-xl font-black text-primary-900">
                                         {Math.round((detectedDishes[activeDish].estimated_total_calories * tempPercentage) / 100)} kcal
                                     </span>
                                 </div>

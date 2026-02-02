@@ -20,7 +20,7 @@ export const DailySummaryModal: React.FC<DailySummaryModalProps> = ({ summary, o
             <div className="bg-white w-full max-w-md rounded-[40px] overflow-hidden shadow-2xl border border-white/50 animate-in slide-in-from-bottom duration-300">
 
                 {/* Header */}
-                <div className="relative bg-primary-50 dark:bg-primary-950/20 p-8 pb-10">
+                <div className="relative bg-primary-50 p-8 pb-10">
                     <div className="absolute top-6 right-6">
                         <button
                             onClick={onClose}
@@ -49,7 +49,7 @@ export const DailySummaryModal: React.FC<DailySummaryModalProps> = ({ summary, o
                                 <span className="text-gray-400 font-bold text-lg">kcal</span>
                             </div>
                         </div>
-                        <div className="w-14 h-14 rounded-2xl bg-primary-50 dark:bg-primary-950/30 flex items-center justify-center text-primary-600">
+                        <div className="w-14 h-14 rounded-2xl bg-primary-50 flex items-center justify-center text-primary-600">
                             <Activity size={28} />
                         </div>
                     </div>

@@ -262,28 +262,28 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ onClose, onSuccess, 
 
   return (
     <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center bg-black/40 backdrop-blur-md p-4 animate-in fade-in duration-200">
-      <div className="bg-surface dark:bg-surface-dark w-full max-w-md rounded-4xl p-6 shadow-2xl border border-white/50 dark:border-white/5 animate-in slide-in-from-bottom duration-300 max-h-[95vh] overflow-y-auto no-scrollbar">
+      <div className="bg-surface w-full max-w-md rounded-4xl p-6 shadow-2xl border border-white/50 animate-in slide-in-from-bottom duration-300 max-h-[95vh] overflow-y-auto no-scrollbar">
 
         <div className="flex justify-between items-center mb-6">
           <div className="flex items-center gap-3">
             {step === 'details' && !editEntry && (
-              <button onClick={() => setStep('upload')} className="p-2 -ml-2 rounded-full hover:bg-secondary-50 dark:hover:bg-white/10 transition-all active:scale-95">
-                <ChevronLeft size={24} className="text-primary-900 dark:text-gray-50" />
+              <button onClick={() => setStep('upload')} className="p-2 -ml-2 rounded-full hover:bg-secondary-50:bg-white/10 transition-all active:scale-95">
+                <ChevronLeft size={24} className="text-primary-900" />
               </button>
             )}
-            <h2 className="text-3xl font-black text-primary-900 dark:text-gray-50 tracking-tight font-display">
+            <h2 className="text-3xl font-black text-primary-900 tracking-tight font-display">
               {editEntry ? 'Edit Record' : (step === 'upload' ? 'Track Meal' : 'Meal Receipt')}
             </h2>
           </div>
-          <button onClick={onClose} className="p-2.5 bg-secondary-50 dark:bg-white/10 rounded-full hover:bg-secondary-100 dark:hover:bg-white/20 transition-all active:scale-90">
-            <X size={22} className="text-secondary-600 dark:text-gray-400" />
+          <button onClick={onClose} className="p-2.5 bg-secondary-50 rounded-full hover:bg-secondary-100:bg-white/20 transition-all active:scale-90">
+            <X size={22} className="text-secondary-600" />
           </button>
         </div>
 
         {error && (
-          <div className={`mb-4 p-4 rounded-3xl flex flex-col gap-3 animate-in shake-1 duration-300 ${isAiQuotaError ? 'bg-amber-50 dark:bg-amber-950/30 border border-amber-100 dark:border-amber-900/30 text-amber-700 dark:text-amber-400' :
-            isDbQuotaError || isBrowserQuotaError ? 'bg-orange-50 dark:bg-orange-950/30 border border-orange-100 dark:border-orange-900/30 text-orange-700 dark:text-orange-400' :
-              'bg-red-50 dark:bg-red-950/20 border border-red-100 dark:border-red-900/30 text-red-600 dark:text-red-400'
+          <div className={`mb-4 p-4 rounded-3xl flex flex-col gap-3 animate-in shake-1 duration-300 ${isAiQuotaError ? 'bg-amber-50 border border-amber-100 text-amber-700' :
+            isDbQuotaError || isBrowserQuotaError ? 'bg-orange-50 border border-orange-100 text-orange-700' :
+              'bg-red-50 border border-red-100 text-red-600'
             } `}>
             <div className="flex items-start gap-3">
               {isAiQuotaError ? <Hourglass className="shrink-0 mt-0.5" size={18} /> :
@@ -299,14 +299,14 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ onClose, onSuccess, 
             {!isBrowserQuotaError && (isAiQuotaError || !isDbQuotaError) && (
               <button
                 onClick={() => { setError(null); if (step === 'upload') handleAnalyze(); else handleRecalculate(); }}
-                className="w-full py-2 bg-white/50 dark:bg-white/10 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-white/80 dark:hover:bg-white/20 transition-all"
+                className="w-full py-2 bg-white/50 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-white/80:bg-white/20 transition-all"
               >
                 <RotateCcw size={14} /> Try Again
               </button>
             )}
             {isBrowserQuotaError && (
-              <div className="pt-2 border-t border-orange-200 dark:border-orange-900/40">
-                <p className="text-[10px] font-medium text-orange-600/70 dark:text-orange-400/70 italic">
+              <div className="pt-2 border-t border-orange-200">
+                <p className="text-[10px] font-medium text-orange-600/70 italic">
                   Tip: Photos take up the most space. Delete old entries in the History tab to free up browser storage.
                 </p>
               </div>
@@ -316,7 +316,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ onClose, onSuccess, 
 
         {step === 'upload' ? (
           <div className="space-y-6">
-            <div className="flex p-1.5 bg-[#3D745B] dark:bg-[#1a1c26]/90 rounded-3xl backdrop-blur-sm border border-white/10">
+            <div className="flex p-1.5 bg-[#3D745B][#1a1c26]/90 rounded-3xl backdrop-blur-sm border border-white/10">
               <button
                 onClick={() => setMode('scan')}
                 className={`flex-1 py-3.5 flex items-center justify-center gap-2 rounded-2xl text-[13px] font-bold transition-all duration-300 ${mode === 'scan' ? 'bg-white text-[#3D745B] shadow-soft' : 'text-white/70 hover:text-white hover:bg-white/10'} `}
@@ -350,9 +350,9 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ onClose, onSuccess, 
             {mode === 'scan' && (
               <>
                 {!preview ? (
-                  <div onClick={() => fileInputRef.current?.click()} className="border-2 border-dashed border-secondary-200 dark:border-white/10 rounded-4xl h-64 flex flex-col items-center justify-center cursor-pointer hover:border-primary-400 hover:bg-secondary-50 dark:hover:bg-white/5 transition-all group">
+                  <div onClick={() => fileInputRef.current?.click()} className="border-2 border-dashed border-secondary-200 rounded-4xl h-64 flex flex-col items-center justify-center cursor-pointer hover:border-primary-400 hover:bg-secondary-50:bg-white/5 transition-all group">
                     <Camera size={48} className="text-secondary-300 group-hover:text-primary-600 mb-4 transition-colors" />
-                    <p className="text-primary-900 dark:text-gray-50 font-bold">Snap or Upload Photo</p>
+                    <p className="text-primary-900 font-bold">Snap or Upload Photo</p>
                     <p className="text-secondary-400 text-xs mt-1 italic">Let AI do the calorie math</p>
                   </div>
                 ) : (
@@ -372,8 +372,8 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ onClose, onSuccess, 
 
             {mode === 'chat' && (
               <div className="space-y-4 animate-in fade-in duration-300">
-                <div className="bg-white dark:bg-surface-dark p-5 rounded-4xl border border-secondary-100 dark:border-white/5 transition-colors shadow-soft">
-                  <p className="text-xs font-bold text-primary-600 dark:text-primary-400 uppercase tracking-widest mb-3 flex items-center gap-2">
+                <div className="bg-white p-5 rounded-4xl border border-secondary-100 transition-colors shadow-soft">
+                  <p className="text-xs font-bold text-primary-600 uppercase tracking-widest mb-3 flex items-center gap-2">
                     <Sparkles size={14} /> Describe your meal
                   </p>
                   <textarea
@@ -381,7 +381,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ onClose, onSuccess, 
                     onChange={(e) => setChatInput(e.target.value)}
                     placeholder="e.g. I had two slices of pepperoni pizza and a small Caesar salad with Italian dressing."
                     rows={4}
-                    className="w-full bg-transparent border-none outline-none text-primary-900 dark:text-white font-medium text-sm resize-none placeholder-secondary-300 dark:placeholder-gray-600"
+                    className="w-full bg-transparent border-none outline-none text-primary-900 font-medium text-sm resize-none placeholder-secondary-300"
                   />
                 </div>
                 <Button
@@ -398,9 +398,9 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ onClose, onSuccess, 
             {mode === 'recipe' && (
               <div className="space-y-4 animate-in fade-in duration-300 text-center py-6">
                 <ChefHat size={40} className="mx-auto text-primary-400 mb-2" />
-                <p className="text-sm font-bold text-primary-900 dark:text-white">Recipe Mode Coming Soon</p>
+                <p className="text-sm font-bold text-primary-900">Recipe Mode Coming Soon</p>
                 <p className="text-xs font-medium text-secondary-400 px-8">For now, use Chat mode to describe your recipe ingredients for estimation.</p>
-                <Button className="w-full py-3 mt-4 text-xs font-bold text-secondary-400 hover:text-primary-500 bg-secondary-50 dark:bg-white/5 rounded-full" onClick={() => setStep('details')}>
+                <Button className="w-full py-3 mt-4 text-xs font-bold text-secondary-400 hover:text-primary-500 bg-secondary-50 rounded-full" onClick={() => setStep('details')}>
                   Enter Details Manually
                 </Button>
               </div>
@@ -408,22 +408,22 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ onClose, onSuccess, 
 
             {mode === 'shared' && (
               <>
-                <div className="bg-primary-50 dark:bg-primary-900/10 p-4 rounded-3xl mb-6 border border-primary-100 dark:border-primary-900/30 flex gap-3 items-start">
-                  <div className="p-2 bg-primary-100 dark:bg-primary-900/50 rounded-full shrink-0">
-                    <Users size={16} className="text-primary-600 dark:text-primary-400" />
+                <div className="bg-primary-50 p-4 rounded-3xl mb-6 border border-primary-100 flex gap-3 items-start">
+                  <div className="p-2 bg-primary-100 rounded-full shrink-0">
+                    <Users size={16} className="text-primary-600" />
                   </div>
                   <div>
-                    <h4 className="text-sm font-bold text-primary-900 dark:text-white mb-1">Shared Meal Mode</h4>
-                    <p className="text-xs text-secondary-500 dark:text-gray-400 leading-relaxed">
+                    <h4 className="text-sm font-bold text-primary-900 mb-1">Shared Meal Mode</h4>
+                    <p className="text-xs text-secondary-500 leading-relaxed">
                       Upload a photo of the entire table. Connect directly to our multi-dish analysis engine.
                     </p>
                   </div>
                 </div>
 
                 {!preview ? (
-                  <div onClick={() => fileInputRef.current?.click()} className="border-2 border-dashed border-secondary-200 dark:border-white/10 rounded-4xl h-64 flex flex-col items-center justify-center cursor-pointer hover:border-primary-400 hover:bg-secondary-50 dark:hover:bg-white/5 transition-all group">
+                  <div onClick={() => fileInputRef.current?.click()} className="border-2 border-dashed border-secondary-200 rounded-4xl h-64 flex flex-col items-center justify-center cursor-pointer hover:border-primary-400 hover:bg-secondary-50:bg-white/5 transition-all group">
                     <Camera size={48} className="text-secondary-300 group-hover:text-primary-600 mb-4 transition-colors" />
-                    <p className="text-primary-900 dark:text-gray-50 font-bold">Snap or Upload Photo</p>
+                    <p className="text-primary-900 font-bold">Snap or Upload Photo</p>
                     <p className="text-secondary-400 text-xs mt-1 italic">Capture the whole table</p>
                   </div>
                 ) : (
@@ -445,7 +445,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ onClose, onSuccess, 
 
                 <div className="flex gap-3">
                   <Button
-                    className="w-full py-5 text-lg font-black shadow-lg shadow-primary-200/50 dark:shadow-none bg-[#3D745B] hover:bg-[#315C49] text-white rounded-full"
+                    className="w-full py-5 text-lg font-black shadow-lg shadow-primary-200/50 bg-[#3D745B] hover:bg-[#315C49] text-white rounded-full"
                     disabled={!preview}
                     onClick={() => onOpenSharedMeal(preview || undefined)}
                   >
@@ -458,7 +458,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ onClose, onSuccess, 
             {mode !== 'recipe' && mode !== 'shared' && (
               <button
                 onClick={() => setStep('details')}
-                className="w-full py-4 text-sm font-bold text-secondary-400 dark:text-gray-500 hover:text-primary-600 transition-all flex items-center justify-center gap-2 group"
+                className="w-full py-4 text-sm font-bold text-secondary-400 hover:text-primary-600 transition-all flex items-center justify-center gap-2 group"
               >
                 <span>Enter Details Manually</span>
                 <ChevronLeft size={16} className="rotate-180 opacity-0 group-hover:opacity-100 transition-all transform -translate-x-1 group-hover:translate-x-0" />
@@ -468,7 +468,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ onClose, onSuccess, 
         ) : (
           <div className="space-y-6 animate-in slide-in-from-right duration-300">
             {/* Summary Top Section */}
-            <div className="bg-[#3D745B] rounded-4xl p-6 text-white shadow-lg shadow-primary-200/50 dark:shadow-none">
+            <div className="bg-[#3D745B] rounded-4xl p-6 text-white shadow-lg shadow-primary-200/50">
               <div className="flex justify-between items-start mb-4">
                 <div>
                   <p className="text-primary-100 text-[10px] font-black uppercase tracking-widest mb-1">Estimated Calories</p>
@@ -523,24 +523,24 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ onClose, onSuccess, 
 
             {/* Time & Date */}
             <div className="grid grid-cols-2 gap-3">
-              <div className="bg-secondary-50 dark:bg-white/5 rounded-3xl p-3 flex items-center gap-3 border border-secondary-100 dark:border-white/5">
+              <div className="bg-secondary-50 rounded-3xl p-3 flex items-center gap-3 border border-secondary-100">
                 <Calendar size={18} className="text-secondary-400" />
-                <input type="date" value={entryDate} onChange={(e) => setEntryDate(e.target.value)} className="bg-transparent text-sm font-bold w-full outline-none text-primary-900 dark:text-white" />
+                <input type="date" value={entryDate} onChange={(e) => setEntryDate(e.target.value)} className="bg-transparent text-sm font-bold w-full outline-none text-primary-900" />
               </div>
-              <div className="bg-secondary-50 dark:bg-white/5 rounded-3xl p-3 flex items-center gap-3 border border-secondary-100 dark:border-white/5">
+              <div className="bg-secondary-50 rounded-3xl p-3 flex items-center gap-3 border border-secondary-100">
                 <Clock size={18} className="text-secondary-400" />
-                <input type="time" value={entryTime} onChange={(e) => setEntryTime(e.target.value)} className="bg-transparent text-sm font-bold w-full outline-none text-primary-900 dark:text-white" />
+                <input type="time" value={entryTime} onChange={(e) => setEntryTime(e.target.value)} className="bg-transparent text-sm font-bold w-full outline-none text-primary-900" />
               </div>
             </div>
 
             {/* Meal Name */}
             <div>
               <label className="text-[10px] font-black text-secondary-400 uppercase ml-1">Meal Title</label>
-              <input type="text" value={foodName} onChange={(e) => setFoodName(e.target.value)} className="w-full p-4 bg-secondary-50 dark:bg-white/5 border border-secondary-100 dark:border-white/5 rounded-3xl font-bold text-primary-900 dark:text-white mt-1" />
+              <input type="text" value={foodName} onChange={(e) => setFoodName(e.target.value)} className="w-full p-4 bg-secondary-50 border border-secondary-100 rounded-3xl font-bold text-primary-900 mt-1" />
             </div>
 
             {/* Ingredient Breakdown "Receipt" */}
-            <div className="bg-secondary-50/50 dark:bg-white/5 rounded-4xl p-5 border border-secondary-100 dark:border-white/5">
+            <div className="bg-secondary-50/50 rounded-4xl p-5 border border-secondary-100">
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-[10px] font-black text-secondary-400 uppercase tracking-widest flex items-center gap-2 mb-4">
                   <Sparkles size={14} className="text-primary-500" /> Ingredient Receipt
@@ -556,7 +556,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ onClose, onSuccess, 
                       type="text"
                       value={ing.name}
                       onChange={(e) => handleIngredientChange(idx, 'name', e.target.value)}
-                      className="flex-1 bg-white dark:bg-white/10 p-2.5 rounded-xl text-xs font-bold border border-secondary-100 dark:border-white/10 outline-none focus:border-primary-300 text-primary-900 dark:text-white"
+                      className="flex-1 bg-white p-2.5 rounded-xl text-xs font-bold border border-secondary-100 outline-none focus:border-primary-300 text-primary-900"
                       placeholder="Ingredient"
                     />
                     <div className="relative w-20">
@@ -564,7 +564,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ onClose, onSuccess, 
                         type="number"
                         value={ing.grams === 0 ? '' : ing.grams}
                         onChange={(e) => handleIngredientChange(idx, 'grams', e.target.value)}
-                        className="w-full bg-white dark:bg-white/10 p-2.5 pr-6 rounded-xl text-xs font-bold border border-secondary-100 dark:border-white/10 outline-none text-right text-primary-900 dark:text-white"
+                        className="w-full bg-white p-2.5 pr-6 rounded-xl text-xs font-bold border border-secondary-100 outline-none text-right text-primary-900"
                       />
                       <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[8px] font-black text-secondary-400">g</span>
                     </div>
