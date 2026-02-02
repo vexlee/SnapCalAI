@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { User, Ruler, Weight, Check, RefreshCw, Activity, ArrowRight, Database, Moon, Sun, LogOut, UploadCloud, AlertCircle, HardDrive, Cloud, Code, Copy, Calendar, Users, TrendingUp, Target, Dumbbell, ChevronDown, Scale } from 'lucide-react';
+import { User, Ruler, Weight, Check, RefreshCw, Activity, ArrowRight, Database, LogOut, UploadCloud, AlertCircle, HardDrive, Cloud, Code, Copy, Calendar, Users, TrendingUp, Target, Dumbbell, ChevronDown, Scale } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { getUserProfile, saveUserProfile, saveDailyGoal, hasLocalData, syncLocalDataToSupabase, checkDatabaseSchema } from '../services/storage';
 import { isSupabaseConfigured, getAppMode, setAppMode, shouldUseCloud } from '../services/supabase';
@@ -97,7 +97,6 @@ export const Profile: React.FC = () => {
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [recommendedCalories, setRecommendedCalories] = useState<number | null>(null);
-  const [isDarkMode, setIsDarkMode] = useState(document.documentElement.classList.contains('dark'));
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [hasUnsyncedData, setHasUnsyncedData] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
@@ -123,17 +122,7 @@ export const Profile: React.FC = () => {
     else setDbStatus('ok');
   };
 
-  const toggleTheme = () => {
-    const newDarkMode = !isDarkMode;
-    setIsDarkMode(newDarkMode);
-    if (newDarkMode) {
-      document.documentElement.classList.add('dark');
-      localStorage.setItem('snapcal-theme', 'dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-      localStorage.setItem('snapcal-theme', 'light');
-    }
-  };
+
 
   const handleModeSwitch = (mode: 'local' | 'cloud') => {
     if (mode === getAppMode()) return;
@@ -262,28 +251,28 @@ export const Profile: React.FC = () => {
   const currentMode = getAppMode();
 
   return (
-    <div className="flex-1 overflow-y-auto no-scrollbar pb-32 px-6 pt-10 space-y-8 animate-in fade-in duration-500">
+    <div className="flex-1 overflow-y-auto no-scrollbar pb-32 px-6 pt-10 space-y-8 animate-in fade-in duration-500 bg-background dark:bg-surface-dark">
       <header>
-        <p className="text-gray-400 dark:text-gray-500 text-xs font-semibold uppercase tracking-widest mb-2">My Profile</p>
-        <h1 className="text-3xl font-extrabold text-gray-900 dark:text-gray-50 tracking-tight">Personal Details</h1>
+        <p className="text-secondary-400 dark:text-secondary-500 text-xs font-bold uppercase tracking-widest mb-2">My Profile</p>
+        <h1 className="text-3xl font-black text-primary-900 dark:text-primary-50 tracking-tight font-display">Personal Details</h1>
       </header>
 
       {/* Sync Banner */}
       {shouldUseCloud && hasUnsyncedData && (
-        <div className="bg-indigo-50 dark:bg-indigo-950/30 border border-indigo-100 dark:border-indigo-900/40 p-5 rounded-[32px] animate-in slide-in-from-top-4">
+        <div className="bg-indigo-50 dark:bg-indigo-950/30 border border-indigo-100 dark:border-indigo-900/40 p-5 rounded-4xl animate-in slide-in-from-top-4 shadow-soft">
           <div className="flex items-start gap-4">
             <div className="p-3 bg-indigo-100 dark:bg-indigo-900/50 rounded-2xl text-indigo-600 dark:text-indigo-400">
               <UploadCloud size={24} />
             </div>
             <div>
-              <h3 className="text-sm font-extrabold text-indigo-900 dark:text-indigo-200">Local Data Found</h3>
-              <p className="text-xs text-indigo-700 dark:text-indigo-300 mt-1 mb-3 leading-relaxed">
+              <h3 className="text-sm font-black text-indigo-900 dark:text-indigo-200">Local Data Found</h3>
+              <p className="text-xs text-indigo-700 dark:text-indigo-300 mt-1 mb-3 leading-relaxed font-medium">
                 We found meal history on this device that isn't in the cloud yet. Sync now to secure your data.
               </p>
               <Button
                 onClick={handleSync}
                 isLoading={isSyncing}
-                className="py-3 px-6 text-xs bg-indigo-600 hover:bg-indigo-700 shadow-lg shadow-indigo-200 dark:shadow-none"
+                className="py-3 px-6 text-xs bg-[#3D745B] hover:bg-[#2D5A45] shadow-lg shadow-primary-200/50 dark:shadow-none rounded-full"
               >
                 Sync to Cloud
               </Button>
@@ -316,7 +305,7 @@ export const Profile: React.FC = () => {
                   <div className="bg-gray-900 rounded-xl p-3 mb-2 overflow-x-auto border border-white/10">
                     <pre className="text-[10px] text-emerald-400 font-mono leading-relaxed">{SUPABASE_SCHEMA_SQL}</pre>
                   </div>
-                  <Button onClick={copySql} className="w-full py-3 text-xs bg-rose-600 hover:bg-rose-700 text-white">
+                  <Button onClick={copySql} className="w-full py-3 text-xs bg-[#3D745B] hover:bg-[#2D5A45] text-white">
                     <Copy size={14} className="mr-2" /> Copy SQL to Clipboard
                   </Button>
                   <p className="text-[10px] text-rose-600/70 dark:text-rose-400/70 mt-2 italic text-center">
@@ -330,30 +319,9 @@ export const Profile: React.FC = () => {
       )}
 
 
-      {/* Appearance Card */}
-      <div className="bg-white dark:bg-[#1a1c26] p-6 rounded-[32px] border border-gray-100 dark:border-white/5 shadow-diffused dark:shadow-diffused-dark">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-royal-50 dark:bg-royal-950/30 rounded-2xl flex items-center justify-center text-royal-600 dark:text-royal-400">
-              {isDarkMode ? <Moon size={20} /> : <Sun size={20} />}
-            </div>
-            <div>
-              <p className="text-sm font-bold text-gray-900 dark:text-gray-50">Dark Mode</p>
-              <p className="text-xs text-gray-400 dark:text-gray-500">Optimize for low light</p>
-            </div>
-          </div>
-          <button
-            onClick={toggleTheme}
-            className={`w-14 h-8 rounded-full transition-all duration-300 relative ${isDarkMode ? 'bg-royal-600' : 'bg-gray-200 dark:bg-gray-800'}`}
-          >
-            <div className={`absolute top-1 left-1 w-6 h-6 bg-white rounded-full shadow-sm transition-transform duration-300 ${isDarkMode ? 'translate-x-6' : ''}`}></div>
-          </button>
-        </div>
-      </div>
-
       {/* Insight Container */}
       {bmi && bmiStatus && currentRecommendation && (
-        <div className="relative rounded-[32px] p-6 text-white overflow-hidden shadow-xl bg-royal-600 shadow-royal-200 dark:shadow-royal-900/40 animate-in slide-in-from-bottom-4 duration-500">
+        <div className="relative rounded-4xl p-6 text-white overflow-hidden shadow-xl bg-[#3D745B] shadow-primary-200/50 dark:shadow-primary-900/40 animate-in slide-in-from-bottom-4 duration-500">
           <div className="absolute top-0 right-0 -mt-10 -mr-10 w-40 h-40 bg-white/10 rounded-full blur-3xl"></div>
           <div className="absolute bottom-0 left-0 -mb-10 -ml-10 w-40 h-40 bg-black/10 rounded-full blur-3xl"></div>
 
@@ -361,28 +329,28 @@ export const Profile: React.FC = () => {
             <div className="flex justify-between items-start mb-6">
               <div>
                 <div className="flex items-center gap-2 mb-1">
-                  <Activity size={16} className="text-royal-200" />
-                  <span className="text-royal-200 text-xs font-bold uppercase tracking-widest">Body Insight</span>
+                  <Activity size={16} className="text-primary-200" />
+                  <span className="text-primary-200 text-xs font-bold uppercase tracking-widest">Body Insight</span>
                 </div>
-                <h2 className="text-3xl font-extrabold tracking-tight">BMI: {bmi.toFixed(1)}</h2>
+                <h2 className="text-3xl font-black tracking-tight font-display">BMI: {bmi.toFixed(1)}</h2>
               </div>
-              <div className={`px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/10 text-sm font-bold ${bmiStatus.color}`}>
+              <div className={`px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/10 text-sm font-black ${bmiStatus.color}`}>
                 {bmiStatus.label}
               </div>
             </div>
 
-            <div className="bg-white/10 backdrop-blur-md rounded-[24px] p-5 border border-white/5">
-              <p className="text-white/70 text-xs font-medium mb-3">
+            <div className="bg-white/10 backdrop-blur-md rounded-3xl p-5 border border-white/5">
+              <p className="text-white/70 text-xs font-bold mb-3">
                 Based on your profile, we recommend a daily calorie limit of:
               </p>
               <div className="flex items-center justify-between">
                 <div className="flex items-baseline gap-1">
-                  <span className="text-4xl font-extrabold tracking-tighter">{currentRecommendation}</span>
+                  <span className="text-4xl font-black tracking-tighter">{currentRecommendation}</span>
                   <span className="text-lg font-bold text-white/60">kcal</span>
                 </div>
                 <button
                   onClick={handleApplyRecommendation}
-                  className="w-10 h-10 bg-white text-royal-600 rounded-full flex items-center justify-center hover:scale-110 active:scale-95 transition-all shadow-lg"
+                  className="w-10 h-10 bg-white text-[#3D745B] rounded-full flex items-center justify-center hover:scale-110 active:scale-95 transition-all shadow-lg"
                 >
                   <ArrowRight size={20} strokeWidth={3} />
                 </button>
@@ -392,110 +360,110 @@ export const Profile: React.FC = () => {
         </div>
       )}
 
-      <div className="bg-white dark:bg-[#1a1c26] p-6 rounded-[32px] border border-gray-100 dark:border-white/5 shadow-diffused dark:shadow-diffused-dark space-y-5">
+      <div className="bg-white dark:bg-surface-dark p-6 rounded-4xl border border-white/50 dark:border-white/5 shadow-soft space-y-5">
         <div>
-          <label className="block text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2 ml-1">Display Name</label>
+          <label className="block text-xs font-black text-secondary-400 dark:text-secondary-500 uppercase tracking-wider mb-2 ml-1">Display Name</label>
           <div className="relative">
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Enter your name"
-              className="w-full p-4 pl-12 bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5 rounded-[20px] focus:outline-none focus:ring-2 focus:ring-royal-200 focus:border-royal-400 font-bold text-gray-900 dark:text-gray-50 transition-all placeholder:text-gray-300 dark:placeholder:text-gray-600"
+              className="w-full p-4 pl-12 bg-secondary-50 dark:bg-white/5 border border-secondary-100 dark:border-white/5 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 font-bold text-primary-900 dark:text-primary-50 transition-all placeholder:text-secondary-300 dark:placeholder:text-secondary-600"
             />
-            <User className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500" size={20} />
+            <User className="absolute left-4 top-1/2 -translate-y-1/2 text-secondary-400 dark:text-secondary-500" size={20} />
           </div>
         </div>
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2 ml-1">Height (cm)</label>
+            <label className="block text-xs font-black text-secondary-400 dark:text-secondary-500 uppercase tracking-wider mb-2 ml-1">Height (cm)</label>
             <div className="relative">
               <input
                 type="number"
                 value={height}
                 onChange={(e) => setHeight(e.target.value)}
                 placeholder="175"
-                className="w-full p-4 pl-12 bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5 rounded-[20px] focus:outline-none focus:ring-2 focus:ring-royal-200 focus:border-royal-400 font-bold text-gray-900 dark:text-gray-50 transition-all placeholder:text-gray-300 dark:placeholder:text-gray-600"
+                className="w-full p-4 pl-12 bg-secondary-50 dark:bg-white/5 border border-secondary-100 dark:border-white/5 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 font-bold text-primary-900 dark:text-primary-50 transition-all placeholder:text-secondary-300 dark:placeholder:text-secondary-600"
               />
-              <Ruler className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500" size={20} />
+              <Ruler className="absolute left-4 top-1/2 -translate-y-1/2 text-secondary-400 dark:text-secondary-500" size={20} />
             </div>
           </div>
           <div>
-            <label className="block text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2 ml-1">Weight (kg)</label>
+            <label className="block text-xs font-black text-secondary-400 dark:text-secondary-500 uppercase tracking-wider mb-2 ml-1">Weight (kg)</label>
             <div className="relative">
               <input
                 type="number"
                 value={weight}
                 onChange={(e) => setWeight(e.target.value)}
                 placeholder="70"
-                className="w-full p-4 pl-12 bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5 rounded-[20px] focus:outline-none focus:ring-2 focus:ring-royal-200 focus:border-royal-400 font-bold text-gray-900 dark:text-gray-50 transition-all placeholder:text-gray-300 dark:placeholder:text-gray-600"
+                className="w-full p-4 pl-12 bg-secondary-50 dark:bg-white/5 border border-secondary-100 dark:border-white/5 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 font-bold text-primary-900 dark:text-primary-50 transition-all placeholder:text-secondary-300 dark:placeholder:text-secondary-600"
               />
-              <Weight className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500" size={20} />
+              <Weight className="absolute left-4 top-1/2 -translate-y-1/2 text-secondary-400 dark:text-secondary-500" size={20} />
             </div>
           </div>
         </div>
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2 ml-1">Age</label>
+            <label className="block text-xs font-black text-secondary-400 dark:text-secondary-500 uppercase tracking-wider mb-2 ml-1">Age</label>
             <div className="relative">
               <input
                 type="number"
                 value={age}
                 onChange={(e) => setAge(e.target.value)}
                 placeholder="25"
-                className="w-full p-4 pl-12 bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5 rounded-[20px] focus:outline-none focus:ring-2 focus:ring-royal-200 focus:border-royal-400 font-bold text-gray-900 dark:text-gray-50 transition-all placeholder:text-gray-300 dark:placeholder:text-gray-600"
+                className="w-full p-4 pl-12 bg-secondary-50 dark:bg-white/5 border border-secondary-100 dark:border-white/5 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 font-bold text-primary-900 dark:text-primary-50 transition-all placeholder:text-secondary-300 dark:placeholder:text-secondary-600"
               />
-              <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500" size={20} />
+              <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 text-secondary-400 dark:text-secondary-500" size={20} />
             </div>
           </div>
           <div>
-            <label className="block text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2 ml-1">Gender</label>
+            <label className="block text-xs font-black text-secondary-400 dark:text-secondary-500 uppercase tracking-wider mb-2 ml-1">Gender</label>
             <div className="relative">
               <select
                 value={gender}
                 onChange={(e) => setGender(e.target.value as 'male' | 'female' | '')}
-                className="w-full p-4 pl-12 bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5 rounded-[20px] focus:outline-none focus:ring-2 focus:ring-royal-200 focus:border-royal-400 font-bold text-gray-900 dark:text-gray-50 transition-all appearance-none cursor-pointer"
+                className="w-full p-4 pl-12 bg-secondary-50 dark:bg-white/5 border border-secondary-100 dark:border-white/5 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 font-bold text-primary-900 dark:text-primary-50 transition-all appearance-none cursor-pointer"
               >
                 <option value="">Select</option>
                 <option value="male">Male</option>
                 <option value="female">Female</option>
               </select>
-              <Users className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 pointer-events-none" size={20} />
+              <Users className="absolute left-4 top-1/2 -translate-y-1/2 text-secondary-400 dark:text-secondary-500 pointer-events-none" size={20} />
             </div>
           </div>
         </div>
 
         {/* Training Goal Setting - Collapsible Section */}
-        <div className="pt-4 border-t border-gray-100 dark:border-white/5">
+        <div className="pt-4 border-t border-secondary-100 dark:border-white/5">
           <button
             type="button"
             onClick={() => setShowTrainingGoals(!showTrainingGoals)}
             className="w-full flex items-center justify-between mb-3 group"
           >
             <div className="flex items-center gap-2">
-              <Target size={16} className="text-royal-600 dark:text-royal-400" />
-              <p className="text-xs font-bold text-royal-600 dark:text-royal-400 uppercase tracking-wider">
+              <Target size={16} className="text-[#3D745B] dark:text-primary-400" />
+              <p className="text-xs font-black text-[#3D745B] dark:text-primary-400 uppercase tracking-wider">
                 Training Goal Setting
               </p>
             </div>
             <ChevronDown
               size={18}
-              className={`text-royal-600 dark:text-royal-400 transition-transform duration-300 ${showTrainingGoals ? 'rotate-180' : ''}`}
+              className={`text-[#3D745B] dark:text-primary-400 transition-transform duration-300 ${showTrainingGoals ? 'rotate-180' : ''}`}
             />
           </button>
-          <p className="text-[10px] text-gray-400 dark:text-gray-500 mb-3 ml-1">Optional - Fill this for personalized AI Coach recommendations</p>
+          <p className="text-[10px] text-secondary-400 dark:text-secondary-500 mb-3 ml-1 font-medium">Optional - Fill this for personalized AI Coach recommendations</p>
 
           {showTrainingGoals && (
             <div className="space-y-5 animate-in slide-in-from-top-2 duration-300">
               <div>
-                <label className="block text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2 ml-1">Activity Level</label>
+                <label className="block text-xs font-black text-secondary-400 dark:text-secondary-500 uppercase tracking-wider mb-2 ml-1">Activity Level</label>
                 <div className="relative">
                   <select
                     value={activityLevel}
                     onChange={(e) => setActivityLevel(e.target.value as any)}
-                    className="w-full p-4 pl-12 bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5 rounded-[20px] focus:outline-none focus:ring-2 focus:ring-royal-200 focus:border-royal-400 font-bold text-gray-900 dark:text-gray-50 transition-all appearance-none cursor-pointer"
+                    className="w-full p-4 pl-12 bg-secondary-50 dark:bg-white/5 border border-secondary-100 dark:border-white/5 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 font-bold text-primary-900 dark:text-primary-50 transition-all appearance-none cursor-pointer"
                   >
                     <option value="">Select</option>
                     <option value="sedentary">Sedentary (Little or no exercise)</option>
@@ -504,41 +472,41 @@ export const Profile: React.FC = () => {
                     <option value="very">Very Active (6-7 days/week)</option>
                     <option value="extra">Extra Active (Intense daily)</option>
                   </select>
-                  <TrendingUp className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 pointer-events-none" size={20} />
+                  <TrendingUp className="absolute left-4 top-1/2 -translate-y-1/2 text-secondary-400 dark:text-secondary-500 pointer-events-none" size={20} />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2 ml-1">Goal</label>
+                  <label className="block text-xs font-black text-secondary-400 dark:text-secondary-500 uppercase tracking-wider mb-2 ml-1">Goal</label>
                   <div className="relative">
                     <select
                       value={goal}
                       onChange={(e) => setGoal(e.target.value as any)}
-                      className="w-full p-4 pl-12 bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5 rounded-[20px] focus:outline-none focus:ring-2 focus:ring-royal-200 focus:border-royal-400 font-bold text-gray-900 dark:text-gray-50 transition-all appearance-none cursor-pointer"
+                      className="w-full p-4 pl-12 bg-secondary-50 dark:bg-white/5 border border-secondary-100 dark:border-white/5 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 font-bold text-primary-900 dark:text-primary-50 transition-all appearance-none cursor-pointer"
                     >
                       <option value="">Select</option>
                       <option value="cut">Cut (Lose Fat)</option>
                       <option value="bulk">Bulk (Gain Muscle)</option>
                       <option value="maintain">Maintain</option>
                     </select>
-                    <Target className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 pointer-events-none" size={20} />
+                    <Target className="absolute left-4 top-1/2 -translate-y-1/2 text-secondary-400 dark:text-secondary-500 pointer-events-none" size={20} />
                   </div>
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2 ml-1">Equipment</label>
+                  <label className="block text-xs font-black text-secondary-400 dark:text-secondary-500 uppercase tracking-wider mb-2 ml-1">Equipment</label>
                   <div className="relative">
                     <select
                       value={equipmentAccess}
                       onChange={(e) => setEquipmentAccess(e.target.value as any)}
-                      className="w-full p-4 pl-12 bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5 rounded-[20px] focus:outline-none focus:ring-2 focus:ring-royal-200 focus:border-royal-400 font-bold text-gray-900 dark:text-gray-50 transition-all appearance-none cursor-pointer"
+                      className="w-full p-4 pl-12 bg-secondary-50 dark:bg-white/5 border border-secondary-100 dark:border-white/5 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 font-bold text-primary-900 dark:text-primary-50 transition-all appearance-none cursor-pointer"
                     >
                       <option value="">Select</option>
                       <option value="gym">Gym Access</option>
                       <option value="home">Home Equipment</option>
                       <option value="bodyweight">Bodyweight Only</option>
                     </select>
-                    <Dumbbell className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 pointer-events-none" size={20} />
+                    <Dumbbell className="absolute left-4 top-1/2 -translate-y-1/2 text-secondary-400 dark:text-secondary-500 pointer-events-none" size={20} />
                   </div>
                 </div>
               </div>
@@ -546,7 +514,7 @@ export const Profile: React.FC = () => {
               {/* Target Weight - Only show for weight loss goal */}
               {goal === 'cut' && (
                 <div className="mt-4 animate-in slide-in-from-top-2 duration-300">
-                  <label className="block text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2 ml-1">Target Weight (kg)</label>
+                  <label className="block text-xs font-black text-secondary-400 dark:text-secondary-500 uppercase tracking-wider mb-2 ml-1">Target Weight (kg)</label>
                   <div className="relative">
                     <input
                       type="number"
@@ -556,7 +524,7 @@ export const Profile: React.FC = () => {
                       step="0.1"
                       min="30"
                       max="200"
-                      className="w-full p-4 pl-12 bg-gradient-to-r from-emerald-50 to-green-50 dark:from-emerald-950/30 dark:to-green-950/30 border border-emerald-200 dark:border-emerald-900/50 rounded-[20px] focus:outline-none focus:ring-2 focus:ring-emerald-200 focus:border-emerald-400 font-bold text-gray-900 dark:text-gray-50 transition-all"
+                      className="w-full p-4 pl-12 bg-gradient-to-r from-emerald-50 to-green-50 dark:from-emerald-950/30 dark:to-green-950/30 border border-emerald-200 dark:border-emerald-900/50 rounded-2xl focus:outline-none focus:ring-2 focus:ring-emerald-200 focus:border-emerald-400 font-bold text-primary-900 dark:text-primary-50 transition-all"
                     />
                     <Scale className="absolute left-4 top-1/2 -translate-y-1/2 text-emerald-500" size={20} />
                   </div>
@@ -568,7 +536,7 @@ export const Profile: React.FC = () => {
         </div>
 
         <Button
-          className="w-full py-5 text-lg shadow-lg shadow-royal-200 dark:shadow-royal-900/40"
+          className="w-full py-5 text-lg shadow-lg bg-[#3D745B] hover:bg-[#2D5A45] shadow-primary-200/50 dark:shadow-primary-900/40 rounded-full transition-all"
           onClick={handleSave}
           isLoading={isSaving}
         >
@@ -583,41 +551,41 @@ export const Profile: React.FC = () => {
 
       {/* Storage Mode Toggle (Only if Supabase is configured) */}
       {isSupabaseConfigured && (
-        <div className="bg-white dark:bg-[#1a1c26] p-6 rounded-[32px] border border-gray-100 dark:border-white/5 shadow-diffused dark:shadow-diffused-dark">
+        <div className="bg-white dark:bg-surface-dark p-6 rounded-4xl border border-white/50 dark:border-white/5 shadow-soft">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
-              <div className={`w-10 h-10 rounded-2xl flex items-center justify-center ${currentMode === 'cloud' ? 'bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600' : 'bg-gray-100 dark:bg-white/10 text-gray-500'}`}>
+              <div className={`w-10 h-10 rounded-2xl flex items-center justify-center ${currentMode === 'cloud' ? 'bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600' : 'bg-secondary-100 dark:bg-white/10 text-secondary-500'}`}>
                 {currentMode === 'cloud' ? <Cloud size={20} /> : <HardDrive size={20} />}
               </div>
               <div>
-                <p className="text-sm font-bold text-gray-900 dark:text-gray-50">Storage Mode</p>
-                <p className="text-xs text-gray-400 dark:text-gray-500">
+                <p className="text-sm font-black text-primary-900 dark:text-primary-50">Storage Mode</p>
+                <p className="text-xs text-secondary-500 dark:text-secondary-400 font-bold">
                   {currentMode === 'cloud' ? 'Connected to Supabase' : 'Device Storage Only'}
                 </p>
               </div>
             </div>
             {shouldUseCloud && (
-              <button onClick={checkDB} className="p-2 text-gray-400 hover:text-royal-500 transition-colors" title="Check Connection">
+              <button onClick={checkDB} className="p-2 text-secondary-400 hover:text-primary-500 transition-colors" title="Check Connection">
                 <RefreshCw size={16} className={dbStatus === 'checking' ? 'animate-spin' : ''} />
               </button>
             )}
           </div>
 
-          <div className="flex p-1 bg-gray-100 dark:bg-white/5 rounded-2xl">
+          <div className="flex p-1 bg-secondary-50 dark:bg-white/5 rounded-2xl">
             <button
               onClick={() => handleModeSwitch('local')}
-              className={`flex-1 py-3 text-xs font-bold rounded-xl transition-all ${currentMode === 'local'
-                ? 'bg-white dark:bg-white/10 text-gray-900 dark:text-white shadow-sm'
-                : 'text-gray-400 hover:text-gray-600'
+              className={`flex-1 py-3 text-xs font-black rounded-xl transition-all ${currentMode === 'local'
+                ? 'bg-white dark:bg-white/10 text-primary-900 dark:text-white shadow-sm'
+                : 'text-secondary-400 hover:text-secondary-600'
                 }`}
             >
               Device Only
             </button>
             <button
               onClick={() => handleModeSwitch('cloud')}
-              className={`flex-1 py-3 text-xs font-bold rounded-xl transition-all ${currentMode === 'cloud'
-                ? 'bg-emerald-500 text-white shadow-sm'
-                : 'text-gray-400 hover:text-gray-600'
+              className={`flex-1 py-3 text-xs font-black rounded-xl transition-all ${currentMode === 'cloud'
+                ? 'bg-[#3D745B] text-white shadow-sm'
+                : 'text-secondary-400 hover:text-secondary-600'
                 }`}
             >
               Cloud Sync
@@ -631,7 +599,7 @@ export const Profile: React.FC = () => {
         <button
           onClick={handleSignOut}
           disabled={isLoggingOut}
-          className="w-full flex items-center justify-center gap-3 py-5 rounded-[24px] border border-red-200 dark:border-red-900/30 text-red-500 dark:text-red-400 font-bold hover:bg-red-50 dark:hover:bg-red-950/20 active:scale-95 transition-all shadow-sm"
+          className="w-full flex items-center justify-center gap-3 py-5 rounded-3xl border border-red-200 dark:border-red-900/30 text-red-500 dark:text-red-400 font-black hover:bg-red-50 dark:hover:bg-red-950/20 active:scale-95 transition-all shadow-sm"
         >
           {isLoggingOut ? (
             <RefreshCw size={20} className="animate-spin" />
@@ -646,7 +614,7 @@ export const Profile: React.FC = () => {
 
       {/* Storage Status Footer */}
       <div className="text-center pt-4 pb-2">
-        <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-[10px] font-bold border transition-colors ${shouldUseCloud
+        <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-[10px] font-black border transition-colors ${shouldUseCloud
           ? 'bg-emerald-50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-400 border-emerald-100 dark:border-emerald-900/30'
           : 'bg-amber-50 dark:bg-amber-950/20 text-amber-700 dark:text-amber-400 border-amber-100 dark:border-amber-900/30'
           }`}>

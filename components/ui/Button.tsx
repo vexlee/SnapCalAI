@@ -6,23 +6,23 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   isLoading?: boolean;
 }
 
-export const Button: React.FC<ButtonProps> = ({ 
-  className, 
-  variant = 'primary', 
-  isLoading, 
-  children, 
-  ...props 
+export const Button: React.FC<ButtonProps> = ({
+  className,
+  variant = 'primary',
+  isLoading,
+  children,
+  ...props
 }) => {
-  const baseStyles = "inline-flex items-center justify-center px-6 py-4 rounded-[24px] font-semibold transition-all duration-300 active:scale-95 disabled:opacity-50 disabled:pointer-events-none text-sm tracking-wide";
-  
+  const baseStyles = "inline-flex items-center justify-center px-6 py-4 rounded-full font-semibold transition-all duration-300 active:scale-95 disabled:opacity-50 disabled:pointer-events-none text-sm tracking-wide";
+
   const variants = {
-    primary: "bg-royal-600 text-white hover:bg-royal-700 shadow-[0_10px_20px_-10px_rgba(124,58,237,0.5)]",
-    secondary: "bg-royal-50 text-royal-700 hover:bg-royal-100",
-    ghost: "bg-transparent text-gray-500 hover:text-royal-600 hover:bg-royal-50",
+    primary: "bg-primary-600 text-white hover:bg-primary-700 shadow-[0_10px_20px_-10px_rgba(45,74,62,0.4)]",
+    secondary: "bg-secondary-100 text-secondary-800 hover:bg-secondary-200",
+    ghost: "bg-transparent text-secondary-600 hover:text-primary-600 hover:bg-secondary-50",
   };
 
   return (
-    <button 
+    <button
       className={clsx(baseStyles, variants[variant], className)}
       disabled={isLoading || props.disabled}
       {...props}

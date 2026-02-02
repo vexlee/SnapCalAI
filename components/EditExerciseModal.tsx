@@ -76,7 +76,7 @@ export const EditExerciseModal: React.FC<EditExerciseModalProps> = ({ isOpen, on
                             value={name}
                             onChange={(e) => setName(e.target.value)}
                             placeholder="e.g., Bench Press"
-                            className="w-full px-4 py-3 bg-gray-50 dark:bg-white/5 border-2 border-gray-200 dark:border-white/10 rounded-xl text-gray-900 dark:text-gray-50 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-royal-500 dark:focus:border-royal-400 transition-colors"
+                            className="w-full px-4 py-3 bg-gray-50 dark:bg-white/5 border-2 border-gray-200 dark:border-white/10 rounded-xl text-gray-900 dark:text-gray-50 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-primary-500 dark:focus:border-primary-400 transition-colors"
                         />
                     </div>
 
@@ -91,7 +91,7 @@ export const EditExerciseModal: React.FC<EditExerciseModalProps> = ({ isOpen, on
                                 value={sets}
                                 onChange={(e) => setSets(parseInt(e.target.value) || 0)}
                                 min="1"
-                                className="w-full px-3 py-2 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg text-sm text-gray-900 dark:text-gray-50 focus:outline-none focus:border-royal-500 dark:focus:border-royal-400"
+                                className="w-full px-3 py-2 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg text-sm text-gray-900 dark:text-gray-50 focus:outline-none focus:border-primary-500 dark:focus:border-primary-400"
                             />
                         </div>
                         <div>
@@ -103,7 +103,7 @@ export const EditExerciseModal: React.FC<EditExerciseModalProps> = ({ isOpen, on
                                 value={reps}
                                 onChange={(e) => setReps(e.target.value)}
                                 placeholder="8-10"
-                                className="w-full px-3 py-2 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg text-sm text-gray-900 dark:text-gray-50 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-royal-500 dark:focus:border-royal-400"
+                                className="w-full px-3 py-2 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg text-sm text-gray-900 dark:text-gray-50 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-primary-500 dark:focus:border-primary-400"
                             />
                         </div>
                         <div>
@@ -115,7 +115,7 @@ export const EditExerciseModal: React.FC<EditExerciseModalProps> = ({ isOpen, on
                                 value={rest}
                                 onChange={(e) => setRest(e.target.value)}
                                 placeholder="60s"
-                                className="w-full px-3 py-2 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg text-sm text-gray-900 dark:text-gray-50 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-royal-500 dark:focus:border-royal-400"
+                                className="w-full px-3 py-2 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg text-sm text-gray-900 dark:text-gray-50 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-primary-500 dark:focus:border-primary-400"
                             />
                         </div>
                     </div>
@@ -133,7 +133,7 @@ export const EditExerciseModal: React.FC<EditExerciseModalProps> = ({ isOpen, on
                     <button
                         onClick={handleSave}
                         disabled={saving}
-                        className="flex items-center gap-2 px-6 py-3 bg-royal-600 hover:bg-royal-700 text-white rounded-xl font-semibold transition-colors disabled:opacity-50 shadow-lg shadow-royal-200 dark:shadow-royal-900/40"
+                        className="flex items-center gap-2 px-6 py-3 bg-primary-600 hover:bg-primary-700 text-white rounded-xl font-semibold transition-colors disabled:opacity-50 shadow-lg shadow-primary-200 dark:shadow-primary-900/40"
                     >
                         <Save size={18} />
                         <span>{saving ? 'Saving...' : 'Save Changes'}</span>

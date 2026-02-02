@@ -46,8 +46,8 @@ export const WORKOUT_TYPES: WorkoutType[] = [
         id: 'core',
         name: 'Core',
         icon: 'Target',
-        color: 'text-purple-600 dark:text-purple-400',
-        bgColor: 'bg-purple-500',
+        color: 'text-[#3D745B] dark:text-emerald-400',
+        bgColor: 'bg-[#3D745B]',
         category: 'strength',
         defaultExercises: [
             { name: 'Plank', sets: 3, reps: '60s hold', rest: '30s' },

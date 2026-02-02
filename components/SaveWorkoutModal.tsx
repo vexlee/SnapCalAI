@@ -82,11 +82,11 @@ export const SaveWorkoutModal: React.FC<SaveWorkoutModalProps> = ({ isOpen, onCl
                 <div className="p-6 space-y-4">
                     {/* Plan Summary for Multi-Day */}
                     {isMultiDay && (
-                        <div className="p-4 bg-royal-50 dark:bg-royal-950/20 border-2 border-royal-200 dark:border-royal-800/50 rounded-xl">
-                            <p className="text-sm font-bold text-royal-900 dark:text-royal-100 mb-1">
+                        <div className="p-4 bg-primary-50 dark:bg-primary-950/20 border-2 border-primary-200 dark:border-primary-800/50 rounded-xl">
+                            <p className="text-sm font-bold text-primary-900 dark:text-primary-100 mb-1">
                                 📅 {dayCount}-Day Workout Plan
                             </p>
-                            <p className="text-xs text-royal-700 dark:text-royal-300">
+                            <p className="text-xs text-primary-700 dark:text-primary-300">
                                 Will be saved from <strong>{startDateFormatted}</strong> to <strong>{endDate}</strong>
                             </p>
                         </div>
@@ -100,7 +100,7 @@ export const SaveWorkoutModal: React.FC<SaveWorkoutModalProps> = ({ isOpen, onCl
                             type="date"
                             value={selectedDate}
                             onChange={(e) => setSelectedDate(e.target.value)}
-                            className="w-full px-4 py-3 bg-gray-50 dark:bg-white/5 border-2 border-gray-200 dark:border-white/10 rounded-xl text-gray-900 dark:text-gray-50 focus:outline-none focus:border-royal-500 dark:focus:border-royal-400 transition-colors"
+                            className="w-full px-4 py-3 bg-gray-50 dark:bg-white/5 border-2 border-gray-200 dark:border-white/10 rounded-xl text-gray-900 dark:text-gray-50 focus:outline-none focus:border-primary-500 dark:focus:border-primary-400 transition-colors"
                         />
                         <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
                             {isMultiDay
@@ -123,7 +123,7 @@ export const SaveWorkoutModal: React.FC<SaveWorkoutModalProps> = ({ isOpen, onCl
                     <button
                         onClick={handleSave}
                         disabled={saving}
-                        className="flex items-center gap-2 px-6 py-3 bg-royal-600 hover:bg-royal-700 text-white rounded-xl font-semibold transition-colors disabled:opacity-50 shadow-lg shadow-royal-200 dark:shadow-royal-900/40"
+                        className="flex items-center gap-2 px-6 py-3 bg-primary-600 hover:bg-primary-700 text-white rounded-xl font-semibold transition-colors disabled:opacity-50 shadow-lg shadow-primary-200 dark:shadow-primary-900/40"
                     >
                         <Save size={18} />
                         <span>{saving ? 'Saving...' : (isMultiDay ? `Save ${dayCount}-Day Plan` : 'Save Plan')}</span>

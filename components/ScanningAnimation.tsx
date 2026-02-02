@@ -60,19 +60,19 @@ export const ScanningAnimation: React.FC<ScanningAnimationProps> = ({ isActive, 
             <div className="relative bg-[#1a1c26]/95 backdrop-blur-xl p-8 rounded-[40px] border border-white/10 shadow-2xl pointer-events-auto flex flex-col items-center animate-in zoom-in-95 duration-300 min-w-[300px]">
 
                 {/* Glowing Background Effect - Contained */}
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-40 h-40 bg-royal-500/20 blur-3xl rounded-full animate-pulse pointer-events-none" />
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-40 h-40 bg-primary-500/20 blur-3xl rounded-full animate-pulse pointer-events-none" />
 
                 {/* Main Circle Container */}
                 <div className="relative w-40 h-40 flex items-center justify-center mb-6">
 
                     {/* Rotating Outer Ring */}
-                    <div className="absolute inset-0 border-4 border-royal-500/10 rounded-full border-t-royal-500/30 animate-[spin_3s_linear_infinite]" />
+                    <div className="absolute inset-0 border-4 border-primary-500/10 rounded-full border-t-primary-500/30 animate-[spin_3s_linear_infinite]" />
 
                     {/* SVG Progress Circle */}
                     <svg
                         height={radius * 2}
                         width={radius * 2}
-                        className="rotate-[-90deg] drop-shadow-[0_0_10px_rgba(124,58,237,0.3)]"
+                        className="rotate-[-90deg] drop-shadow-[0_0_10px_rgba(16,185,129,0.3)]"
                     >
                         <circle
                             stroke="rgba(255,255,255,0.1)"
@@ -95,8 +95,8 @@ export const ScanningAnimation: React.FC<ScanningAnimationProps> = ({ isActive, 
                         />
                         <defs>
                             <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                                <stop offset="0%" stopColor="#7c3aed" /> {/* royal-600 */}
-                                <stop offset="100%" stopColor="#a78bfa" /> {/* royal-400 */}
+                                <stop offset="0%" stopColor="#059669" /> {/* primary-600 */}
+                                <stop offset="100%" stopColor="#34d399" /> {/* primary-400 */}
                             </linearGradient>
                         </defs>
                     </svg>

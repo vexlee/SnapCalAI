@@ -31,18 +31,18 @@ export const EditGoalModal: React.FC<EditGoalModalProps> = ({ currentGoal, onClo
         <div className="mb-8">
           <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 ml-1">Target Calories</label>
           <div className="relative">
-            <input 
-                type="number" 
-                value={goal}
-                onChange={(e) => setGoal(e.target.value)}
-                className="w-full p-5 bg-gray-50 border border-gray-100 rounded-[20px] focus:outline-none focus:ring-2 focus:ring-royal-200 focus:border-royal-400 transition-all font-extrabold text-3xl text-center text-gray-900"
-                autoFocus
+            <input
+              type="number"
+              value={goal}
+              onChange={(e) => setGoal(e.target.value)}
+              className="w-full p-5 bg-gray-50 border border-gray-100 rounded-[20px] focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 transition-all font-extrabold text-3xl text-center text-gray-900"
+              autoFocus
             />
             <span className="absolute right-6 top-1/2 -translate-y-1/2 text-gray-400 text-sm font-bold">kcal</span>
           </div>
         </div>
 
-        <Button className="w-full py-4 shadow-lg shadow-royal-200" onClick={handleSave}>
+        <Button className="w-full py-4 shadow-lg shadow-primary-200 dark:shadow-none" onClick={handleSave}>
           Update Goal
         </Button>
       </div>

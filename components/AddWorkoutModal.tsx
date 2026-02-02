@@ -106,27 +106,27 @@ export const AddWorkoutModal: React.FC<AddWorkoutModalProps> = ({ isOpen, onClos
 
     return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm animate-in fade-in duration-300 px-4">
-            <Card className="w-full max-w-lg max-h-[90vh] overflow-hidden flex flex-col animate-in zoom-in-95 duration-300">
+            <Card className="w-full max-w-lg max-h-[90vh] overflow-hidden flex flex-col bg-[#F3F0E7] animate-in zoom-in-95 duration-300 border-none">
                 {/* Header */}
-                <div className="flex items-center justify-between p-5 border-b border-gray-100 dark:border-white/10">
+                <div className="flex items-center justify-between p-5 bg-[#3D745B] text-white">
                     <div className="flex items-center gap-3">
                         {step === 'customize' && (
                             <button
                                 onClick={handleBack}
-                                className="p-2 -ml-2 hover:bg-gray-100 dark:hover:bg-white/5 rounded-full transition-colors"
+                                className="p-2 -ml-2 hover:bg-white/10 rounded-full transition-colors"
                             >
-                                <ChevronLeft size={20} className="text-gray-500 dark:text-gray-400" />
+                                <ChevronLeft size={20} className="text-white" />
                             </button>
                         )}
-                        <h2 className="text-xl font-extrabold text-gray-900 dark:text-gray-50">
+                        <h2 className="text-xl font-extrabold">
                             {step === 'select' ? 'Choose Workout' : selectedType?.name}
                         </h2>
                     </div>
                     <button
                         onClick={handleClose}
-                        className="p-2 hover:bg-gray-100 dark:hover:bg-white/5 rounded-full transition-colors"
+                        className="p-2 hover:bg-white/10 rounded-full transition-colors"
                     >
-                        <X size={20} className="text-gray-500 dark:text-gray-400" />
+                        <X size={20} className="text-white" />
                     </button>
                 </div>
 
@@ -140,10 +140,10 @@ export const AddWorkoutModal: React.FC<AddWorkoutModalProps> = ({ isOpen, onClos
                                     key={cat.id}
                                     onClick={() => setActiveCategory(cat.id)}
                                     className={`
-                                        flex items-center gap-2 px-4 py-2.5 rounded-full font-bold text-sm whitespace-nowrap transition-all
+                                        flex items-center gap-2 px-4 py-2.5 rounded-full font-bold text-sm whitespace-nowrap transition-all border-2
                                         ${activeCategory === cat.id
-                                            ? 'bg-royal-600 text-white shadow-lg shadow-royal-200 dark:shadow-royal-900/40'
-                                            : 'bg-gray-100 dark:bg-white/5 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-white/10'
+                                            ? 'bg-[#3D745B] text-white border-[#3D745B] shadow-lg shadow-primary-200'
+                                            : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'
                                         }
                                     `}
                                 >
@@ -159,10 +159,10 @@ export const AddWorkoutModal: React.FC<AddWorkoutModalProps> = ({ isOpen, onClos
                                 <button
                                     key={type.id}
                                     onClick={() => handleSelectType(type)}
-                                    className="group relative p-5 bg-gray-50 dark:bg-white/5 hover:bg-gray-100 dark:hover:bg-white/10 rounded-2xl transition-all hover:scale-[1.02] active:scale-[0.98] text-left border-2 border-transparent hover:border-gray-200 dark:hover:border-white/10"
+                                    className="group relative p-5 bg-white hover:bg-gray-50 rounded-2xl transition-all hover:scale-[1.02] active:scale-[0.98] text-left border-2 border-gray-200/50 hover:border-[#3D745B]/30 shadow-sm"
                                 >
-                                    <div className={`w-12 h-12 ${type.bgColor} rounded-xl flex items-center justify-center mb-3 shadow-lg group-hover:scale-110 transition-transform`}>
-                                        {renderIcon(type.icon, 24, 'text-white')}
+                                    <div className={`w-12 h-12 bg-gray-50 rounded-xl flex items-center justify-center mb-3 shadow-sm group-hover:scale-110 transition-transform`}>
+                                        {renderIcon(type.icon, 24, type.color.split(' ')[0])}
                                     </div>
                                     <h3 className="font-bold text-gray-900 dark:text-gray-50 mb-1">
                                         {type.name}
@@ -178,9 +178,9 @@ export const AddWorkoutModal: React.FC<AddWorkoutModalProps> = ({ isOpen, onClos
                     <div className="flex-1 overflow-y-auto p-5 space-y-5">
                         {/* Workout Type Badge */}
                         {selectedType && (
-                            <div className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-white/5 rounded-xl">
-                                <div className={`w-10 h-10 ${selectedType.bgColor} rounded-lg flex items-center justify-center`}>
-                                    {renderIcon(selectedType.icon, 20, 'text-white')}
+                            <div className="flex items-center gap-3 p-4 bg-white rounded-xl border-2 border-gray-100 shadow-sm">
+                                <div className={`w-10 h-10 bg-gray-50 rounded-lg flex items-center justify-center`}>
+                                    {renderIcon(selectedType.icon, 20, selectedType.color.split(' ')[0])}
                                 </div>
                                 <div>
                                     <p className="text-xs text-gray-500 dark:text-gray-400 font-semibold uppercase tracking-wide">
@@ -202,7 +202,7 @@ export const AddWorkoutModal: React.FC<AddWorkoutModalProps> = ({ isOpen, onClos
                                 type="date"
                                 value={selectedDate}
                                 onChange={(e) => setSelectedDate(e.target.value)}
-                                className="w-full px-4 py-3 bg-gray-50 dark:bg-white/5 border-2 border-gray-200 dark:border-white/10 rounded-xl text-gray-900 dark:text-gray-50 focus:outline-none focus:border-royal-500 dark:focus:border-royal-400 transition-colors"
+                                className="w-full px-4 py-3 bg-white border-2 border-gray-100 rounded-xl text-gray-900 focus:outline-none focus:border-[#3D745B] transition-colors"
                             />
                         </div>
 
@@ -214,7 +214,7 @@ export const AddWorkoutModal: React.FC<AddWorkoutModalProps> = ({ isOpen, onClos
                                 </label>
                                 <button
                                     onClick={addExercise}
-                                    className="flex items-center gap-1 px-3 py-1.5 bg-royal-600 hover:bg-royal-700 text-white text-sm font-semibold rounded-lg transition-colors"
+                                    className="flex items-center gap-1 px-3 py-1.5 bg-[#3D745B] hover:bg-[#2D5A45] text-white text-sm font-semibold rounded-lg transition-colors shadow-md"
                                 >
                                     <Plus size={16} />
                                     <span>Add</span>
@@ -232,7 +232,7 @@ export const AddWorkoutModal: React.FC<AddWorkoutModalProps> = ({ isOpen, onClos
                                                     value={exercise.name}
                                                     onChange={(e) => updateExercise(idx, 'name', e.target.value)}
                                                     placeholder="Exercise name"
-                                                    className="w-full px-3 py-2 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg text-sm text-gray-900 dark:text-gray-50 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-royal-500 dark:focus:border-royal-400"
+                                                    className="w-full px-3 py-2 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg text-sm text-gray-900 dark:text-gray-50 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-primary-500 dark:focus:border-primary-400"
                                                 />
 
                                                 {/* Sets, Reps, Rest */}
@@ -246,7 +246,7 @@ export const AddWorkoutModal: React.FC<AddWorkoutModalProps> = ({ isOpen, onClos
                                                             value={exercise.sets}
                                                             onChange={(e) => updateExercise(idx, 'sets', parseInt(e.target.value) || 0)}
                                                             min="1"
-                                                            className="w-full px-3 py-2 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg text-sm text-gray-900 dark:text-gray-50 focus:outline-none focus:border-royal-500 dark:focus:border-royal-400"
+                                                            className="w-full px-3 py-2 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg text-sm text-gray-900 dark:text-gray-50 focus:outline-none focus:border-primary-500 dark:focus:border-primary-400"
                                                         />
                                                     </div>
                                                     <div>
@@ -258,7 +258,7 @@ export const AddWorkoutModal: React.FC<AddWorkoutModalProps> = ({ isOpen, onClos
                                                             value={exercise.reps}
                                                             onChange={(e) => updateExercise(idx, 'reps', e.target.value)}
                                                             placeholder="8-10"
-                                                            className="w-full px-3 py-2 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg text-sm text-gray-900 dark:text-gray-50 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-royal-500 dark:focus:border-royal-400"
+                                                            className="w-full px-3 py-2 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg text-sm text-gray-900 dark:text-gray-50 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-primary-500 dark:focus:border-primary-400"
                                                         />
                                                     </div>
                                                     <div>
@@ -270,7 +270,7 @@ export const AddWorkoutModal: React.FC<AddWorkoutModalProps> = ({ isOpen, onClos
                                                             value={exercise.rest}
                                                             onChange={(e) => updateExercise(idx, 'rest', e.target.value)}
                                                             placeholder="60s"
-                                                            className="w-full px-3 py-2 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg text-sm text-gray-900 dark:text-gray-50 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-royal-500 dark:focus:border-royal-400"
+                                                            className="w-full px-3 py-2 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg text-sm text-gray-900 dark:text-gray-50 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-primary-500 dark:focus:border-primary-400"
                                                         />
                                                     </div>
                                                 </div>
@@ -306,7 +306,7 @@ export const AddWorkoutModal: React.FC<AddWorkoutModalProps> = ({ isOpen, onClos
                         <button
                             onClick={handleSave}
                             disabled={saving}
-                            className="px-6 py-3 bg-royal-600 hover:bg-royal-700 text-white rounded-xl font-semibold transition-colors disabled:opacity-50 shadow-lg shadow-royal-200 dark:shadow-royal-900/40"
+                            className="px-6 py-3 bg-[#3D745B] hover:bg-[#2D5A45] text-white rounded-xl font-semibold transition-colors disabled:opacity-50 shadow-lg shadow-primary-200"
                         >
                             {saving ? 'Saving...' : 'Save Workout'}
                         </button>

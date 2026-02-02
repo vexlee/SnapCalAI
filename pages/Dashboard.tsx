@@ -191,8 +191,8 @@ export const Dashboard: React.FC = () => {
       <div className="flex-shrink-0 px-6 pt-6 sm:pt-10 space-y-4 sm:space-y-8 pb-4">
         <header className="flex justify-between items-end">
           <div>
-            <p className="text-gray-400 dark:text-gray-500 text-xs font-semibold uppercase tracking-widest mb-2">{new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</p>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-gray-50 tracking-tight leading-tight sm:leading-none">
+            <p className="text-secondary-500 font-bold text-xs uppercase tracking-widest mb-2">{new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</p>
+            <h1 className="text-3xl sm:text-4xl font-extrabold text-primary-900 dark:text-primary-50 tracking-tight leading-tight sm:leading-none font-display">
               Hello {userName || 'there'}, <br />Let's Eat Well.
             </h1>
           </div>
@@ -208,7 +208,7 @@ export const Dashboard: React.FC = () => {
 
         {/* Streak Counter Badge */}
         {currentStreak > 0 && (
-          <div className="flex items-center gap-2 bg-gradient-to-r from-orange-500 to-amber-500 text-white px-3 py-1.5 rounded-xl shadow-lg shadow-orange-200 dark:shadow-orange-900/30 animate-in slide-in-from-left duration-500 w-fit">
+          <div className="flex items-center gap-2 bg-gradient-to-r from-orange-500 to-amber-500 text-white px-3 py-1.5 rounded-full shadow-lg shadow-orange-200 dark:shadow-orange-900/30 animate-in slide-in-from-left duration-500 w-fit">
             <Flame size={16} className="animate-pulse" />
             <div className="flex items-baseline gap-1">
               <span className="text-base font-extrabold">{currentStreak}</span>
@@ -226,38 +226,37 @@ export const Dashboard: React.FC = () => {
           </div>
         )}
 
-        {/* Hero Stats Card - Royal Purple */}
-        {/* Hero Stats Card - Royal Purple */}
+        {/* Hero Stats Card - Forest Green */}
         {(() => {
           const isOverLimit = todayCalories > dailyGoal;
           return (
-            <div className={`relative rounded-[28px] sm:rounded-[32px] p-5 sm:p-6 text-white overflow-hidden shadow-xl transition-all duration-500 ${isOverLimit ? 'bg-red-500 shadow-red-200 dark:shadow-red-900/40' : 'bg-royal-600 shadow-royal-200 dark:shadow-royal-900/40'}`}>
-              <div className="absolute top-0 right-0 -mt-10 -mr-10 w-40 h-40 bg-white/10 rounded-full blur-3xl"></div>
-              <div className="absolute bottom-0 left-0 -mb-10 -ml-10 w-40 h-40 bg-black/10 rounded-full blur-3xl"></div>
+            <div className={`relative rounded-[32px] p-6 sm:p-7 text-white overflow-hidden shadow-soft-lg transition-all duration-500 ${isOverLimit ? 'bg-red-500 shadow-red-200 dark:shadow-red-900/40' : 'bg-[#3D745B] shadow-sm shadow-primary-200/50 dark:shadow-primary-900/40'}`}>
+              <div className="absolute top-0 right-0 -mt-10 -mr-10 w-48 h-48 bg-white/5 rounded-full blur-3xl"></div>
+              <div className="absolute bottom-0 left-0 -mb-10 -ml-10 w-48 h-48 bg-black/10 rounded-full blur-3xl"></div>
 
               <div className="relative z-10">
-                <div className="flex justify-between items-start mb-4 sm:mb-6">
+                <div className="flex justify-between items-start mb-6">
                   <div>
-                    <p className="text-white/70 text-xs font-bold uppercase tracking-widest mb-1">Calories Consumed</p>
+                    <p className="text-primary-100 text-xs font-bold uppercase tracking-widest mb-1">Calories Consumed</p>
                     <div className="flex items-baseline gap-1">
-                      <span className="text-4xl sm:text-5xl font-bold tracking-tighter">{isLoading ? "..." : todayCalories}</span>
-                      <span className="text-base sm:text-lg text-white/60 font-medium">kcal</span>
+                      <span className="text-5xl sm:text-6xl font-black tracking-tighter sm:leading-none">{isLoading ? "..." : todayCalories}</span>
+                      <span className="text-lg text-primary-200 font-medium ml-1">kcal</span>
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="flex items-center justify-end gap-2 text-white/80 mb-1">
+                    <div className="flex items-center justify-end gap-2 text-primary-100 mb-1">
                       <span className="text-xs font-semibold">Goal: {dailyGoal}</span>
                       <button
                         onClick={() => setShowGoalModal(true)}
-                        className="p-1.5 rounded-full bg-white/20 hover:bg-white/30 transition-colors backdrop-blur-sm"
+                        className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors backdrop-blur-sm"
                       >
-                        <Edit2 size={10} />
+                        <Edit2 size={12} />
                       </button>
                     </div>
                   </div>
                 </div>
 
-                <div className="w-full bg-black/20 rounded-full h-4 mb-3 overflow-hidden backdrop-blur-sm relative">
+                <div className="w-full bg-black/10 rounded-full h-4 mb-4 overflow-hidden backdrop-blur-sm relative border border-white/5">
                   <div
                     className="h-full rounded-full transition-all duration-1000 ease-out will-change-[width] flex items-center justify-center overflow-hidden"
                     style={{
@@ -267,13 +266,13 @@ export const Dashboard: React.FC = () => {
                   >
                     {(todayCalories / dailyGoal) >= 1 && (
                       <span className="text-[10px] font-black tracking-tighter text-white drop-shadow-md animate-pulse">
-                        OVER LIMIT
+                        OVER
                       </span>
                     )}
                   </div>
                 </div>
 
-                <div className="flex justify-end mb-4 sm:mb-6">
+                <div className="flex justify-end mb-6">
                   {isOverLimit ? (
                     <div className="flex items-center gap-1.5 bg-white/20 backdrop-blur-md px-3 py-1 rounded-full animate-pulse">
                       <AlertTriangle size={14} className="text-white" fill="white" />
@@ -282,127 +281,96 @@ export const Dashboard: React.FC = () => {
                       </span>
                     </div>
                   ) : (
-                    <p className="text-xs font-medium text-white/80">
+                    <p className="text-xs font-medium text-primary-100">
                       {Math.max(dailyGoal - todayCalories, 0).toLocaleString()} kcal remaining
                     </p>
                   )}
                 </div>
 
                 {/* Macro Breakdown */}
-                <div className="grid grid-cols-3 gap-2 sm:gap-3 mt-4 sm:mt-5 pt-3 sm:pt-4 border-t border-white/10">
+                <div className="grid grid-cols-3 gap-3 border-t border-white/10 pt-4">
                   {/* Protein - Emerald */}
-                  <div className={`flex flex-col items-center justify-center p-1.5 sm:p-2 rounded-xl sm:rounded-2xl border-t-2 border-x border-b shadow-sm relative overflow-hidden group transition-colors ${isOverLimit ? 'bg-black/30 border-t-emerald-300 border-emerald-500/20' : 'bg-emerald-500/15 border-t-emerald-400 border-emerald-500/20'}`}>
-                    <div className={`absolute inset-0 bg-gradient-to-br from-emerald-400/20 to-transparent ${isOverLimit ? 'opacity-30' : 'opacity-50'}`} />
-                    <p className={`text-[8px] sm:text-[9px] uppercase font-bold mb-0.5 relative z-10 tracking-wider ${isOverLimit ? 'text-emerald-300' : 'text-emerald-400'}`}>Protein</p>
+                  <div className={`flex flex-col items-center justify-center p-2 rounded-2xl border-t border-x border-b shadow-sm relative overflow-hidden group transition-colors ${isOverLimit ? 'bg-black/30 border-emerald-500/20' : 'bg-primary-700/30 border-primary-500/20'}`}>
+                    <p className={`text-[9px] uppercase font-bold mb-0.5 relative z-10 tracking-wider text-emerald-300`}>Protein</p>
                     <div className="flex items-baseline gap-0.5 relative z-10">
-                      <span className="text-lg sm:text-xl font-black text-white drop-shadow-md">{todayProtein}</span>
-                      <span className={`text-[9px] sm:text-[10px] font-bold ${isOverLimit ? 'text-emerald-200' : 'text-emerald-300'}`}>g</span>
+                      <span className="text-xl font-black text-white drop-shadow-md">{todayProtein}</span>
+                      <span className="text-[10px] font-bold text-emerald-200">g</span>
                     </div>
                   </div>
 
                   {/* Carbs - Amber */}
-                  <div className={`flex flex-col items-center justify-center p-1.5 sm:p-2 rounded-xl sm:rounded-2xl border-t-2 border-x border-b shadow-sm relative overflow-hidden group transition-colors ${isOverLimit ? 'bg-black/30 border-t-amber-300 border-amber-500/20' : 'bg-amber-500/15 border-t-amber-400 border-amber-500/20'}`}>
-                    <div className={`absolute inset-0 bg-gradient-to-br from-amber-400/20 to-transparent ${isOverLimit ? 'opacity-30' : 'opacity-50'}`} />
-                    <p className={`text-[8px] sm:text-[9px] uppercase font-bold mb-0.5 relative z-10 tracking-wider ${isOverLimit ? 'text-amber-300' : 'text-amber-400'}`}>Carbs</p>
+                  <div className={`flex flex-col items-center justify-center p-2 rounded-2xl border-t border-x border-b shadow-sm relative overflow-hidden group transition-colors ${isOverLimit ? 'bg-black/30 border-amber-500/20' : 'bg-primary-700/30 border-primary-500/20'}`}>
+                    <p className={`text-[9px] uppercase font-bold mb-0.5 relative z-10 tracking-wider text-amber-300`}>Carbs</p>
                     <div className="flex items-baseline gap-0.5 relative z-10">
-                      <span className="text-lg sm:text-xl font-black text-white drop-shadow-md">{todayCarbs}</span>
-                      <span className={`text-[9px] sm:text-[10px] font-bold ${isOverLimit ? 'text-amber-200' : 'text-amber-300'}`}>g</span>
+                      <span className="text-xl font-black text-white drop-shadow-md">{todayCarbs}</span>
+                      <span className="text-[10px] font-bold text-amber-200">g</span>
                     </div>
                   </div>
 
                   {/* Fat - Rose */}
-                  <div className={`flex flex-col items-center justify-center p-1.5 sm:p-2 rounded-xl sm:rounded-2xl border-t-2 border-x border-b shadow-sm relative overflow-hidden group transition-colors ${isOverLimit ? 'bg-black/30 border-t-rose-300 border-rose-500/20' : 'bg-rose-500/15 border-t-rose-400 border-rose-500/20'}`}>
-                    <div className={`absolute inset-0 bg-gradient-to-br from-rose-400/20 to-transparent ${isOverLimit ? 'opacity-30' : 'opacity-50'}`} />
-                    <p className={`text-[8px] sm:text-[9px] uppercase font-bold mb-0.5 relative z-10 tracking-wider ${isOverLimit ? 'text-rose-200' : 'text-rose-400'}`}>Fat</p>
+                  <div className={`flex flex-col items-center justify-center p-2 rounded-2xl border-t border-x border-b shadow-sm relative overflow-hidden group transition-colors ${isOverLimit ? 'bg-black/30 border-rose-500/20' : 'bg-primary-700/30 border-primary-500/20'}`}>
+                    <p className={`text-[9px] uppercase font-bold mb-0.5 relative z-10 tracking-wider text-rose-300`}>Fat</p>
                     <div className="flex items-baseline gap-0.5 relative z-10">
-                      <span className="text-lg sm:text-xl font-black text-white drop-shadow-md">{todayFat}</span>
-                      <span className={`text-[9px] sm:text-[10px] font-bold ${isOverLimit ? 'text-rose-100' : 'text-rose-300'}`}>g</span>
+                      <span className="text-xl font-black text-white drop-shadow-md">{todayFat}</span>
+                      <span className="text-[10px] font-bold text-rose-200">g</span>
                     </div>
                   </div>
                 </div>
-
-                {/* Weight Goal Progress */}
-                {weightPrediction && weightPrediction.daysRemaining > 0 && (
-                  <div className="mt-4 sm:mt-5 pt-3 sm:pt-4 border-t border-white/10">
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-2">
-                        <Target size={14} className="text-white/70" />
-                        <span className="text-xs font-bold text-white/70 uppercase tracking-wider">Weight Goal</span>
-                      </div>
-                      <span className="text-xs font-bold text-white/90">
-                        {weightPrediction.currentWeight}kg → {weightPrediction.targetWeight}kg
-                      </span>
-                    </div>
-
-                    {/* Progress bar */}
-                    <div className="w-full bg-white/10 rounded-full h-2 mb-2 overflow-hidden">
-                      <div
-                        className="h-full rounded-full bg-gradient-to-r from-emerald-400 to-green-500 transition-all duration-1000"
-                        style={{ width: `${weightPrediction.progressPercentage}%` }}
-                      />
-                    </div>
-
-                    {/* Prediction message */}
-                    <p className="text-xs text-white/80 font-medium leading-relaxed">
-                      {formatPredictionMessage(weightPrediction)}
-                    </p>
-                  </div>
-                )}
               </div>
             </div>
           );
         })()}
       </div>
 
-      {/* Entries List Header - Still Fixed */}
-      <div className="flex-shrink-0 px-6 mb-4">
+      {/* Entries List Header */}
+      <div className="flex-shrink-0 px-6 mb-3">
         <div className="flex items-center justify-between px-1">
-          <h2 className="text-lg font-bold text-gray-900 dark:text-gray-50">Recent Meals</h2>
-          <span className="text-xs font-medium text-gray-400 dark:text-gray-500 bg-gray-100 dark:bg-white/5 px-2 py-1 rounded-lg">{entries.length} items</span>
+          <h2 className="text-xl font-bold text-primary-900 dark:text-primary-50 font-display">Recent Meals</h2>
+          <span className="text-xs font-bold text-secondary-500 bg-secondary-100 dark:bg-white/5 px-2.5 py-1 rounded-full">{entries.length} items</span>
         </div>
       </div>
 
-      {/* Entries List Content - Scrollable Only */}
+      {/* Entries List Content */}
       <div className="flex-1 overflow-y-auto no-scrollbar px-6 pb-32">
         {isLoading ? (
           <div className="space-y-4">
             {[1, 2].map(i => (
-              <div key={i} className="h-24 bg-white dark:bg-[#1a1c26] rounded-[32px] animate-pulse shadow-sm border border-white/5 dark:border-white/5"></div>
+              <div key={i} className="h-24 bg-surface rounded-4xl animate-pulse shadow-sm border border-white/40"></div>
             ))}
           </div>
         ) : entries.length === 0 ? (
-          <div className="text-center py-16 bg-white dark:bg-[#1a1c26] rounded-[32px] border border-gray-100 dark:border-white/5 shadow-diffused dark:shadow-diffused-dark">
-            <div className="w-16 h-16 bg-gray-50 dark:bg-white/5 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-300 dark:text-gray-700">
+          <div className="text-center py-16 bg-surface dark:bg-surface-dark rounded-4xl border border-white/40 dark:border-white/5 shadow-soft">
+            <div className="w-16 h-16 bg-secondary-50 dark:bg-white/5 rounded-full flex items-center justify-center mx-auto mb-4 text-secondary-300">
               <Utensils size={24} />
             </div>
-            <p className="text-gray-400 dark:text-gray-500 font-medium mb-1">No meals tracked today.</p>
-            <p className="text-xs text-gray-300 dark:text-gray-700">Tap the + button to add one.</p>
+            <p className="text-secondary-500 font-medium mb-1">No meals tracked today.</p>
+            <p className="text-xs text-secondary-400">Tap the + button to add one.</p>
           </div>
         ) : (
           <div className="space-y-4">
             {entries.map(entry => (
               <Card key={entry.id} className="flex gap-4 items-center p-4 group" onClick={() => setSelectedEntry(entry)}>
-                <div className="w-16 h-16 bg-gray-50 dark:bg-white/5 rounded-2xl overflow-hidden flex-shrink-0 shadow-inner">
+                <div className="w-16 h-16 bg-secondary-50 dark:bg-white/5 rounded-3xl overflow-hidden flex-shrink-0 shadow-inner">
                   {entry.imageUrl ? (
                     <img src={entry.imageUrl} alt={entry.food_item} className="w-full h-full object-cover" />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-gray-300 dark:text-gray-700">
+                    <div className="w-full h-full flex items-center justify-center text-secondary-300 dark:text-secondary-700">
                       <User size={20} />
                     </div>
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
-                    <h3 className="font-bold text-gray-900 dark:text-gray-50 truncate text-base">{entry.food_item}</h3>
+                    <h3 className="font-bold text-primary-900 dark:text-primary-50 truncate text-base">{entry.food_item}</h3>
                   </div>
                   <div className="flex items-center gap-2">
-                    <p className="text-xs font-semibold text-gray-400 dark:text-gray-500">{entry.time}</p>
+                    <p className="text-xs font-semibold text-secondary-400">{entry.time}</p>
                     {renderStatusBadge(entry)}
                   </div>
                 </div>
                 <div className="text-right pl-2">
-                  <span className="block font-extrabold text-gray-900 dark:text-gray-50 text-lg">{entry.calories}</span>
-                  <span className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase">kcal</span>
+                  <span className="block font-black text-primary-900 dark:text-primary-50 text-xl">{entry.calories}</span>
+                  <span className="text-[10px] font-bold text-secondary-400 uppercase tracking-wider">kcal</span>
                 </div>
               </Card>
             ))}
@@ -410,10 +378,10 @@ export const Dashboard: React.FC = () => {
         )}
       </div>
 
-      {/* Floating Action Button - Absolute within Dashboard container */}
+      {/* Floating Action Button */}
       <button
         onClick={() => { setEntryToEdit(null); setShowAddModal(true); }}
-        className="absolute bottom-28 right-6 w-16 h-16 bg-royal-600 text-white rounded-[24px] shadow-[0_12px_24px_-6px_rgba(124,58,237,0.5)] flex items-center justify-center hover:scale-105 hover:bg-royal-700 active:scale-95 transition-all z-[60]"
+        className="absolute bottom-28 right-6 w-16 h-16 bg-[#3D745B] text-white rounded-full shadow-[0_12px_24px_-6px_rgba(45,74,62,0.5)] flex items-center justify-center hover:scale-105 hover:bg-primary-700 active:scale-95 transition-all z-[60]"
       >
         <Plus size={32} strokeWidth={2.5} />
       </button>
@@ -432,7 +400,7 @@ export const Dashboard: React.FC = () => {
               setShowAddModal(false);
               setEntryToEdit(null);
               if (image) setInitialSharedImage(image);
-              setTimeout(() => setShowSharedMealModal(true), 100); // Small delay for smooth transition
+              setTimeout(() => setShowSharedMealModal(true), 100);
             }}
           />
         )
@@ -475,6 +443,6 @@ export const Dashboard: React.FC = () => {
           />
         )
       }
-    </div >
+    </div>
   );
 };

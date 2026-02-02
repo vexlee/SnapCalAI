@@ -51,7 +51,7 @@ export const WeightCheckModal: React.FC<WeightCheckModalProps> = ({ onClose, onC
             <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center animate-in fade-in duration-300">
                 <div className="bg-white dark:bg-[#1A1C26] rounded-[28px] p-8 w-[90%] max-w-sm shadow-2xl">
                     <div className="flex justify-center">
-                        <div className="w-8 h-8 border-2 border-royal-200 dark:border-royal-800 border-t-royal-600 rounded-full animate-spin" />
+                        <div className="w-8 h-8 border-2 border-primary-200 dark:border-primary-800 border-t-primary-600 rounded-full animate-spin" />
                     </div>
                 </div>
             </div>
@@ -70,8 +70,8 @@ export const WeightCheckModal: React.FC<WeightCheckModalProps> = ({ onClose, onC
                 {/* Header */}
                 <div className="flex items-center justify-between mb-6">
                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-royal-100 dark:bg-royal-900/30 flex items-center justify-center">
-                            <Scale size={20} className="text-royal-600 dark:text-royal-400" />
+                        <div className="w-10 h-10 rounded-xl bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center">
+                            <Scale size={20} className="text-primary-600 dark:text-primary-400" />
                         </div>
                         <div>
                             <h2 className="text-lg font-black text-gray-900 dark:text-gray-50">Weight Check</h2>
@@ -100,7 +100,7 @@ export const WeightCheckModal: React.FC<WeightCheckModalProps> = ({ onClose, onC
                             </div>
                             <button
                                 onClick={() => setIsEditing(true)}
-                                className="text-xs text-royal-600 dark:text-royal-400 font-bold flex items-center gap-1 mx-auto hover:underline"
+                                className="text-xs text-primary-600 dark:text-primary-400 font-bold flex items-center gap-1 mx-auto hover:underline"
                             >
                                 <RefreshCw size={12} />
                                 Update weight
@@ -113,7 +113,7 @@ export const WeightCheckModal: React.FC<WeightCheckModalProps> = ({ onClose, onC
                                     type="number"
                                     value={newWeight}
                                     onChange={(e) => setNewWeight(e.target.value)}
-                                    className="w-28 text-center text-3xl font-black text-gray-900 dark:text-gray-50 bg-white dark:bg-[#0F111A] border-2 border-royal-200 dark:border-royal-800 rounded-xl py-2 focus:outline-none focus:border-royal-500"
+                                    className="w-28 text-center text-3xl font-black text-gray-900 dark:text-gray-50 bg-white dark:bg-[#0F111A] border-2 border-primary-200 dark:border-primary-800 rounded-xl py-2 focus:outline-none focus:border-primary-500"
                                     step="0.1"
                                     min="20"
                                     max="300"
@@ -145,7 +145,7 @@ export const WeightCheckModal: React.FC<WeightCheckModalProps> = ({ onClose, onC
                     <button
                         onClick={handleConfirmWeight}
                         disabled={isSaving}
-                        className="flex-1 py-3.5 rounded-xl bg-royal-600 text-white font-bold text-sm hover:bg-royal-700 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
+                        className="flex-1 py-3.5 rounded-xl bg-primary-600 text-white font-bold text-sm hover:bg-primary-700 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
                     >
                         {isSaving ? (
                             <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />

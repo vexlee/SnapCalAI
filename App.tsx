@@ -18,7 +18,7 @@ const Onboarding = lazy(() => import('./pages/Onboarding').then(m => ({ default:
 // Loading spinner component
 const LoadingSpinner = () => (
   <div className="min-h-screen bg-surface dark:bg-surface-dark flex items-center justify-center">
-    <div className="w-8 h-8 border-2 border-royal-200 dark:border-white/20 border-t-royal-600 dark:border-t-white rounded-full animate-spin"></div>
+    <div className="w-8 h-8 border-2 border-primary-200 dark:border-white/20 border-t-primary-600 dark:border-t-white rounded-full animate-spin"></div>
   </div>
 );
 

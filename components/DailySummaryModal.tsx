@@ -20,7 +20,7 @@ export const DailySummaryModal: React.FC<DailySummaryModalProps> = ({ summary, o
             <div className="bg-white w-full max-w-md rounded-[40px] overflow-hidden shadow-2xl border border-white/50 animate-in slide-in-from-bottom duration-300">
 
                 {/* Header */}
-                <div className="relative bg-royal-50 p-8 pb-10">
+                <div className="relative bg-primary-50 dark:bg-primary-950/20 p-8 pb-10">
                     <div className="absolute top-6 right-6">
                         <button
                             onClick={onClose}
@@ -30,7 +30,7 @@ export const DailySummaryModal: React.FC<DailySummaryModalProps> = ({ summary, o
                         </button>
                     </div>
 
-                    <div className="flex items-center gap-2 text-royal-600 mb-3">
+                    <div className="flex items-center gap-2 text-primary-600 mb-3">
                         <Calendar size={20} />
                         <span className="text-xs font-bold uppercase tracking-widest">Daily Report</span>
                     </div>
@@ -49,7 +49,7 @@ export const DailySummaryModal: React.FC<DailySummaryModalProps> = ({ summary, o
                                 <span className="text-gray-400 font-bold text-lg">kcal</span>
                             </div>
                         </div>
-                        <div className="w-14 h-14 rounded-2xl bg-royal-50 flex items-center justify-center text-royal-600">
+                        <div className="w-14 h-14 rounded-2xl bg-primary-50 dark:bg-primary-950/30 flex items-center justify-center text-primary-600">
                             <Activity size={28} />
                         </div>
                     </div>
@@ -95,7 +95,7 @@ export const DailySummaryModal: React.FC<DailySummaryModalProps> = ({ summary, o
 
                     <div className="mt-8 pt-6 border-t border-gray-100 flex justify-between items-center text-xs font-bold text-gray-400 uppercase tracking-wider">
                         <span>{summary.entries.length} meals tracked</span>
-                        <span className="flex items-center gap-1.5 text-royal-600">
+                        <span className="flex items-center gap-1.5 text-primary-600">
                             <TrendingUp size={14} />
                             See History Tab
                         </span>

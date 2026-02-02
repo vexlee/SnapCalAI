@@ -84,7 +84,7 @@ class ErrorBoundary extends Component<Props, State> {
                             </button>
                             <button
                                 onClick={this.handleReload}
-                                className="px-4 py-2 bg-royal-600 text-white rounded-lg font-medium hover:bg-royal-700 transition-colors flex items-center gap-2"
+                                className="px-4 py-2 bg-primary-600 text-white rounded-lg font-medium hover:bg-primary-700 transition-colors flex items-center gap-2"
                             >
                                 <RefreshCw className="w-4 h-4" />
                                 Reload Page

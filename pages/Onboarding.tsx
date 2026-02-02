@@ -88,10 +88,10 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete }) => {
     const recommendedCalories = bmi ? calculateRecommendedCalories(bmi) : null;
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-surface via-royal-50/30 to-royal-100/40 dark:from-surface-dark dark:via-royal-950/20 dark:to-black flex items-center justify-center p-4 relative overflow-hidden">
+        <div className="min-h-screen bg-gradient-to-br from-surface via-primary-50/30 to-primary-100/40 dark:from-surface-dark dark:via-primary-950/20 dark:to-black flex items-center justify-center p-4 relative overflow-hidden">
             {/* Decorative Background Elements */}
-            <div className="absolute top-0 right-0 w-96 h-96 bg-royal-200/20 dark:bg-royal-800/10 rounded-full blur-3xl animate-pulse"></div>
-            <div className="absolute bottom-0 left-0 w-96 h-96 bg-purple-200/20 dark:bg-purple-900/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+            <div className="absolute top-0 right-0 w-96 h-96 bg-primary-200/20 dark:bg-primary-800/10 rounded-full blur-3xl animate-pulse"></div>
+            <div className="absolute bottom-0 left-0 w-96 h-96 bg-primary-800/20 dark:bg-primary-900/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
 
             {/* Skip Button */}
             <button
@@ -109,9 +109,9 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete }) => {
                         <div
                             key={idx}
                             className={`h-1.5 rounded-full transition-all duration-500 ${idx === currentStep
-                                ? 'w-12 bg-royal-600 dark:bg-royal-500'
+                                ? 'w-12 bg-primary-600 dark:bg-primary-500'
                                 : idx < currentStep
-                                    ? 'w-8 bg-royal-400 dark:bg-royal-600'
+                                    ? 'w-8 bg-primary-400 dark:bg-primary-600'
                                     : 'w-8 bg-gray-200 dark:bg-gray-700'
                                 }`}
                         />
@@ -124,7 +124,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete }) => {
                     {currentStep === 0 && (
                         <div className="flex-1 flex flex-col items-center justify-center text-center animate-in fade-in slide-in-from-bottom-4 duration-500">
                             <div className="relative mb-8">
-                                <div className="w-24 h-24 bg-gradient-to-br from-royal-500 to-purple-600 rounded-[32px] flex items-center justify-center shadow-xl shadow-royal-200 dark:shadow-royal-900/40 animate-in zoom-in duration-700">
+                                <div className="w-24 h-24 bg-gradient-to-br from-primary-500 to-[#3D745B] rounded-[32px] flex items-center justify-center shadow-xl shadow-primary-200 dark:shadow-primary-900/40 animate-in zoom-in duration-700">
                                     <Sparkles size={48} className="text-white" strokeWidth={2} />
                                 </div>
                                 <div className="absolute -top-2 -right-2 w-8 h-8 bg-yellow-400 rounded-full animate-bounce"></div>
@@ -142,14 +142,14 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete }) => {
 
                             <div className="mt-12 grid grid-cols-3 gap-6 w-full max-w-md">
                                 <div className="flex flex-col items-center gap-2">
-                                    <div className="w-14 h-14 bg-royal-50 dark:bg-royal-950/30 rounded-2xl flex items-center justify-center">
-                                        <Camera size={28} className="text-royal-600 dark:text-royal-400" />
+                                    <div className="w-14 h-14 bg-primary-50 dark:bg-primary-950/30 rounded-2xl flex items-center justify-center">
+                                        <Camera size={28} className="text-primary-600 dark:text-primary-400" />
                                     </div>
                                     <span className="text-xs font-bold text-gray-700 dark:text-gray-300">Snap</span>
                                 </div>
                                 <div className="flex flex-col items-center gap-2">
-                                    <div className="w-14 h-14 bg-purple-50 dark:bg-purple-950/30 rounded-2xl flex items-center justify-center">
-                                        <Zap size={28} className="text-purple-600 dark:text-purple-400" />
+                                    <div className="w-14 h-14 bg-primary-100 dark:bg-primary-900/30 rounded-2xl flex items-center justify-center">
+                                        <Zap size={28} className="text-primary-600 dark:text-primary-400" />
                                     </div>
                                     <span className="text-xs font-bold text-gray-700 dark:text-gray-300">Analyze</span>
                                 </div>
@@ -167,9 +167,9 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete }) => {
                     {currentStep === 1 && (
                         <div className="flex-1 flex flex-col justify-center animate-in fade-in slide-in-from-right-4 duration-500">
                             <div className="mb-8 text-center">
-                                <div className="inline-flex items-center gap-2 px-4 py-2 bg-royal-50 dark:bg-royal-950/30 rounded-full mb-4">
-                                    <Camera size={16} className="text-royal-600 dark:text-royal-400" />
-                                    <span className="text-xs font-bold text-royal-600 dark:text-royal-400 uppercase tracking-wider">How It Works</span>
+                                <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary-50 dark:bg-primary-950/30 rounded-full mb-4">
+                                    <Camera size={16} className="text-primary-600 dark:text-primary-400" />
+                                    <span className="text-xs font-bold text-primary-600 dark:text-primary-400 uppercase tracking-wider">How It Works</span>
                                 </div>
                                 <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-gray-50 mb-3">
                                     Instant Nutrition Insights
@@ -181,8 +181,8 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete }) => {
 
                             <div className="space-y-4">
                                 <div className="flex items-start gap-4 p-5 bg-gray-50 dark:bg-white/5 rounded-[24px] border border-gray-100 dark:border-white/5">
-                                    <div className="w-12 h-12 bg-royal-100 dark:bg-royal-900/30 rounded-2xl flex items-center justify-center flex-shrink-0">
-                                        <Camera size={24} className="text-royal-600 dark:text-royal-400" />
+                                    <div className="w-12 h-12 bg-primary-100 dark:bg-primary-900/30 rounded-2xl flex items-center justify-center flex-shrink-0">
+                                        <Camera size={24} className="text-primary-600 dark:text-primary-400" />
                                     </div>
                                     <div>
                                         <h3 className="font-bold text-gray-900 dark:text-gray-50 mb-1">1. Capture Your Meal</h3>
@@ -191,8 +191,8 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete }) => {
                                 </div>
 
                                 <div className="flex items-start gap-4 p-5 bg-gray-50 dark:bg-white/5 rounded-[24px] border border-gray-100 dark:border-white/5">
-                                    <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-2xl flex items-center justify-center flex-shrink-0">
-                                        <Sparkles size={24} className="text-purple-600 dark:text-purple-400" />
+                                    <div className="w-12 h-12 bg-primary-100 dark:bg-primary-900/30 rounded-2xl flex items-center justify-center flex-shrink-0">
+                                        <Sparkles size={24} className="text-primary-600 dark:text-primary-400" />
                                     </div>
                                     <div>
                                         <h3 className="font-bold text-gray-900 dark:text-gray-50 mb-1">2. AI Recognition</h3>
@@ -217,9 +217,9 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete }) => {
                     {currentStep === 2 && (
                         <div className="flex-1 flex flex-col justify-center animate-in fade-in slide-in-from-right-4 duration-500">
                             <div className="mb-8 text-center">
-                                <div className="inline-flex items-center gap-2 px-4 py-2 bg-purple-50 dark:bg-purple-950/30 rounded-full mb-4">
-                                    <Heart size={16} className="text-purple-600 dark:text-purple-400" />
-                                    <span className="text-xs font-bold text-purple-600 dark:text-purple-400 uppercase tracking-wider">Personalization</span>
+                                <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary-50 dark:bg-primary-950/30 rounded-full mb-4">
+                                    <Heart size={16} className="text-primary-600 dark:text-primary-400" />
+                                    <span className="text-xs font-bold text-primary-600 dark:text-primary-400 uppercase tracking-wider">Personalization</span>
                                 </div>
                                 <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-gray-50 mb-3">
                                     Why Your Profile Matters
@@ -230,9 +230,9 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete }) => {
                             </div>
 
                             <div className="grid md:grid-cols-2 gap-6">
-                                <div className="p-6 bg-gradient-to-br from-royal-50 to-purple-50 dark:from-royal-950/20 dark:to-purple-950/20 rounded-[28px] border border-royal-100 dark:border-royal-900/30">
+                                <div className="p-6 bg-gradient-to-br from-primary-50 to-primary-100/50 dark:from-primary-950/20 dark:to-primary-900/20 rounded-[28px] border border-primary-100 dark:border-primary-900/30">
                                     <div className="w-12 h-12 bg-white dark:bg-white/10 rounded-2xl flex items-center justify-center mb-4 shadow-sm">
-                                        <Target size={24} className="text-royal-600 dark:text-royal-400" />
+                                        <Target size={24} className="text-primary-600 dark:text-primary-400" />
                                     </div>
                                     <h3 className="font-extrabold text-gray-900 dark:text-gray-50 mb-2">Accurate Goals</h3>
                                     <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
@@ -277,9 +277,9 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete }) => {
                     {currentStep === 3 && (
                         <div className="flex-1 flex flex-col justify-center animate-in fade-in slide-in-from-right-4 duration-500">
                             <div className="mb-6 text-center">
-                                <div className="inline-flex items-center gap-2 px-4 py-2 bg-royal-50 dark:bg-royal-950/30 rounded-full mb-4">
-                                    <User size={16} className="text-royal-600 dark:text-royal-400" />
-                                    <span className="text-xs font-bold text-royal-600 dark:text-royal-400 uppercase tracking-wider">Your Details</span>
+                                <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary-50 dark:bg-primary-950/30 rounded-full mb-4">
+                                    <User size={16} className="text-primary-600 dark:text-primary-400" />
+                                    <span className="text-xs font-bold text-primary-600 dark:text-primary-400 uppercase tracking-wider">Your Details</span>
                                 </div>
                                 <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-gray-50 mb-3">
                                     Set Up Your Profile
@@ -300,7 +300,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete }) => {
                                             value={name}
                                             onChange={(e) => setName(e.target.value)}
                                             placeholder="Enter your name"
-                                            className="w-full p-4 pl-12 bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5 rounded-[20px] focus:outline-none focus:ring-2 focus:ring-royal-200 focus:border-royal-400 font-bold text-gray-900 dark:text-gray-50 transition-all placeholder:text-gray-300 dark:placeholder:text-gray-600"
+                                            className="w-full p-4 pl-12 bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5 rounded-[20px] focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 font-bold text-gray-900 dark:text-gray-50 transition-all placeholder:text-gray-300 dark:placeholder:text-gray-600"
                                         />
                                         <User className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500" size={20} />
                                     </div>
@@ -317,7 +317,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete }) => {
                                                 value={height}
                                                 onChange={(e) => setHeight(e.target.value)}
                                                 placeholder="175"
-                                                className="w-full p-4 pl-12 bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5 rounded-[20px] focus:outline-none focus:ring-2 focus:ring-royal-200 focus:border-royal-400 font-bold text-gray-900 dark:text-gray-50 transition-all placeholder:text-gray-300 dark:placeholder:text-gray-600"
+                                                className="w-full p-4 pl-12 bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5 rounded-[20px] focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 font-bold text-gray-900 dark:text-gray-50 transition-all placeholder:text-gray-300 dark:placeholder:text-gray-600"
                                             />
                                             <Ruler className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500" size={20} />
                                         </div>
@@ -332,7 +332,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete }) => {
                                                 value={weight}
                                                 onChange={(e) => setWeight(e.target.value)}
                                                 placeholder="70"
-                                                className="w-full p-4 pl-12 bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5 rounded-[20px] focus:outline-none focus:ring-2 focus:ring-royal-200 focus:border-royal-400 font-bold text-gray-900 dark:text-gray-50 transition-all placeholder:text-gray-300 dark:placeholder:text-gray-600"
+                                                className="w-full p-4 pl-12 bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5 rounded-[20px] focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 font-bold text-gray-900 dark:text-gray-50 transition-all placeholder:text-gray-300 dark:placeholder:text-gray-600"
                                             />
                                             <Weight className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500" size={20} />
                                         </div>
@@ -340,13 +340,13 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete }) => {
                                 </div>
 
                                 {bmi && (
-                                    <div className="p-5 bg-gradient-to-r from-royal-50 to-purple-50 dark:from-royal-950/20 dark:to-purple-950/20 rounded-[24px] border border-royal-100 dark:border-royal-900/30 animate-in slide-in-from-bottom-2">
+                                    <div className="p-5 bg-gradient-to-r from-primary-50 to-emerald-50 dark:from-primary-950/20 dark:to-emerald-950/20 rounded-[24px] border border-primary-100 dark:border-primary-900/30 animate-in slide-in-from-bottom-2">
                                         <div className="flex items-center justify-between mb-2">
-                                            <span className="text-xs font-bold text-royal-700 dark:text-royal-300 uppercase tracking-wider">Your BMI</span>
-                                            <span className="text-2xl font-extrabold text-royal-900 dark:text-royal-100">{bmi.toFixed(1)}</span>
+                                            <span className="text-xs font-bold text-primary-700 dark:text-primary-300 uppercase tracking-wider">Your BMI</span>
+                                            <span className="text-2xl font-extrabold text-primary-900 dark:text-primary-100">{bmi.toFixed(1)}</span>
                                         </div>
                                         {recommendedCalories && (
-                                            <p className="text-xs text-royal-600 dark:text-royal-400">
+                                            <p className="text-xs text-primary-600 dark:text-primary-400">
                                                 Recommended daily goal: <span className="font-bold">{recommendedCalories} kcal</span>
                                             </p>
                                         )}
@@ -374,13 +374,13 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete }) => {
                             </p>
 
                             {name && recommendedCalories && (
-                                <div className="mt-8 p-6 bg-gradient-to-br from-royal-50 to-purple-50 dark:from-royal-950/20 dark:to-purple-950/20 rounded-[28px] border border-royal-100 dark:border-royal-900/30 max-w-md w-full">
+                                <div className="mt-8 p-6 bg-gradient-to-br from-primary-50 to-emerald-50 dark:from-primary-950/20 dark:to-emerald-950/20 rounded-[28px] border border-primary-100 dark:border-primary-900/30 max-w-md w-full">
                                     <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
-                                        Welcome, <span className="font-bold text-royal-600 dark:text-royal-400">{name}</span>!
+                                        Welcome, <span className="font-bold text-primary-600 dark:text-primary-400">{name}</span>!
                                     </p>
                                     <div className="flex items-baseline gap-2 justify-center">
                                         <span className="text-xs text-gray-500 dark:text-gray-500 font-medium">Daily Goal:</span>
-                                        <span className="text-3xl font-extrabold text-royal-900 dark:text-royal-100">{recommendedCalories}</span>
+                                        <span className="text-3xl font-extrabold text-primary-900 dark:text-primary-100">{recommendedCalories}</span>
                                         <span className="text-sm font-bold text-gray-500 dark:text-gray-500">kcal</span>
                                     </div>
                                 </div>
@@ -410,7 +410,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete }) => {
                             <Button
                                 onClick={handleComplete}
                                 isLoading={isSaving}
-                                className="px-8 py-4 text-base shadow-xl shadow-royal-200 dark:shadow-royal-900/40"
+                                className="px-8 py-4 text-base shadow-xl shadow-primary-200 dark:shadow-primary-900/40"
                             >
                                 Start Tracking
                                 <ChevronRight size={20} className="ml-1" />
@@ -419,7 +419,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete }) => {
                             <Button
                                 onClick={handleNext}
                                 disabled={!canProceedFromProfile}
-                                className="px-8 py-4 text-base shadow-xl shadow-royal-200 dark:shadow-royal-900/40"
+                                className="px-8 py-4 text-base shadow-xl shadow-primary-200 dark:shadow-primary-900/40"
                             >
                                 Continue
                                 <ChevronRight size={20} className="ml-1" />
@@ -427,7 +427,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete }) => {
                         ) : (
                             <Button
                                 onClick={handleNext}
-                                className="px-8 py-4 text-base shadow-xl shadow-royal-200 dark:shadow-royal-900/40"
+                                className="px-8 py-4 text-base shadow-xl shadow-primary-200 dark:shadow-primary-900/40"
                             >
                                 Next
                                 <ChevronRight size={20} className="ml-1" />
