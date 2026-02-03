@@ -459,7 +459,7 @@ export const History: React.FC = () => {
 
   if (isFullLogView) {
     return (
-      <div className="flex-1 flex flex-col min-h-0 animate-in slide-in-from-right duration-500 bg-background">
+      <div className="flex-1 flex flex-col min-h-0 animate-in slide-in-from-right duration-500 bg-transparent">
         <div className="px-6 pt-10 pb-32 overflow-y-auto no-scrollbar">
           <button
             onClick={() => setIsFullLogView(false)}
@@ -619,7 +619,7 @@ export const History: React.FC = () => {
   }
 
   return (
-    <div className="flex-1 flex flex-col min-h-0 animate-in fade-in duration-500 overflow-y-auto no-scrollbar relative bg-background">
+    <div className="flex-1 flex flex-col min-h-0 animate-in fade-in duration-500 overflow-y-auto no-scrollbar relative bg-transparent">
       <div className="px-6 pt-10 pb-4">
         {/* Header with Switcher */}
         <div className="flex justify-between items-center mb-6">

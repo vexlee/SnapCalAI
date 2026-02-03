@@ -67,7 +67,7 @@ const getWorkoutPlansForRange = async (startDate: string, endDate: string): Prom
 
     const { data, error } = await supabase
         .from('workout_plans')
-        .select('*')
+        .select('id, date, title, exercises')
         .eq('user_id', user.id)
         .gte('date', startDate)
         .lte('date', endDate);
@@ -307,7 +307,7 @@ export const getReport = async (
 
     const { data, error } = await supabase
         .from('coach_reports')
-        .select('*')
+        .select('id, user_id, report_type, period_start, period_end, summary, tips, metrics, weight_at_report, created_at')
         .eq('user_id', user.id)
         .eq('report_type', reportType)
         .eq('period_start', periodStart)

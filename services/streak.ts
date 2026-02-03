@@ -5,7 +5,7 @@
 
 import { supabase, shouldUseCloud } from './supabase';
 import { getCurrentUser } from './auth';
-import { getUserProfile, getDailyGoal, getEntries } from './storage';
+import { getUserProfile, getDailyGoal, getEntriesCountForDate } from './storage';
 import { cache, CACHE_KEYS, withCache } from '../utils/cache';
 import { getCurrentDateString } from '../utils/midnight';
 
@@ -120,7 +120,7 @@ export const getStreakData = async (): Promise<StreakData> => {
         try {
             const { data, error } = await supabase
                 .from('user_streaks')
-                .select('*')
+                .select('current_streak, longest_streak, last_log_date, streak_freezes, last_freeze_used_date, qualifying_dates')
                 .eq('user_id', user.id)
                 .single();
 
@@ -159,15 +159,15 @@ const createDefaultStreakData = (): StreakData => ({
 
 /**
  * Check if a specific date qualifies for streak (has 3+ logs)
+ * OPTIMIZED: Uses count query instead of fetching all entries
  */
 export const checkStreakForDate = async (date: string): Promise<boolean> => {
     const user = await getCurrentUser();
     if (!user) return false;
 
-    const entries = await getEntries();
-    const dateEntries = entries.filter(e => e.date === date);
-
-    return dateEntries.length >= MIN_LOGS_FOR_STREAK;
+    // OPTIMIZED: Use count query instead of fetching all entries
+    const count = await getEntriesCountForDate(date);
+    return count >= MIN_LOGS_FOR_STREAK;
 };
 
 /**

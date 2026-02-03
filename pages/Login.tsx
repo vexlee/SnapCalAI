@@ -38,34 +38,34 @@ export const Login: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-primary-50 flex flex-col items-center justify-center p-6 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-[#F9F7F2] to-[#F3F0E7] flex flex-col items-center justify-center p-6 relative overflow-hidden">
       {/* Background Decor */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
-        <div className="absolute top-[-20%] right-[-20%] w-[500px] h-[500px] bg-primary-200/40 rounded-full blur-[100px]"></div>
-        <div className="absolute bottom-[-10%] left-[-10%] w-80 h-80 bg-pink-200/40 rounded-full blur-[80px]"></div>
+        <div className="absolute top-[-20%] right-[-20%] w-[500px] h-[500px] bg-primary-100/30 rounded-full blur-[100px]"></div>
+        <div className="absolute bottom-[-10%] left-[-10%] w-80 h-80 bg-primary-200/20 rounded-full blur-[80px]"></div>
       </div>
 
       <div className="w-full max-w-sm z-10">
         <div className="text-center mb-10">
-          <div className="w-20 h-20 bg-white rounded-[24px] flex items-center justify-center mx-auto mb-6 shadow-xl shadow-primary-200 rotate-3 transition-transform hover:rotate-0 duration-500">
-            <Zap size={36} className="text-primary-600 fill-primary-600" />
+          <div className="w-20 h-20 bg-white rounded-[24px] flex items-center justify-center mx-auto mb-6 shadow-xl shadow-primary-200/50 rotate-3 transition-transform hover:rotate-0 duration-500">
+            <Zap size={36} className="text-[#3D745B] fill-[#3D745B]" />
           </div>
           <h1 className="text-4xl font-extrabold text-gray-900 tracking-tight mb-2">SnapCal AI</h1>
           <p className="text-gray-500 font-medium">Track your vibe, not just calories.</p>
         </div>
 
         <div className="bg-white/80 backdrop-blur-xl border border-white p-8 rounded-[40px] shadow-[0_20px_40px_-12px_rgba(0,0,0,0.05)]">
-          <div className="flex p-1 bg-gray-100 rounded-[20px] mb-8">
+          <div className="flex p-1 bg-[#3D745B] rounded-[20px] mb-8 shadow-sm">
             <button
               onClick={() => { setIsLogin(true); setError(null); setMessage(null); }}
-              className={`flex-1 py-3 text-sm font-bold rounded-[16px] transition-all duration-300 ${isLogin ? 'bg-white text-primary-700 shadow-sm' : 'text-gray-400 hover:text-gray-600'
+              className={`flex-1 py-3 text-sm font-bold rounded-[16px] transition-all duration-300 ${isLogin ? 'bg-white text-[#3D745B] shadow-lg' : 'text-white/70 hover:text-white'
                 }`}
             >
               Sign In
             </button>
             <button
               onClick={() => { setIsLogin(false); setError(null); setMessage(null); }}
-              className={`flex-1 py-3 text-sm font-bold rounded-[16px] transition-all duration-300 ${!isLogin ? 'bg-white text-primary-700 shadow-sm' : 'text-gray-400 hover:text-gray-600'
+              className={`flex-1 py-3 text-sm font-bold rounded-[16px] transition-all duration-300 ${!isLogin ? 'bg-white text-[#3D745B] shadow-lg' : 'text-white/70 hover:text-white'
                 }`}
             >
               Sign Up
@@ -114,7 +114,7 @@ export const Login: React.FC = () => {
               </div>
             </div>
 
-            <Button className="w-full mt-4 flex justify-between items-center group py-5" isLoading={isLoading}>
+            <Button className="w-full mt-4 flex justify-between items-center group py-5 bg-[#3D745B] hover:bg-[#315C49] border-none shadow-lg shadow-primary-100 text-white" isLoading={isLoading}>
               <span>{isLogin ? 'Sign In' : 'Create Account'}</span>
               {!isLoading && <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />}
             </Button>

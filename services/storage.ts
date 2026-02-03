@@ -3,6 +3,7 @@ import { getCurrentUser } from './auth';
 import { FoodEntry, DailySummary, UserProfile, WorkoutExercise, DailyWorkout } from '../types';
 import { cache, CACHE_KEYS, withCache } from '../utils/cache';
 import type { ChatMessage } from './coach';
+import { getCurrentDateString } from '../utils/midnight';
 
 // --- Local Storage Fallback Keys ---
 const LS_KEY = 'snapcal_data_v1';
@@ -480,6 +481,80 @@ export const getEntryImage = async (entryId: string): Promise<string | null> => 
 };
 
 /**
+ * Get today's entry stats (count and calories) - Bandwidth optimized for Avatar
+ * Only fetches minimal columns needed for state calculation
+ */
+export interface TodayStats {
+  count: number;
+  calories: number;
+  latestTimestamp: string | null;
+}
+
+export const getTodayStats = async (): Promise<TodayStats> => {
+  const today = getCurrentDateString();
+
+  return withCache(CACHE_KEYS.entriesForDate(`stats:${today}`), async () => {
+    const user = await getCurrentUser();
+    if (!user) return { count: 0, calories: 0, latestTimestamp: null };
+
+    if (!shouldUseCloud) {
+      const entries = getLocalEntries().filter(e => e.user_id === user.id && e.date === today);
+      const sorted = entries.sort((a, b) => b.timestamp.localeCompare(a.timestamp));
+      return {
+        count: entries.length,
+        calories: entries.reduce((sum, e) => sum + e.calories, 0),
+        latestTimestamp: sorted[0]?.timestamp || null
+      };
+    }
+
+    // Fetch only minimal columns for today's entries
+    const { data, error } = await supabase
+      .from('food_entries')
+      .select('id, calories, timestamp')
+      .eq('user_id', user.id)
+      .eq('date', today)
+      .order('timestamp', { ascending: false });
+
+    if (error || !data) return { count: 0, calories: 0, latestTimestamp: null };
+
+    return {
+      count: data.length,
+      calories: data.reduce((sum, e) => sum + (e.calories || 0), 0),
+      latestTimestamp: data[0]?.timestamp || null
+    };
+  }, 2 * 60 * 1000); // Cache for 2 minutes (frequently accessed)
+};
+
+/**
+ * Get entry count for a specific date - Bandwidth optimized for Streak
+ * Only fetches entry IDs to count, not full entry data
+ */
+export const getEntriesCountForDate = async (date: string): Promise<number> => {
+  return withCache(CACHE_KEYS.entriesForDate(`count:${date}`), async () => {
+    const user = await getCurrentUser();
+    if (!user) return 0;
+
+    if (!shouldUseCloud) {
+      return getLocalEntries().filter(e => e.user_id === user.id && e.date === date).length;
+    }
+
+    // Supabase: Use count query for maximum efficiency
+    const { count, error } = await supabase
+      .from('food_entries')
+      .select('id', { count: 'exact', head: true })
+      .eq('user_id', user.id)
+      .eq('date', date);
+
+    if (error) {
+      console.error('Error counting entries:', error);
+      return 0;
+    }
+
+    return count || 0;
+  }, 5 * 60 * 1000); // Cache for 5 minutes
+};
+
+/**
  * @deprecated Use getDailySummariesLite() for charts and getEntriesForDateLite() for lazy loading
  * This function fetches all entries with images - use only when you need full data
  */
@@ -671,7 +746,7 @@ export const getDailyGoal = async (): Promise<number> => {
       .single();
 
     return (error || !data) ? 2000 : data.daily_goal;
-  }, 10 * 60 * 1000); // Cache for 10 minutes
+  }, 30 * 60 * 1000); // Cache for 30 minutes (rarely changes)
 };
 
 export const saveDailyGoal = async (goal: number): Promise<void> => {
@@ -726,7 +801,7 @@ export const getUserProfile = async (): Promise<UserProfile | null> => {
       equipmentAccess: data.equipment_access,
       targetWeight: data.target_weight
     };
-  }, 10 * 60 * 1000); // Cache for 10 minutes
+  }, 30 * 60 * 1000); // Cache for 30 minutes (rarely changes)
 };
 
 export const saveUserProfile = async (profile: UserProfile): Promise<void> => {

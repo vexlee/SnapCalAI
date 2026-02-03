@@ -11,7 +11,7 @@ interface LayoutProps {
 
 export const Layout: React.FC<LayoutProps> = ({ children, currentView, onNavigate }) => {
   return (
-    <div className="h-[100dvh] bg-background flex flex-col max-w-md mx-auto relative shadow-2xl shadow-gray-200 overflow-hidden border-x border-primary-100/50 transition-colors duration-300">
+    <div className="h-[100dvh] bg-gradient-to-br from-[#F9F7F2] to-[#F3F0E7] flex flex-col max-w-md mx-auto relative shadow-2xl shadow-gray-200 overflow-hidden border-x border-primary-100/50 transition-colors duration-300">
 
       {/* Content Area */}
       <main className="flex-1 flex flex-col min-h-0 overflow-hidden">
@@ -23,14 +23,14 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentView, onNavigat
 
       {/* Bottom Navigation */}
       <div className="absolute bottom-6 left-5 right-5 z-50">
-        <nav className="bg-[#3D745B][#1a1c26]/90 backdrop-blur-xl rounded-full p-2 shadow-soft-lg border border-primary-500/50 flex justify-between items-center">
+        <nav className="bg-[#3D745B] rounded-full p-2 shadow-soft-lg border border-white/10 flex justify-between items-center">
           <button
             onClick={() => onNavigate(AppView.DASHBOARD)}
             className={clsx(
               "flex items-center justify-center gap-2 py-3 rounded-full transition-all duration-500",
               currentView === AppView.DASHBOARD
-                ? "flex-[1.6] bg-white text-primary-600 shadow-lg px-4"
-                : "flex-1 text-primary-100 hover:text-white hover:bg-white/10:bg-white/5"
+                ? "flex-[1.6] bg-white text-[#3D745B] shadow-lg px-4"
+                : "flex-1 text-white/70 hover:text-white hover:bg-white/10"
             )}
           >
             <Home size={22} strokeWidth={currentView === AppView.DASHBOARD ? 2.5 : 2} />
@@ -42,8 +42,8 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentView, onNavigat
             className={clsx(
               "flex items-center justify-center gap-2 py-3 rounded-full transition-all duration-500",
               currentView === AppView.CAL_COACH
-                ? "flex-[1.6] bg-white text-primary-600 shadow-lg px-4"
-                : "flex-1 text-primary-100 hover:text-white hover:bg-white/10:bg-white/5"
+                ? "flex-[1.6] bg-white text-[#3D745B] shadow-lg px-4"
+                : "flex-1 text-white/70 hover:text-white hover:bg-white/10"
             )}
           >
             <Sparkles size={22} strokeWidth={currentView === AppView.CAL_COACH ? 2.5 : 2} />
@@ -55,8 +55,8 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentView, onNavigat
             className={clsx(
               "flex items-center justify-center gap-2 py-3 rounded-full transition-all duration-500",
               currentView === AppView.WORKOUT_PLAN
-                ? "flex-[2] bg-white text-primary-600 shadow-lg px-4"
-                : "flex-1 text-primary-100 hover:text-white hover:bg-white/10:bg-white/5"
+                ? "flex-[2] bg-white text-[#3D745B] shadow-lg px-4"
+                : "flex-1 text-white/70 hover:text-white hover:bg-white/10"
             )}
           >
             <Dumbbell size={22} strokeWidth={currentView === AppView.WORKOUT_PLAN ? 2.5 : 2} />
@@ -68,8 +68,8 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentView, onNavigat
             className={clsx(
               "flex items-center justify-center gap-2 py-3 rounded-full transition-all duration-500",
               currentView === AppView.HISTORY
-                ? "flex-[1.6] bg-white text-primary-600 shadow-lg px-4"
-                : "flex-1 text-primary-100 hover:text-white hover:bg-white/10:bg-white/5"
+                ? "flex-[1.6] bg-white text-[#3D745B] shadow-lg px-4"
+                : "flex-1 text-white/70 hover:text-white hover:bg-white/10"
             )}
           >
             <BarChart2 size={22} strokeWidth={currentView === AppView.HISTORY ? 2.5 : 2} />
@@ -81,8 +81,8 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentView, onNavigat
             className={clsx(
               "flex items-center justify-center gap-2 py-3 rounded-full transition-all duration-500",
               currentView === AppView.PROFILE
-                ? "flex-[1.6] bg-white text-primary-600 shadow-lg px-4"
-                : "flex-1 text-primary-100 hover:text-white hover:bg-white/10:bg-white/5"
+                ? "flex-[1.6] bg-white text-[#3D745B] shadow-lg px-4"
+                : "flex-1 text-white/70 hover:text-white hover:bg-white/10"
             )}
           >
             <User size={22} strokeWidth={currentView === AppView.PROFILE ? 2.5 : 2} />

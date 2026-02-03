@@ -88,7 +88,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete }) => {
     const recommendedCalories = bmi ? calculateRecommendedCalories(bmi) : null;
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-surface via-primary-50/30 to-primary-100/40 flex items-center justify-center p-4 relative overflow-hidden">
+        <div className="min-h-screen bg-gradient-to-br from-[#F9F7F2] to-[#F3F0E7] flex items-center justify-center p-4 relative overflow-hidden">
             {/* Decorative Background Elements */}
             <div className="absolute top-0 right-0 w-96 h-96 bg-primary-200/20 rounded-full blur-3xl animate-pulse"></div>
             <div className="absolute bottom-0 left-0 w-96 h-96 bg-primary-800/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
@@ -109,9 +109,9 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete }) => {
                         <div
                             key={idx}
                             className={`h-1.5 rounded-full transition-all duration-500 ${idx === currentStep
-                                ? 'w-12 bg-primary-600'
+                                ? 'w-12 bg-[#3D745B]'
                                 : idx < currentStep
-                                    ? 'w-8 bg-primary-400'
+                                    ? 'w-8 bg-[#3D745B]/40'
                                     : 'w-8 bg-gray-200'
                                 }`}
                         />
@@ -119,12 +119,12 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete }) => {
                 </div>
 
                 {/* Step Content */}
-                <div className="bg-white[#1a1c26] rounded-[40px] shadow-diffused-lg p-8 md:p-12 min-h-[500px] flex flex-col">
+                <div className="bg-white rounded-[40px] shadow-diffused-lg p-8 md:p-12 min-h-[500px] flex flex-col border-2 border-[#3D745B]/10">
                     {/* Step 0: Welcome */}
                     {currentStep === 0 && (
                         <div className="flex-1 flex flex-col items-center justify-center text-center animate-in fade-in slide-in-from-bottom-4 duration-500">
                             <div className="relative mb-8">
-                                <div className="w-24 h-24 bg-gradient-to-br from-primary-500 to-[#3D745B] rounded-[32px] flex items-center justify-center shadow-xl shadow-primary-200 animate-in zoom-in duration-700">
+                                <div className="w-24 h-24 bg-gradient-to-br from-[#467A64] to-[#3D745B] rounded-[32px] flex items-center justify-center shadow-xl shadow-primary-200/50 animate-in zoom-in duration-700">
                                     <Sparkles size={48} className="text-white" strokeWidth={2} />
                                 </div>
                                 <div className="absolute -top-2 -right-2 w-8 h-8 bg-yellow-400 rounded-full animate-bounce"></div>
@@ -142,19 +142,19 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete }) => {
 
                             <div className="mt-12 grid grid-cols-3 gap-6 w-full max-w-md">
                                 <div className="flex flex-col items-center gap-2">
-                                    <div className="w-14 h-14 bg-primary-50 rounded-2xl flex items-center justify-center">
-                                        <Camera size={28} className="text-primary-600" />
+                                    <div className="w-14 h-14 bg-primary-50 rounded-2xl flex items-center justify-center border-2 border-primary-100">
+                                        <Camera size={28} className="text-[#3D745B]" />
                                     </div>
                                     <span className="text-xs font-bold text-gray-700">Snap</span>
                                 </div>
                                 <div className="flex flex-col items-center gap-2">
-                                    <div className="w-14 h-14 bg-primary-100 rounded-2xl flex items-center justify-center">
-                                        <Zap size={28} className="text-primary-600" />
+                                    <div className="w-14 h-14 bg-primary-100 rounded-2xl flex items-center justify-center border-2 border-primary-200">
+                                        <Zap size={28} className="text-[#3D745B]" />
                                     </div>
                                     <span className="text-xs font-bold text-gray-700">Analyze</span>
                                 </div>
                                 <div className="flex flex-col items-center gap-2">
-                                    <div className="w-14 h-14 bg-emerald-50 rounded-2xl flex items-center justify-center">
+                                    <div className="w-14 h-14 bg-emerald-50 rounded-2xl flex items-center justify-center border-2 border-emerald-100">
                                         <TrendingUp size={28} className="text-emerald-600" />
                                     </div>
                                     <span className="text-xs font-bold text-gray-700">Track</span>
@@ -167,9 +167,9 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete }) => {
                     {currentStep === 1 && (
                         <div className="flex-1 flex flex-col justify-center animate-in fade-in slide-in-from-right-4 duration-500">
                             <div className="mb-8 text-center">
-                                <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary-50 rounded-full mb-4">
-                                    <Camera size={16} className="text-primary-600" />
-                                    <span className="text-xs font-bold text-primary-600 uppercase tracking-wider">How It Works</span>
+                                <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary-50 rounded-full mb-4 border border-[#3D745B]/20">
+                                    <Camera size={16} className="text-[#3D745B]" />
+                                    <span className="text-xs font-bold text-[#3D745B] uppercase tracking-wider">How It Works</span>
                                 </div>
                                 <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-3">
                                     Instant Nutrition Insights
@@ -180,9 +180,9 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete }) => {
                             </div>
 
                             <div className="space-y-4">
-                                <div className="flex items-start gap-4 p-5 bg-gray-50 rounded-[24px] border border-gray-100">
-                                    <div className="w-12 h-12 bg-primary-100 rounded-2xl flex items-center justify-center flex-shrink-0">
-                                        <Camera size={24} className="text-primary-600" />
+                                <div className="flex items-start gap-4 p-5 bg-gray-50 rounded-[24px] border border-gray-100 hover:border-[#3D745B]/30 transition-colors">
+                                    <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center flex-shrink-0 shadow-sm border border-gray-100">
+                                        <Camera size={24} className="text-[#3D745B]" />
                                     </div>
                                     <div>
                                         <h3 className="font-bold text-gray-900 mb-1">1. Capture Your Meal</h3>
@@ -190,9 +190,9 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete }) => {
                                     </div>
                                 </div>
 
-                                <div className="flex items-start gap-4 p-5 bg-gray-50 rounded-[24px] border border-gray-100">
-                                    <div className="w-12 h-12 bg-primary-100 rounded-2xl flex items-center justify-center flex-shrink-0">
-                                        <Sparkles size={24} className="text-primary-600" />
+                                <div className="flex items-start gap-4 p-5 bg-gray-50 rounded-[24px] border border-gray-100 hover:border-[#3D745B]/30 transition-colors">
+                                    <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center flex-shrink-0 shadow-sm border border-gray-100">
+                                        <Sparkles size={24} className="text-[#3D745B]" />
                                     </div>
                                     <div>
                                         <h3 className="font-bold text-gray-900 mb-1">2. AI Recognition</h3>
@@ -200,8 +200,8 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete }) => {
                                     </div>
                                 </div>
 
-                                <div className="flex items-start gap-4 p-5 bg-gray-50 rounded-[24px] border border-gray-100">
-                                    <div className="w-12 h-12 bg-emerald-100 rounded-2xl flex items-center justify-center flex-shrink-0">
+                                <div className="flex items-start gap-4 p-5 bg-gray-50 rounded-[24px] border border-gray-100 hover:border-[#3D745B]/30 transition-colors">
+                                    <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center flex-shrink-0 shadow-sm border border-gray-100">
                                         <TrendingUp size={24} className="text-emerald-600" />
                                     </div>
                                     <div>
@@ -217,9 +217,9 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete }) => {
                     {currentStep === 2 && (
                         <div className="flex-1 flex flex-col justify-center animate-in fade-in slide-in-from-right-4 duration-500">
                             <div className="mb-8 text-center">
-                                <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary-50 rounded-full mb-4">
-                                    <Heart size={16} className="text-primary-600" />
-                                    <span className="text-xs font-bold text-primary-600 uppercase tracking-wider">Personalization</span>
+                                <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary-50 rounded-full mb-4 border border-[#3D745B]/20">
+                                    <Heart size={16} className="text-[#3D745B]" />
+                                    <span className="text-xs font-bold text-[#3D745B] uppercase tracking-wider">Personalization</span>
                                 </div>
                                 <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-3">
                                     Why Your Profile Matters
@@ -230,9 +230,9 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete }) => {
                             </div>
 
                             <div className="grid md:grid-cols-2 gap-6">
-                                <div className="p-6 bg-gradient-to-br from-primary-50 to-primary-100/50 rounded-[28px] border border-primary-100">
-                                    <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center mb-4 shadow-sm">
-                                        <Target size={24} className="text-primary-600" />
+                                <div className="p-6 bg-gradient-to-br from-primary-50 to-primary-100/50 rounded-[28px] border-2 border-[#3D745B]/20">
+                                    <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center mb-4 shadow-sm border border-primary-100">
+                                        <Target size={24} className="text-[#3D745B]" />
                                     </div>
                                     <h3 className="font-extrabold text-gray-900 mb-2">Accurate Goals</h3>
                                     <p className="text-sm text-gray-700 leading-relaxed">
@@ -410,7 +410,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete }) => {
                             <Button
                                 onClick={handleComplete}
                                 isLoading={isSaving}
-                                className="px-8 py-4 text-base shadow-xl shadow-primary-200"
+                                className="px-8 py-4 text-base shadow-xl shadow-primary-200/50 bg-[#3D745B] hover:bg-[#315C49]"
                             >
                                 Start Tracking
                                 <ChevronRight size={20} className="ml-1" />
@@ -419,7 +419,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete }) => {
                             <Button
                                 onClick={handleNext}
                                 disabled={!canProceedFromProfile}
-                                className="px-8 py-4 text-base shadow-xl shadow-primary-200"
+                                className="px-8 py-4 text-base shadow-xl shadow-primary-200/50 bg-[#3D745B] hover:bg-[#315C49]"
                             >
                                 Continue
                                 <ChevronRight size={20} className="ml-1" />
@@ -427,7 +427,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete }) => {
                         ) : (
                             <Button
                                 onClick={handleNext}
-                                className="px-8 py-4 text-base shadow-xl shadow-primary-200"
+                                className="px-8 py-4 text-base shadow-xl shadow-primary-200/50 bg-[#3D745B] hover:bg-[#315C49]"
                             >
                                 Next
                                 <ChevronRight size={20} className="ml-1" />

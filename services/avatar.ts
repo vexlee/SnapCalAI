@@ -4,7 +4,7 @@
  */
 
 import { getCurrentUser } from './auth';
-import { getEntries, getDailyGoal } from './storage';
+import { getDailyGoal, getTodayStats } from './storage';
 import { getCurrentDateString } from '../utils/midnight';
 
 // --- Types ---
@@ -68,6 +68,7 @@ const calculateHoursSinceLastLog = (lastTimestamp: string | null): number => {
 
 /**
  * Get current avatar status with all relevant data
+ * OPTIMIZED: Uses getTodayStats() instead of fetching all entries
  */
 export const getAvatarStatus = async (): Promise<AvatarStatus> => {
     const user = await getCurrentUser();
@@ -86,45 +87,17 @@ export const getAvatarStatus = async (): Promise<AvatarStatus> => {
         return defaultStatus;
     }
 
-    // Get today's entries
-    const entries = await getEntries();
-    const today = getCurrentDateString();
-    const todayEntries = entries.filter(e => e.date === today);
+    // OPTIMIZED: Use lightweight stats instead of full entries
+    const [todayStats, calorieLimit] = await Promise.all([
+        getTodayStats(),
+        getDailyGoal()
+    ]);
 
-    // Calculate totals
-    const todayCalories = todayEntries.reduce((sum, e) => sum + e.calories, 0);
-    const mealsLogged = todayEntries.length;
-    const calorieLimit = await getDailyGoal();
+    const todayCalories = todayStats.calories;
+    const mealsLogged = todayStats.count;
 
-    // Get last log timestamp from localStorage
-    let lastLogTimestamp = getLastLogTimestamp();
-
-    // Always check actual entries to find the most recent log
-    // This fixes the bug where localStorage has stale data
-    if (entries.length > 0) {
-        // Sort entries by date/time to find the latest one
-        const sortedEntries = [...entries].sort((a, b) => {
-            const dateA = new Date(`${a.date}T${a.time || '00:00'}`);
-            const dateB = new Date(`${b.date}T${b.time || '00:00'}`);
-            return dateB.getTime() - dateA.getTime();
-        });
-
-        if (sortedEntries.length > 0) {
-            const latest = sortedEntries[0];
-            // Construct a timestamp from date and time
-            const latestEntryTimestamp = new Date(`${latest.date}T${latest.time || '00:00'}`).toISOString();
-
-            // Use the entry timestamp if it's newer than localStorage value
-            if (!lastLogTimestamp || new Date(latestEntryTimestamp) > new Date(lastLogTimestamp)) {
-                lastLogTimestamp = latestEntryTimestamp;
-                // Update localStorage for next time
-                try {
-                    localStorage.setItem(LS_LAST_LOG_KEY, lastLogTimestamp);
-                } catch (e) { }
-            }
-        }
-    }
-
+    // Get last log timestamp - prefer data from stats if available
+    const lastLogTimestamp = todayStats.latestTimestamp || getLastLogTimestamp();
     const hoursSinceLastLog = calculateHoursSinceLastLog(lastLogTimestamp);
 
     // Calculate state

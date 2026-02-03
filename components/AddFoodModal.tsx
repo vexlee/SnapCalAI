@@ -267,7 +267,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ onClose, onSuccess, 
         <div className="flex justify-between items-center mb-6">
           <div className="flex items-center gap-3">
             {step === 'details' && !editEntry && (
-              <button onClick={() => setStep('upload')} className="p-2 -ml-2 rounded-full hover:bg-secondary-50:bg-white/10 transition-all active:scale-95">
+              <button onClick={() => setStep('upload')} className="p-2 -ml-2 rounded-full hover:bg-black/5 transition-all active:scale-95">
                 <ChevronLeft size={24} className="text-primary-900" />
               </button>
             )}
@@ -275,7 +275,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ onClose, onSuccess, 
               {editEntry ? 'Edit Record' : (step === 'upload' ? 'Track Meal' : 'Meal Receipt')}
             </h2>
           </div>
-          <button onClick={onClose} className="p-2.5 bg-secondary-50 rounded-full hover:bg-secondary-100:bg-white/20 transition-all active:scale-90">
+          <button onClick={onClose} className="p-2.5 bg-secondary-50 rounded-full hover:bg-secondary-100 transition-all active:scale-90">
             <X size={22} className="text-secondary-600" />
           </button>
         </div>
@@ -299,7 +299,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ onClose, onSuccess, 
             {!isBrowserQuotaError && (isAiQuotaError || !isDbQuotaError) && (
               <button
                 onClick={() => { setError(null); if (step === 'upload') handleAnalyze(); else handleRecalculate(); }}
-                className="w-full py-2 bg-white/50 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-white/80:bg-white/20 transition-all"
+                className="w-full py-2 bg-white/50 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-white/80 transition-all"
               >
                 <RotateCcw size={14} /> Try Again
               </button>
@@ -316,7 +316,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ onClose, onSuccess, 
 
         {step === 'upload' ? (
           <div className="space-y-6">
-            <div className="flex p-1.5 bg-[#3D745B][#1a1c26]/90 rounded-3xl backdrop-blur-sm border border-white/10">
+            <div className="flex p-1.5 bg-[#3D745B] rounded-3xl backdrop-blur-sm border border-white/10">
               <button
                 onClick={() => setMode('scan')}
                 className={`flex-1 py-3.5 flex items-center justify-center gap-2 rounded-2xl text-[13px] font-bold transition-all duration-300 ${mode === 'scan' ? 'bg-white text-[#3D745B] shadow-soft' : 'text-white/70 hover:text-white hover:bg-white/10'} `}
@@ -350,7 +350,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ onClose, onSuccess, 
             {mode === 'scan' && (
               <>
                 {!preview ? (
-                  <div onClick={() => fileInputRef.current?.click()} className="border-2 border-dashed border-secondary-200 rounded-4xl h-64 flex flex-col items-center justify-center cursor-pointer hover:border-primary-400 hover:bg-secondary-50:bg-white/5 transition-all group">
+                  <div onClick={() => fileInputRef.current?.click()} className="border-2 border-dashed border-secondary-200 rounded-4xl h-64 flex flex-col items-center justify-center cursor-pointer hover:border-primary-400 hover:bg-black/5 transition-all group">
                     <Camera size={48} className="text-secondary-300 group-hover:text-primary-600 mb-4 transition-colors" />
                     <p className="text-primary-900 font-bold">Snap or Upload Photo</p>
                     <p className="text-secondary-400 text-xs mt-1 italic">Let AI do the calorie math</p>
@@ -421,7 +421,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ onClose, onSuccess, 
                 </div>
 
                 {!preview ? (
-                  <div onClick={() => fileInputRef.current?.click()} className="border-2 border-dashed border-secondary-200 rounded-4xl h-64 flex flex-col items-center justify-center cursor-pointer hover:border-primary-400 hover:bg-secondary-50:bg-white/5 transition-all group">
+                  <div onClick={() => fileInputRef.current?.click()} className="border-2 border-dashed border-secondary-200 rounded-4xl h-64 flex flex-col items-center justify-center cursor-pointer hover:border-primary-400 hover:bg-black/5 transition-all group">
                     <Camera size={48} className="text-secondary-300 group-hover:text-primary-600 mb-4 transition-colors" />
                     <p className="text-primary-900 font-bold">Snap or Upload Photo</p>
                     <p className="text-secondary-400 text-xs mt-1 italic">Capture the whole table</p>

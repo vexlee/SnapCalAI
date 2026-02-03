@@ -262,7 +262,7 @@ export const CalCoach: React.FC<CalCoachProps> = ({ onNavigate }) => {
     const showCompactSuggestions = messages.length > 1 && !isLoading;
 
     return (
-        <div className="flex-1 flex flex-col min-h-0 px-6 pt-10 pb-32 animate-in fade-in duration-500 bg-background">
+        <div className="flex-1 flex flex-col min-h-0 px-6 pt-10 pb-32 animate-in fade-in duration-500 bg-transparent">
             {/* Header */}
             <header className="flex justify-between items-end mb-6 flex-shrink-0">
                 <div>

@@ -30,12 +30,12 @@
 /* Base body styles */
 body {
   font-family: 'Inter', system-ui, sans-serif;
-  background-color: #F3F0E7;
-  /* Cream/Bone */
+  background: linear-gradient(135deg, #F9F7F2 0%, #F3F0E7 100%);
+  background-attachment: fixed;
   color: #1a211e;
   /* Dark Forest Green/Black */
   -webkit-tap-highlight-color: transparent;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition: background 0.3s ease, color 0.3s ease;
 }
 
 

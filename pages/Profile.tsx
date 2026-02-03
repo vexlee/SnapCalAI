@@ -251,7 +251,7 @@ export const Profile: React.FC = () => {
   const currentMode = getAppMode();
 
   return (
-    <div className="flex-1 overflow-y-auto no-scrollbar pb-32 px-6 pt-10 space-y-8 animate-in fade-in duration-500 bg-background">
+    <div className="flex-1 overflow-y-auto no-scrollbar pb-32 px-6 pt-10 space-y-8 animate-in fade-in duration-500 bg-transparent">
       <header>
         <p className="text-secondary-400 text-xs font-bold uppercase tracking-widest mb-2">My Profile</p>
         <h1 className="text-3xl font-black text-primary-900 tracking-tight font-display">Personal Details</h1>
