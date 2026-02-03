@@ -1,0 +1,1 @@
+import{j as t}from"./index-BTP2R7HP.js";import{c as a}from"./vendor-charts-Bdt_fL2G.js";const i=({children:s,className:o,onClick:r})=>t.jsx("div",{onClick:r,className:a("bg-surface rounded-4xl p-5 shadow-soft border border-white/40",r&&"cursor-pointer active:scale-[0.98] transition-all hover:shadow-soft-lg hover:-translate-y-1",o),children:s});export{i as C};
