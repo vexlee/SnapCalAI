@@ -43,10 +43,10 @@ export const CoachTipsModal: React.FC<CoachTipsModalProps> = ({
     };
 
     return (
-        <div className="fixed inset-0 bg-[#F3F0E7][#0F111A] z-[100] animate-in slide-in-from-right duration-300 overflow-y-auto">
+        <div className="fixed inset-0 bg-[#F3F0E7] z-[100] animate-in slide-in-from-right duration-300 overflow-y-auto">
             <div className="min-h-screen pb-20">
                 {/* Header */}
-                <div className="sticky top-0 bg-[#F3F0E7]/80[#0F111A]/80 backdrop-blur-xl z-10 px-6 pt-10 pb-4 border-b border-gray-100">
+                <div className="sticky top-0 bg-[#F3F0E7]/80 backdrop-blur-xl z-10 px-6 pt-10 pb-4 border-b border-gray-100">
                     <div className="flex items-center justify-between">
                         <button
                             onClick={onClose}
@@ -58,7 +58,7 @@ export const CoachTipsModal: React.FC<CoachTipsModalProps> = ({
                         <button
                             onClick={onRegenerate}
                             disabled={isRegenerating}
-                            className="flex items-center gap-2 text-xs font-bold text-[#3D745B] bg-primary-50 px-3 py-1.5 rounded-xl hover:bg-primary-100:bg-primary-900/30 transition-colors disabled:opacity-50"
+                            className="flex items-center gap-2 text-xs font-bold text-[#3D745B] bg-primary-50 px-3 py-1.5 rounded-xl hover:bg-primary-100 transition-colors disabled:opacity-50"
                         >
                             <RefreshCw size={12} className={isRegenerating ? 'animate-spin' : ''} />
                             {isRegenerating ? 'Generating...' : 'Regenerate'}
@@ -179,7 +179,7 @@ export const CoachTipsModal: React.FC<CoachTipsModalProps> = ({
                                 return (
                                     <div
                                         key={index}
-                                        className={`${styleClass}[#1A1C26] rounded-2xl p-4 border-2 flex items-start gap-3 shadow-sm`}
+                                        className={`${styleClass} rounded-2xl p-4 border-2 flex items-start gap-3 shadow-sm`}
                                     >
                                         <div className="w-10 h-10 rounded-xl bg-white/50 backdrop-blur-sm flex items-center justify-center flex-shrink-0 text-xl shadow-sm">
                                             {tip.emoji}

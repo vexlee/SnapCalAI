@@ -277,7 +277,7 @@ export const WorkoutPlan: React.FC<WorkoutPlanProps> = ({ onNavigate }) => {
                                         aspect-square flex flex-col items-center justify-center p-1 rounded-xl transition-all relative text-sm
                                         ${isSelected
                                             ? 'bg-[#3D745B] text-white shadow-lg shadow-primary-200 scale-105 font-bold'
-                                            : 'bg-gray-50 text-gray-700 hover:bg-primary-50:bg-primary-900/20 hover:scale-105'
+                                            : 'bg-gray-50 text-gray-700 hover:bg-primary-100 hover:scale-105'
                                         }
                                     `}
                                 >
@@ -359,7 +359,7 @@ export const WorkoutPlan: React.FC<WorkoutPlanProps> = ({ onNavigate }) => {
                                         {/* Delete Workout Button */}
                                         <button
                                             onClick={() => handleDeleteWorkout(workout.id!)}
-                                            className="p-2 hover:bg-red-50:bg-red-900/20 rounded-lg transition-colors"
+                                            className="p-2 hover:bg-red-50 rounded-lg transition-colors"
                                             title="Delete entire workout"
                                         >
                                             <Trash2 size={16} className="text-red-600" />
@@ -446,7 +446,7 @@ export const WorkoutPlan: React.FC<WorkoutPlanProps> = ({ onNavigate }) => {
                                                                     e.stopPropagation();
                                                                     handleEditExercise(workout.id!, exercise);
                                                                 }}
-                                                                className="p-1.5 hover:bg-blue-50:bg-blue-900/20 rounded-lg transition-colors"
+                                                                className="p-1.5 hover:bg-blue-50 rounded-lg transition-colors"
                                                                 title="Edit exercise"
                                                             >
                                                                 <Pencil size={14} className="text-blue-600" />
@@ -456,7 +456,7 @@ export const WorkoutPlan: React.FC<WorkoutPlanProps> = ({ onNavigate }) => {
                                                                     e.stopPropagation();
                                                                     handleDeleteExercise(workout.id!, exercise.id);
                                                                 }}
-                                                                className="p-1.5 hover:bg-red-50:bg-red-900/20 rounded-lg transition-colors"
+                                                                className="p-1.5 hover:bg-red-50 rounded-lg transition-colors"
                                                                 title="Delete exercise"
                                                             >
                                                                 <Trash2 size={14} className="text-red-600" />
@@ -486,7 +486,7 @@ export const WorkoutPlan: React.FC<WorkoutPlanProps> = ({ onNavigate }) => {
                         {/* Add Another Workout Button */}
                         <button
                             onClick={() => setShowAddModal(true)}
-                            className="w-full flex items-center justify-center gap-2 py-4 bg-white hover:bg-primary-50:bg-primary-900/20 text-gray-900 rounded-[20px] font-bold transition-all border-2 border-dashed border-gray-300 hover:border-primary-400:border-primary-600 active:scale-95"
+                            className="w-full flex items-center justify-center gap-2 py-4 bg-white hover:bg-primary-100 text-gray-900 rounded-[20px] font-bold transition-all border-2 border-dashed border-gray-300 hover:border-primary-400:border-primary-600 active:scale-95"
                         >
                             <Plus size={20} />
                             <span>Add Another Workout</span>
@@ -537,7 +537,7 @@ export const WorkoutPlan: React.FC<WorkoutPlanProps> = ({ onNavigate }) => {
 
                                 <button
                                     onClick={() => setShowAddModal(true)}
-                                    className="w-full flex items-center justify-center gap-2 py-4 bg-white hover:bg-gray-50:bg-white/10 text-gray-900 rounded-[20px] font-bold transition-all border-2 border-gray-200 active:scale-95"
+                                    className="w-full flex items-center justify-center gap-2 py-4 bg-white hover:bg-gray-50 text-gray-900 rounded-[20px] font-bold transition-all border-2 border-gray-200 active:scale-95"
                                 >
                                     <Plus size={20} />
                                     <span>Create Custom Plan</span>

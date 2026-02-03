@@ -369,7 +369,7 @@ export const Profile: React.FC = () => {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Enter your name"
-              className="w-full p-4 pl-12 bg-secondary-50 border border-secondary-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 font-bold text-primary-900 transition-all placeholder:text-secondary-300:text-secondary-600"
+              className="w-full p-4 pl-12 bg-secondary-50 border border-secondary-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 font-bold text-primary-900 transition-all placeholder:text-secondary-300"
             />
             <User className="absolute left-4 top-1/2 -translate-y-1/2 text-secondary-400" size={20} />
           </div>
@@ -384,7 +384,7 @@ export const Profile: React.FC = () => {
                 value={height}
                 onChange={(e) => setHeight(e.target.value)}
                 placeholder="175"
-                className="w-full p-4 pl-12 bg-secondary-50 border border-secondary-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 font-bold text-primary-900 transition-all placeholder:text-secondary-300:text-secondary-600"
+                className="w-full p-4 pl-12 bg-secondary-50 border border-secondary-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 font-bold text-primary-900 transition-all placeholder:text-secondary-300"
               />
               <Ruler className="absolute left-4 top-1/2 -translate-y-1/2 text-secondary-400" size={20} />
             </div>
@@ -397,7 +397,7 @@ export const Profile: React.FC = () => {
                 value={weight}
                 onChange={(e) => setWeight(e.target.value)}
                 placeholder="70"
-                className="w-full p-4 pl-12 bg-secondary-50 border border-secondary-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 font-bold text-primary-900 transition-all placeholder:text-secondary-300:text-secondary-600"
+                className="w-full p-4 pl-12 bg-secondary-50 border border-secondary-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 font-bold text-primary-900 transition-all placeholder:text-secondary-300"
               />
               <Weight className="absolute left-4 top-1/2 -translate-y-1/2 text-secondary-400" size={20} />
             </div>
@@ -413,7 +413,7 @@ export const Profile: React.FC = () => {
                 value={age}
                 onChange={(e) => setAge(e.target.value)}
                 placeholder="25"
-                className="w-full p-4 pl-12 bg-secondary-50 border border-secondary-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 font-bold text-primary-900 transition-all placeholder:text-secondary-300:text-secondary-600"
+                className="w-full p-4 pl-12 bg-secondary-50 border border-secondary-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 font-bold text-primary-900 transition-all placeholder:text-secondary-300"
               />
               <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 text-secondary-400" size={20} />
             </div>
@@ -599,7 +599,7 @@ export const Profile: React.FC = () => {
         <button
           onClick={handleSignOut}
           disabled={isLoggingOut}
-          className="w-full flex items-center justify-center gap-3 py-5 rounded-3xl border border-red-200 text-red-500 font-black hover:bg-red-50:bg-red-950/20 active:scale-95 transition-all shadow-sm"
+          className="w-full flex items-center justify-center gap-3 py-5 rounded-3xl border border-red-200 text-red-500 font-black hover:bg-red-50 active:scale-95 transition-all shadow-sm"
         >
           {isLoggingOut ? (
             <RefreshCw size={20} className="animate-spin" />

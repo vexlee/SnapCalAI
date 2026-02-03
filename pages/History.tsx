@@ -494,7 +494,7 @@ export const History: React.FC = () => {
                     <div
                       key={entry.id}
                       onClick={() => setSelectedEntry(entryWithImage)}
-                      className="bg-surface p-4 flex justify-between items-center rounded-4xl shadow-soft border border-white/40 hover:bg-white:bg-white/5 transition-all cursor-pointer active:scale-[0.98]"
+                      className="bg-surface p-4 flex justify-between items-center rounded-4xl shadow-soft border border-white/40 hover:bg-white transition-all cursor-pointer active:scale-[0.98]"
                     >
                       <div className="flex items-center gap-4">
                         <div className="w-12 h-12 rounded-3xl bg-secondary-50 overflow-hidden shadow-inner border border-white/40">
@@ -537,7 +537,7 @@ export const History: React.FC = () => {
                         {/* Day Header - Clickable to expand/collapse */}
                         <button
                           onClick={() => toggleDayExpansion(date)}
-                          className="w-full p-4 flex justify-between items-center hover:bg-white:bg-white/5 transition-all"
+                          className="w-full p-4 flex justify-between items-center hover:bg-white transition-all"
                         >
                           <div className="flex items-center gap-3">
                             <div className={`transition-transform duration-200 ${isExpanded ? 'rotate-90' : ''}`}>
@@ -567,7 +567,7 @@ export const History: React.FC = () => {
                                 <div
                                   key={entry.id}
                                   onClick={() => setSelectedEntry(entryWithImage)}
-                                  className="p-4 flex justify-between items-center hover:bg-white:bg-white/5 transition-all cursor-pointer border-b border-secondary-50 last:border-b-0"
+                                  className="p-4 flex justify-between items-center hover:bg-white transition-all cursor-pointer border-b border-secondary-50 last:border-b-0"
                                 >
                                   <div className="flex items-center gap-4">
                                     <div className="w-12 h-12 rounded-3xl bg-secondary-50 overflow-hidden shadow-inner border border-white/40">

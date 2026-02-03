@@ -96,7 +96,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete }) => {
             {/* Skip Button */}
             <button
                 onClick={handleSkip}
-                className="absolute top-6 right-6 z-50 text-gray-400 hover:text-gray-600:text-gray-300 transition-colors text-sm font-medium flex items-center gap-1"
+                className="absolute top-6 right-6 z-50 text-gray-400 hover:text-gray-600 transition-colors text-sm font-medium flex items-center gap-1"
             >
                 Skip <X size={16} />
             </button>
@@ -300,7 +300,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete }) => {
                                             value={name}
                                             onChange={(e) => setName(e.target.value)}
                                             placeholder="Enter your name"
-                                            className="w-full p-4 pl-12 bg-gray-50 border border-gray-100 rounded-[20px] focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 font-bold text-gray-900 transition-all placeholder:text-gray-300:text-gray-600"
+                                            className="w-full p-4 pl-12 bg-gray-50 border border-gray-100 rounded-[20px] focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 font-bold text-gray-900 transition-all placeholder:text-gray-300"
                                         />
                                         <User className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
                                     </div>
@@ -317,7 +317,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete }) => {
                                                 value={height}
                                                 onChange={(e) => setHeight(e.target.value)}
                                                 placeholder="175"
-                                                className="w-full p-4 pl-12 bg-gray-50 border border-gray-100 rounded-[20px] focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 font-bold text-gray-900 transition-all placeholder:text-gray-300:text-gray-600"
+                                                className="w-full p-4 pl-12 bg-gray-50 border border-gray-100 rounded-[20px] focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 font-bold text-gray-900 transition-all placeholder:text-gray-300"
                                             />
                                             <Ruler className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
                                         </div>
@@ -332,7 +332,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete }) => {
                                                 value={weight}
                                                 onChange={(e) => setWeight(e.target.value)}
                                                 placeholder="70"
-                                                className="w-full p-4 pl-12 bg-gray-50 border border-gray-100 rounded-[20px] focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 font-bold text-gray-900 transition-all placeholder:text-gray-300:text-gray-600"
+                                                className="w-full p-4 pl-12 bg-gray-50 border border-gray-100 rounded-[20px] focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 font-bold text-gray-900 transition-all placeholder:text-gray-300"
                                             />
                                             <Weight className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
                                         </div>
@@ -399,7 +399,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete }) => {
                             disabled={currentStep === 0}
                             className={`flex items-center gap-2 px-5 py-3 rounded-[16px] font-bold text-sm transition-all ${currentStep === 0
                                 ? 'opacity-0 pointer-events-none'
-                                : 'text-gray-600 hover:bg-gray-100:bg-white/5'
+                                : 'text-gray-600 hover:bg-gray-100'
                                 }`}
                         >
                             <ChevronLeft size={20} />

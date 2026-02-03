@@ -364,7 +364,7 @@ export const CalCoach: React.FC<CalCoachProps> = ({ onNavigate }) => {
                     <button
                         onClick={() => handleSendMessage()}
                         disabled={!inputValue.trim() || isLoading}
-                        className="flex-shrink-0 w-10 h-10 bg-primary-600 text-white rounded-full flex items-center justify-center hover:bg-primary-700 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-primary-200/50"
+                        className="flex-shrink-0 w-10 h-10 bg-[#3D745B] text-white rounded-full flex items-center justify-center hover:bg-[#315C49] active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-primary-200/50 border border-white/20"
                     >
                         {isLoading ? (
                             <Loader2 size={18} className="animate-spin" />

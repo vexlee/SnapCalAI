@@ -41,7 +41,7 @@ export const MealDetailModal: React.FC<MealDetailModalProps> = ({ entry, onClose
 
   return (
     <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center bg-black/40 backdrop-blur-md p-4 animate-in fade-in duration-200">
-      <div className="bg-white[#1a1c26] w-full max-w-md rounded-[40px] overflow-hidden shadow-2xl border border-white/50 animate-in slide-in-from-bottom duration-300 max-h-[95vh] overflow-y-auto no-scrollbar">
+      <div className="bg-white w-full max-w-md rounded-[40px] overflow-hidden shadow-2xl border border-white/50 animate-in slide-in-from-bottom duration-300 max-h-[95vh] overflow-y-auto no-scrollbar">
 
         <div className="relative h-64 bg-gray-100">
           {entry.imageUrl ? (
@@ -63,7 +63,7 @@ export const MealDetailModal: React.FC<MealDetailModalProps> = ({ entry, onClose
               <p className="text-[10px] font-black uppercase tracking-widest opacity-40">No Photo Attached</p>
             </div>
           )}
-          <button onClick={onClose} className="absolute top-4 right-4 p-2 bg-white/80 text-gray-900 rounded-full backdrop-blur-md hover:bg-white:bg-black/60 shadow-lg transition-colors z-10">
+          <button onClick={onClose} className="absolute top-4 right-4 p-2 bg-white/80 text-gray-900 rounded-full backdrop-blur-md hover:bg-white shadow-lg transition-colors z-10">
             <X size={20} />
           </button>
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none"></div>

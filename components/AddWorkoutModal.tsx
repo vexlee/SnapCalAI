@@ -232,7 +232,7 @@ export const AddWorkoutModal: React.FC<AddWorkoutModalProps> = ({ isOpen, onClos
                                                     value={exercise.name}
                                                     onChange={(e) => updateExercise(idx, 'name', e.target.value)}
                                                     placeholder="Exercise name"
-                                                    className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-primary-500:border-primary-400"
+                                                    className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-primary-500"
                                                 />
 
                                                 {/* Sets, Reps, Rest */}
@@ -246,7 +246,7 @@ export const AddWorkoutModal: React.FC<AddWorkoutModalProps> = ({ isOpen, onClos
                                                             value={exercise.sets}
                                                             onChange={(e) => updateExercise(idx, 'sets', parseInt(e.target.value) || 0)}
                                                             min="1"
-                                                            className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm text-gray-900 focus:outline-none focus:border-primary-500:border-primary-400"
+                                                            className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm text-gray-900 focus:outline-none focus:border-primary-500"
                                                         />
                                                     </div>
                                                     <div>
@@ -280,7 +280,7 @@ export const AddWorkoutModal: React.FC<AddWorkoutModalProps> = ({ isOpen, onClos
                                             {exercises.length > 1 && (
                                                 <button
                                                     onClick={() => removeExercise(idx)}
-                                                    className="p-2 hover:bg-red-50:bg-red-900/20 text-red-600 rounded-lg transition-colors"
+                                                    className="p-2 hover:bg-red-50 text-red-600 rounded-lg transition-colors"
                                                 >
                                                     <Trash2 size={18} />
                                                 </button>

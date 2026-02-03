@@ -25,9 +25,9 @@ const SUGGESTIONS: SuggestionItem[] = [
         icon: "📊",
         text: "Analyze my recent nutrition",
         color: "from-blue-500/30 to-primary-500/30",
-        baseBg: "bg-blue-50/40",
+        baseBg: "bg-blue-50",
         iconBg: "bg-blue-100",
-        iconBorder: "border-blue-200"
+        iconBorder: "border-blue-300"
     },
     {
         title: "Workout Plan",
@@ -35,9 +35,9 @@ const SUGGESTIONS: SuggestionItem[] = [
         icon: "💪",
         text: "Create a workout plan for me",
         color: "from-primary-500/30 to-emerald-500/30",
-        baseBg: "bg-primary-50/40",
+        baseBg: "bg-primary-50",
         iconBg: "bg-primary-100",
-        iconBorder: "border-primary-200"
+        iconBorder: "border-primary-300"
     },
     {
         title: "Calculate TDEE",
@@ -45,9 +45,9 @@ const SUGGESTIONS: SuggestionItem[] = [
         icon: "🔥",
         text: "Calculate my TDEE",
         color: "from-orange-500/30 to-primary-500/30",
-        baseBg: "bg-orange-50/40",
+        baseBg: "bg-orange-50",
         iconBg: "bg-orange-100",
-        iconBorder: "border-orange-200"
+        iconBorder: "border-orange-300"
     },
     {
         title: "Macro Targets",
@@ -55,9 +55,9 @@ const SUGGESTIONS: SuggestionItem[] = [
         icon: "🎯",
         text: "Help me set macro targets",
         color: "from-primary-600/30 to-teal-500/30",
-        baseBg: "bg-primary-50/40",
-        iconBg: "bg-primary-100",
-        iconBorder: "border-primary-200"
+        baseBg: "bg-teal-50",
+        iconBg: "bg-teal-100",
+        iconBorder: "border-teal-300"
     }
 ];
 
@@ -78,7 +78,7 @@ export const CoachSuggestionCards: React.FC<CoachSuggestionCardsProps> = ({
                         key={idx}
                         onClick={() => !isLoading && onSendMessage(item.text)}
                         disabled={isLoading}
-                        className={`flex flex-shrink-0 items-center gap-3 p-3 min-w-[180px] ${item.baseBg} border-2 border-gray-100 rounded-2xl hover:border-primary-500:border-primary-400 transition-all text-left group active:scale-[0.98] relative overflow-hidden disabled:opacity-50`}
+                        className={`flex flex-shrink-0 items-center gap-3 p-3 min-w-[180px] ${item.baseBg} border-2 border-gray-200 rounded-2xl hover:border-primary-400 transition-all text-left group active:scale-[0.98] relative overflow-hidden disabled:opacity-50 shadow-sm`}
                     >
                         <div className={`absolute inset-0 bg-gradient-to-br ${item.color} opacity-0 group-hover:opacity-100 transition-opacity`} />
                         <div className={`relative z-10 w-10 h-10 ${item.iconBg} ${item.iconBorder} border rounded-xl flex items-center justify-center text-xl group-hover:scale-110 transition-transform shadow-sm`}>
@@ -101,7 +101,7 @@ export const CoachSuggestionCards: React.FC<CoachSuggestionCardsProps> = ({
                     key={idx}
                     onClick={() => !isLoading && onSendMessage(item.text)}
                     disabled={isLoading}
-                    className={`flex items-center gap-4 p-4 ${item.baseBg} border-2 border-transparent rounded-4xl hover:border-primary-400:border-primary-400 hover:shadow-soft transition-all text-left group active:scale-[0.98] relative overflow-hidden disabled:opacity-50`}
+                    className={`flex items-center gap-4 p-4 ${item.baseBg} border-2 border-gray-100 rounded-4xl hover:border-primary-400 hover:shadow-soft transition-all text-left group active:scale-[0.98] relative overflow-hidden disabled:opacity-50 shadow-sm`}
                 >
                     <div className={`absolute inset-0 bg-gradient-to-br ${item.color} opacity-0 group-hover:opacity-100 transition-opacity`} />
                     <div className={`relative z-10 w-12 h-12 ${item.iconBg} ${item.iconBorder} border rounded-2xl flex items-center justify-center text-2xl group-hover:scale-110 transition-transform shadow-sm group-hover:shadow-md`}>
