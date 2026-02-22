@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useCallback, useMemo, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { VirtualList } from '../components/VirtualList';
 import { getDailySummariesLite, getEntriesForDateLite, getEntryImage, deleteEntry, getDailyGoal } from '../services/storage';
 import { DailySummary, FoodEntry, CoachReport } from '../types';
@@ -488,11 +489,14 @@ export const History: React.FC = () => {
                   ))}
                 </div>
               ) : (dayEntries[selectedDate] || []).length > 0 ? (
-                (dayEntries[selectedDate] || []).map(entry => {
+                (dayEntries[selectedDate] || []).map((entry, index) => {
                   const entryWithImage = getEntryWithImage(entry);
                   return (
-                    <div
+                    <motion.div
                       key={entry.id}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: index * 0.05, duration: 0.2 }}
                       onClick={() => setSelectedEntry(entryWithImage)}
                       className="bg-surface p-4 flex justify-between items-center rounded-4xl shadow-soft border border-white/40 hover:bg-white transition-all cursor-pointer active:scale-[0.98]"
                     >
@@ -515,7 +519,7 @@ export const History: React.FC = () => {
                         <span className="text-sm text-primary-600 font-black">{entry.calories}</span>
                         <span className="text-[8px] font-bold text-secondary-400 uppercase">kcal</span>
                       </div>
-                    </div>
+                    </motion.div>
                   );
                 })
               ) : (
@@ -561,11 +565,14 @@ export const History: React.FC = () => {
                         {/* Expandable Meal List */}
                         {isExpanded && (
                           <div className="border-t border-secondary-100">
-                            {dayEntries.map(entry => {
+                            {dayEntries.map((entry, index) => {
                               const entryWithImage = getEntryWithImage(entry);
                               return (
-                                <div
+                                <motion.div
                                   key={entry.id}
+                                  initial={{ opacity: 0, y: -10 }}
+                                  animate={{ opacity: 1, y: 0 }}
+                                  transition={{ delay: index * 0.05, duration: 0.2 }}
                                   onClick={() => setSelectedEntry(entryWithImage)}
                                   className="p-4 flex justify-between items-center hover:bg-white transition-all cursor-pointer border-b border-secondary-50 last:border-b-0"
                                 >
@@ -588,7 +595,7 @@ export const History: React.FC = () => {
                                     <span className="text-sm text-primary-600 font-black">{entry.calories}</span>
                                     <span className="text-[8px] font-bold text-secondary-400 uppercase">kcal</span>
                                   </div>
-                                </div>
+                                </motion.div>
                               );
                             })}
                           </div>

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Sparkles, User, PenTool, Edit2, AlertTriangle, Utensils, TrendingUp, Users, Flame, Target } from 'lucide-react';
 import { Card } from '../components/ui/Card';
 import { getEntries, deleteEntry, getDailyGoal, saveDailyGoal, getUserProfile, getDailySummaries } from '../services/storage';
@@ -386,9 +387,10 @@ export const Dashboard: React.FC = () => {
         <Plus size={32} strokeWidth={2.5} />
       </button>
 
-      {
-        showAddModal && (
+      <AnimatePresence>
+        {showAddModal && (
           <AddFoodModal
+            key="add-food-modal"
             editEntry={entryToEdit}
             onClose={() => { setShowAddModal(false); setEntryToEdit(null); }}
             onSuccess={() => {
@@ -403,33 +405,30 @@ export const Dashboard: React.FC = () => {
               setTimeout(() => setShowSharedMealModal(true), 100);
             }}
           />
-        )
-      }
+        )}
 
-      {
-        showGoalModal && (
+        {showGoalModal && (
           <EditGoalModal
+            key="edit-goal-modal"
             currentGoal={dailyGoal}
             onClose={() => setShowGoalModal(false)}
             onSave={handleUpdateGoal}
           />
-        )
-      }
+        )}
 
-      {
-        selectedEntry && (
+        {selectedEntry && (
           <MealDetailModal
+            key="meal-detail-modal"
             entry={selectedEntry}
             onClose={() => setSelectedEntry(null)}
             onDelete={handleDeleteEntry}
             onEdit={handleEditEntry}
           />
-        )
-      }
+        )}
 
-      {
-        showSharedMealModal && (
+        {showSharedMealModal && (
           <SharedMealModal
+            key="shared-meal-modal"
             initialImage={initialSharedImage}
             onClose={() => {
               setShowSharedMealModal(false);
@@ -441,8 +440,8 @@ export const Dashboard: React.FC = () => {
               loadData();
             }}
           />
-        )
-      }
+        )}
+      </AnimatePresence>
     </div>
   );
 };

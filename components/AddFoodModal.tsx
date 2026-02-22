@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { motion } from 'framer-motion';
 import { X, Camera, AlertCircle, ChevronLeft, Sparkles, RefreshCw, ThumbsUp, ChefHat, Image as ImageIcon, Calendar, Clock, Zap, Activity, Droplets, Trash2, PlusCircle, MessageSquare, Hourglass, RotateCcw, Database, HardDrive, Users } from 'lucide-react';
 import { getCurrentDateString } from '../utils/midnight';
 import { Button } from './ui/Button';
@@ -261,8 +262,19 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ onClose, onSuccess, 
   const isBrowserQuotaError = error?.includes("Browser Storage Full");
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center bg-black/40 backdrop-blur-md p-4 animate-in fade-in duration-200">
-      <div className="bg-surface w-full max-w-md rounded-4xl p-6 shadow-2xl border border-white/50 animate-in slide-in-from-bottom duration-300 max-h-[95vh] overflow-y-auto no-scrollbar">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center bg-black/40 backdrop-blur-md p-4"
+    >
+      <motion.div
+        initial={{ y: 50, opacity: 0, scale: 0.95 }}
+        animate={{ y: 0, opacity: 1, scale: 1 }}
+        exit={{ y: 20, opacity: 0, scale: 0.95 }}
+        transition={{ type: "spring", duration: 0.4 }}
+        className="bg-surface w-full max-w-md rounded-4xl p-6 shadow-2xl border border-white/50 max-h-[95vh] overflow-y-auto no-scrollbar"
+      >
 
         <div className="flex justify-between items-center mb-6">
           <div className="flex items-center gap-3">
@@ -590,8 +602,8 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ onClose, onSuccess, 
             </Button>
           </div>
         )}
-      </div>
+      </motion.div>
       <ScanningAnimation isActive={isProcessing} message={mode === 'chat' ? 'Analyzing Request...' : 'Analyzing Meal...'} />
-    </div>
+    </motion.div>
   );
 };
